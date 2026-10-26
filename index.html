@@ -104,7 +104,6 @@
 
   /* portada */
   .hero{padding:34px 0 28px;position:relative}
-  .hero::before{content:"";position:absolute;inset:-64px 0 auto 0;height:420px;background:radial-gradient(60% 70% at 85% 0%,rgba(217,119,46,.2),transparent 70%);pointer-events:none}
   .hero .container{position:relative}
   .kicker{display:inline-flex;align-items:center;gap:8px;font-size:12px;font-weight:800;letter-spacing:.14em;text-transform:uppercase;color:var(--or)}
   .kicker::before{content:"";width:22px;height:2px;background:var(--or)}
@@ -192,6 +191,11 @@
   .stepper button:active{background:var(--card-2)}
   .stepper input{width:100%;min-width:0;height:42px;border:0;background:none;text-align:center;font:inherit;font-weight:800;font-size:16px;color:var(--ink);outline:none;-moz-appearance:textfield}
   .stepper input::-webkit-outer-spin-button,.stepper input::-webkit-inner-spin-button{-webkit-appearance:none;margin:0}
+  .add-btn{height:42px;flex:1;max-width:240px;border:0;border-radius:12px;background:var(--or);color:#111;font-weight:800;font-size:15px;display:inline-flex;align-items:center;justify-content:center;gap:6px}
+  .add-btn:hover{background:var(--or-2)}
+  .add-btn:active{transform:scale(.97)}
+  .ctrl.pop .stepper{animation:pop .25s ease}
+  @keyframes pop{from{transform:scale(.92);opacity:.4}}
   .quick{height:42px;padding:0 12px;border-radius:12px;border:1px solid var(--line);background:none;font-weight:800;font-size:14px;color:var(--or-2)}
   .quick:active{background:var(--or-soft)}
   .card.off{opacity:.5}
@@ -214,6 +218,7 @@
     .stepper button{width:36px;height:38px}
     .stepper input{height:38px}
     .quick{height:38px;padding:0 9px;font-size:13px}
+    .add-btn{height:40px;font-size:14px}
   }
 
   .empty{padding:36px;text-align:center;color:var(--ink-2);border:1px dashed var(--line);border-radius:var(--r);margin-top:26px}
@@ -238,6 +243,11 @@
   .rating{display:flex;align-items:center;gap:10px;font-weight:700;color:var(--ink-2)}
   .rating b{font-family:var(--brand);font-size:30px;color:var(--ink)}
   .stars{color:var(--or-2);letter-spacing:2px}
+  .rv-nav{display:flex;gap:8px}
+  .rv-nav button{width:42px;height:42px;border-radius:50%;border:1px solid var(--line);background:var(--card);font-size:18px;font-weight:800;color:var(--ink)}
+  .rv-nav button:hover{border-color:var(--or)}
+  .rv-nav button:disabled{opacity:.35;cursor:default}
+  .rv .plato{align-self:flex-start;font-size:12px;font-weight:800;color:var(--or-2);background:var(--or-soft);border-radius:999px;padding:3px 10px}
   .rv-track{display:grid;grid-auto-flow:column;grid-auto-columns:minmax(260px,340px);gap:14px;overflow-x:auto;scroll-snap-type:x mandatory;padding-bottom:12px;scrollbar-width:thin}
   .rv{scroll-snap-align:start;background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:20px;display:flex;flex-direction:column;gap:12px;min-width:0}
   .rv q{font-size:17px;line-height:1.45;quotes:"“" "”"}
@@ -390,7 +400,8 @@
   <div class="container">
     <div class="head">
       <div><span class="kicker">Lo que dicen nuestros clientes</span><h2>Reseñas</h2></div>
-      <div class="rating" id="rvRating"></div>
+      <div style="display:flex;align-items:center;gap:18px;flex-wrap:wrap"><div class="rating" id="rvRating"></div>
+      <div class="rv-nav"><button id="rvPrev" aria-label="Reseñas anteriores">←</button><button id="rvNext" aria-label="Más reseñas">→</button></div></div>
     </div>
     <div class="rv-track" id="rvTrack"></div>
   </div>
@@ -509,13 +520,14 @@ function renderInfo(){
   const star = (h && (h.datos || []).find(d => /★/.test(d.valor)));
   if (star){ $("#fRating b").textContent = `${star.valor} ${star.etiqueta}`; $("#fRating").hidden = false; }
   if (rv.length){
-    $("#rvTrack").innerHTML = rv.map(r => `<figure class="rv" style="margin:0"><q>${esc(r.texto)}</q>
+    $("#rvTrack").innerHTML = rv.map(r => `<figure class="rv" style="margin:0">${r.plato ? `<span class="plato">${esc(r.plato)}</span>` : ""}<q>${esc(r.texto)}</q>
       <figcaption class="who"><span class="av">${esc((r.autor || "C").trim()[0].toUpperCase())}</span><span>${esc(r.autor || "Cliente")}${r.fuente ? " · " + esc(r.fuente) : ""}</span></figcaption></figure>`).join("");
     if (star){
       const opin = (h.datos || []).find(d => /opini/i.test(d.etiqueta));
       $("#rvRating").innerHTML = `<b>${esc(star.valor.replace("★", "").trim())}</b><span><span class="stars">★★★★★</span><br>${opin ? esc(opin.valor + " " + opin.etiqueta) : ""} ${esc(star.etiqueta)}</span>`;
     }
     $("#reviews").hidden = false;
+    requestAnimationFrame(rvArrows);
   }
   // copia de los datos (calificación, dirección, horario) en la columna de la portada
   $("#mFacts").innerHTML = [...document.querySelectorAll("#info .facts .fact")].filter(f => !f.hidden).map(f => f.outerHTML.replace(/ id="[^"]*"/g, "")).join("");
@@ -652,21 +664,26 @@ function photo(p){
   return p.foto ? `<img src="${esc(p.foto)}" alt="${esc(p.nombre)}" loading="lazy">` : `<span class="none"><span class="wm">${WM}</span></span>`;
 }
 
+// sin unidades: un botón "Agregar". Con unidades: − cantidad + y los atajos +6 / +12
+function ctrlHTML(p, q, pop){
+  if (!q) return `<div class="ctrl"><button class="add-btn" data-add="${p.id}" data-n="1"><span aria-hidden="true">+</span> Agregar</button></div>`;
+  const quick = p.unidad === "unidad" && secOf(p) === "cocina"
+    ? `<button class="quick" data-add="${p.id}" data-n="6">+6</button><button class="quick" data-add="${p.id}" data-n="12">+12</button>` : "";
+  return `<div class="ctrl${pop ? " pop" : ""}">
+      <div class="stepper">
+        <button data-add="${p.id}" data-n="-1" aria-label="Quitar uno">−</button>
+        <input type="number" inputmode="numeric" min="0" value="${q}" data-qty="${p.id}" aria-label="Cantidad de ${esc(p.nombre)}">
+        <button data-add="${p.id}" data-n="1" aria-label="Agregar uno">+</button>
+      </div>${quick}
+    </div>`;
+}
+
 function cardHTML(p){
   const q = cart[p.id] || 0, off = p.disponible === false;
   const priceHTML = hasPrice(p)
     ? `<span class="price">${money(p.precio)}</span><span class="per">${UNIT[p.unidad] || (p.unidad ? "por " + esc(p.unidad) : "")}</span>`
     : `<span class="price na">Precio a consultar</span>`;
-  const quick = p.unidad === "unidad" && secOf(p) === "cocina"
-    ? `<button class="quick" data-add="${p.id}" data-n="6">+6</button><button class="quick" data-add="${p.id}" data-n="12">+12</button>` : "";
-  const ctrl = off ? `<div class="off-tag">Sin stock por ahora</div>` : `
-    <div class="ctrl">
-      <div class="stepper">
-        <button data-add="${p.id}" data-n="-1" aria-label="Quitar uno">−</button>
-        <input type="number" inputmode="numeric" min="0" value="${q || ""}" placeholder="0" data-qty="${p.id}" aria-label="Cantidad de ${esc(p.nombre)}">
-        <button data-add="${p.id}" data-n="1" aria-label="Agregar uno">+</button>
-      </div>${quick}
-    </div>`;
+  const ctrl = off ? `<div class="off-tag">Sin stock por ahora</div>` : ctrlHTML(p, q);
   return `<article class="card ${q ? "in" : ""} ${off ? "off" : ""}" data-card="${p.id}">
     <button class="ph" data-zoom="${p.id}" aria-label="Ver ${esc(p.nombre)}">${photo(p)}${q ? `<span class="qbadge">${q}</span>` : ""}</button>
     <div class="body">
@@ -706,8 +723,16 @@ function refreshCard(id){
   if (q && !b){ b = document.createElement("span"); b.className = "qbadge"; ph.appendChild(b); }
   if (b){ if (q) b.textContent = q; else b.remove(); }
   const inp = el.querySelector("[data-qty]");
-  if (inp && document.activeElement !== inp) inp.value = q || "";
+  const ctrl = el.querySelector(".ctrl");
+  if (ctrl && !!q !== !!inp && document.activeElement !== inp){
+    ctrl.outerHTML = ctrlHTML(byId[id], q, !!q);
+    if (q) el.querySelector(".stepper [data-n='1']").focus({preventScroll: true});
+  } else if (inp && document.activeElement !== inp) inp.value = q || "";
 }
+// si alguien borra el número y deja 0, vuelve el botón "Agregar"
+document.addEventListener("focusout", e => {
+  if (e.target.matches(".card [data-qty]")) setTimeout(() => refreshCard(e.target.dataset.qty), 0);
+});
 
 function setQty(id, q, silent){
   q = Math.max(0, Math.min(9999, Math.floor(Number(q) || 0)));
@@ -884,6 +909,16 @@ function toast(m){
   const el = $("#toast"); el.textContent = m; el.classList.add("show");
   clearTimeout(toast.t); toast.t = setTimeout(() => el.classList.remove("show"), 1800);
 }
+
+const rvT = $("#rvTrack");
+function rvMove(dir){ const c = rvT.querySelector(".rv"); if (c) rvT.scrollBy({left: dir * (c.offsetWidth + 14), behavior: "smooth"}); }
+function rvArrows(){
+  $("#rvPrev").disabled = rvT.scrollLeft < 5;
+  $("#rvNext").disabled = rvT.scrollLeft + rvT.clientWidth >= rvT.scrollWidth - 5;
+}
+$("#rvPrev").onclick = () => rvMove(-1); $("#rvNext").onclick = () => rvMove(1);
+rvT.addEventListener("scroll", () => requestAnimationFrame(rvArrows), {passive: true});
+addEventListener("resize", rvArrows);
 
 $("#year").textContent = new Date().getFullYear();
 load();

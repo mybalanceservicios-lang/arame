@@ -18,7 +18,7 @@ Instrucciones para Claude, en una sesión que corre en la computadora del dueño
    - Si ya existe un producto con el mismo nombre (por ejemplo "Hummus Mediano"), actualizalo en vez de duplicarlo.
    - Borrá los productos que no estén en el catálogo de WhatsApp, menos los de las secciones almacén y shishas.
    - Agregá cada colección nueva a `categorias`, en el mismo orden que en WhatsApp.
-   - No toques `negocio`, `secciones`, `historia` ni `resenas`.
+   - No toques `negocio` ni `secciones`. `resenas` e `historia` se cambian solo como dice la parte de reseñas, más abajo.
 6. Revisá que `catalogo.json` sea JSON válido y que cada `foto` apunte a un archivo que existe.
 7. Hacé commit y push a la rama principal del repositorio.
 
@@ -26,3 +26,13 @@ Instrucciones para Claude, en una sesión que corre en la computadora del dueño
 
 - No mandes mensajes ni agregues nada al carrito de WhatsApp.
 - No cambies `index.html` ni `admin.html`.
+
+## Reseñas de Google
+
+1. Abrí Google Maps y buscá **Aramé, Rawson 2021, Martínez**.
+2. En la pestaña **Opiniones**, ordená por **Más relevantes** y copiá entre 10 y 15 reseñas de 4 o 5 estrellas, preferentemente las que nombran un plato.
+3. Copiá el texto tal cual, sin cambiar palabras. Si es largo, usá una o dos frases completas del original.
+4. Reemplazá `resenas` en `catalogo.json` con este formato:
+   `{"texto": "...", "autor": "Nombre como figura en Google", "fuente": "Google", "plato": "Hummus"}`
+   (`plato` va vacío si la reseña no habla de un plato).
+5. Si la ficha muestra otra calificación o cantidad de opiniones, actualizá `historia.datos`.

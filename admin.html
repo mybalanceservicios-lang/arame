@@ -129,13 +129,13 @@
     <div class="brand">Aramé<small>Configuración inicial del panel</small></div>
     <p style="color:var(--ink-2);margin:16px 0 0">Esto se hace <b>una sola vez</b>. Le da permiso al panel para guardar cambios en la web. Después solo se entra con el PIN.</p>
     <ol class="steps">
-      <li>Entrá a <a href="https://github.com/settings/personal-access-tokens/new" target="_blank" rel="noopener">crear un token en GitHub</a> con la cuenta dueña del repositorio.</li>
-      <li>Nombre: <b>Panel Aramé</b>. Vencimiento: el más largo posible.</li>
-      <li>En <b>Repository access</b> elegí <b>Only select repositories</b> → <b id="repoName"></b>.</li>
-      <li>En <b>Permissions → Repository permissions → Contents</b> elegí <b>Read and write</b>.</li>
-      <li>Tocá <b>Generate token</b>, copialo y pegalo acá abajo.</li>
+      <li>Desde una computadora, con la sesión de GitHub abierta en la cuenta dueña de <b id="repoName"></b>, tocá este link: <a href="https://github.com/settings/tokens/new?scopes=public_repo&amp;description=Panel%20Aram%C3%A9" target="_blank" rel="noopener"><b>crear el token del panel</b></a>. Ya viene con el nombre y el permiso cargados.</li>
+      <li>Si GitHub pide la contraseña o un código, ponelos.</li>
+      <li>En <b>Expiration</b> elegí <b>No expiration</b>.</li>
+      <li>Bajá hasta el final y tocá el botón verde <b>Generate token</b>.</li>
+      <li>Copiá el código que empieza con <b>ghp_</b> y pegalo acá abajo. GitHub lo muestra una sola vez.</li>
     </ol>
-    <label class="f">Token de GitHub<input id="sToken" type="password" autocomplete="off" placeholder="github_pat_…"></label>
+    <label class="f">Token de GitHub<input id="sToken" type="password" autocomplete="off" placeholder="ghp_…"></label>
     <div class="row2">
       <label class="f">PIN nuevo (6 a 10 números)<input id="sPin" type="password" inputmode="numeric" autocomplete="new-password" maxlength="10"></label>
       <label class="f">Repetí el PIN<input id="sPin2" type="password" inputmode="numeric" autocomplete="new-password" maxlength="10"></label>
@@ -630,7 +630,7 @@ $("#nSave").onclick = async () => {
   const secs = [...document.querySelectorAll("#nSecs [data-secid]")].map(g => ({id: g.dataset.secid, nombre: val(g, "nombre") || g.dataset.secid, descripcion: val(g, "descripcion")}));
   const historia = {titulo: $("#hTit").value.trim(), texto: $("#hTxt").value.trim(),
     datos: [...document.querySelectorAll("#hDatos .group")].map(g => ({valor: val(g, "valor"), etiqueta: val(g, "etiqueta")})).filter(d => d.valor)};
-  const resenas = [...document.querySelectorAll("#rvList .rv-item")].map(g => ({texto: val(g, "texto"), autor: val(g, "autor"), fuente: val(g, "fuente")})).filter(r => r.texto);
+  const resenas = [...document.querySelectorAll("#rvList .rv-item")].map(g => ({texto: val(g, "texto"), autor: val(g, "autor"), fuente: val(g, "fuente"), plato: val(g, "plato")})).filter(r => r.texto);
   busy(true, "Guardando…");
   try{
     await saveCatalog(d => {
@@ -645,7 +645,8 @@ $("#nSave").onclick = async () => {
 function addReview(r = {}){
   const el = document.createElement("div"); el.className = "rv-item";
   el.innerHTML = `<div class="fields"><textarea data-k="texto" rows="2" placeholder="Lo que dijo el cliente">${esc(r.texto || "")}</textarea>
-    <div><input data-k="autor" placeholder="Nombre" value="${esc(r.autor || "")}"><input data-k="fuente" placeholder="Google" value="${esc(r.fuente || "Google")}"></div></div>
+    <div><input data-k="autor" placeholder="Nombre" value="${esc(r.autor || "")}"><input data-k="fuente" placeholder="Google" value="${esc(r.fuente || "Google")}"></div>
+    <input data-k="plato" placeholder="Plato del que habla (opcional)" value="${esc(r.plato || "")}"></div>
     <button type="button" aria-label="Borrar reseña" data-rvdel>✕</button>`;
   $("#rvList").appendChild(el);
 }
