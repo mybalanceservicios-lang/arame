@@ -28,3 +28,11 @@ Usá un PIN de 8 números o más y no lo compartas.
 En el panel, cada producto es un cuadrado con un botón **Editar**: nombre, descripción, peso o presentación, precio, unidad de venta, categoría, foto y stock. Los cambios aparecen en la tienda en 1 o 2 minutos.
 
 En **Datos del negocio** se cambia el WhatsApp que recibe los pedidos, la dirección, el horario, un aviso destacado y el orden de las categorías.
+
+## Asistente de consultas
+
+El botón **Consultas** de la tienda (`asistente.js`) responde al instante horarios, dirección, productos, precios, stock, promociones y cómo hacer el pedido. No usa servicios pagos ni servidor: lee `catalogo.json`, así que cualquier cambio hecho en el panel se refleja solo.
+
+- Lo que no sabe responder (ingredientes, alergias, cosas que no están en el catálogo) lo deriva a WhatsApp.
+- En el panel, en **Datos del negocio**, los campos **Envíos** y **Formas de pago** son lo que contesta el asistente cuando le preguntan por eso. Si quedan vacíos, responde que se coordina por WhatsApp.
+- El horario se escribe como hasta ahora (por ejemplo `Lunes a sábado · 11 a 15 h y 17 a 20 h`): con ese formato el asistente sabe decir si el local está abierto en ese momento.
