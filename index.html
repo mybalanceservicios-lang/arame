@@ -9,6 +9,26 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700;800;900&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<script>
+/* Tipografía de los títulos. Para probar otra: agregar ?fuente=fraunces (o bricolage, unbounded, dmserif) al link */
+(function(){
+  var FONTS = {
+    fraunces:  ["Fraunces:opsz,wght@9..144,600..900", '"Fraunces",Georgia,serif'],
+    bricolage: ["Bricolage+Grotesque:opsz,wght@12..96,600..800", '"Bricolage Grotesque","Arial",sans-serif'],
+    unbounded: ["Unbounded:wght@500..900", '"Unbounded","Arial Black",sans-serif'],
+    dmserif:   ["DM+Serif+Display", '"DM Serif Display",Georgia,serif']
+  };
+  var DEFAULT = "";
+  var f = "";
+  try { f = new URLSearchParams(location.search).get("fuente") || DEFAULT; } catch (e) { f = DEFAULT; }
+  var o = FONTS[f]; if (!o) return;
+  var l = document.createElement("link"); l.rel = "stylesheet";
+  l.href = "https://fonts.googleapis.com/css2?family=" + o[0] + "&display=swap";
+  document.head.appendChild(l);
+  document.documentElement.style.setProperty("--display", o[1]);
+  document.documentElement.setAttribute("data-font", f);
+})();
+</script>
 <style>
   :root{
     --bg:#0F1418; --bg-2:#131A1F; --card:#172028; --card-2:#1E2830;
@@ -17,11 +37,14 @@
     --or:#D9772E; --or-2:#F0954A; --or-deep:#A85A1F; --or-soft:rgba(217,119,46,.14);
     --wa:#1FA855;
     --brand:"Montserrat","Arial Black",sans-serif;
+    --display:var(--brand);
     --body:"Manrope",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
     --r:16px;
   }
   *{box-sizing:border-box}
   [hidden]{display:none!important}
+  [data-font="dmserif"] h1,[data-font="dmserif"] h2,[data-font="dmserif"] h3,[data-font="dmserif"] .world b,[data-font="dmserif"] .stat b,[data-font="dmserif"] .rating b{font-weight:400!important;font-synthesis:none;letter-spacing:0!important}
+  [data-font="unbounded"] h1,[data-font="unbounded"] .sec-head h2,[data-font="unbounded"] .story h2,[data-font="unbounded"] .reviews h2{font-weight:700!important;letter-spacing:-.02em}
   html{scroll-behavior:smooth;overflow-x:hidden;overflow-x:clip}
   body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--body);line-height:1.5;-webkit-font-smoothing:antialiased;overflow-x:hidden;overflow-x:clip}
   a{color:inherit;text-decoration:none}
@@ -71,7 +94,7 @@
     .mesa .stage{grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:40px;align-items:center;justify-items:stretch;padding:0 max(24px,calc((100vw - 1160px) / 2 + 16px))}
     .m-text{display:block;min-width:0;position:relative;z-index:2}
     .mesa .stage{background:radial-gradient(50% 70% at 75% 50%,#1C252C,var(--bg) 75%)}
-    .m-text h1{font-family:var(--brand);font-weight:900;font-size:clamp(34px,4.4vw,60px);letter-spacing:-.02em;margin:14px 0 14px}
+    .m-text h1{font-family:var(--display);font-weight:900;font-size:clamp(34px,4.4vw,60px);letter-spacing:-.02em;margin:14px 0 14px}
     .m-text h1 em{color:var(--or);font-style:normal}
     .m-text p{color:var(--ink-2);font-size:17px;max-width:46ch;margin:0}
     .m-ctas{display:flex;gap:12px;flex-wrap:wrap;margin-top:26px}
@@ -107,7 +130,7 @@
   .hero .container{position:relative}
   .kicker{display:inline-flex;align-items:center;gap:8px;font-size:12px;font-weight:800;letter-spacing:.14em;text-transform:uppercase;color:var(--or)}
   .kicker::before{content:"";width:22px;height:2px;background:var(--or)}
-  .hero h1{font-family:var(--brand);font-weight:900;font-size:clamp(36px,6.6vw,70px);margin:14px 0 12px;letter-spacing:-.02em}
+  .hero h1{font-family:var(--display);font-weight:900;font-size:clamp(36px,6.6vw,70px);margin:14px 0 12px;letter-spacing:-.02em}
   .hero h1 em{color:var(--or);font-style:normal}
   .hero p{color:var(--ink-2);font-size:17px;max-width:560px;margin:0}
   .facts{display:flex;flex-wrap:wrap;gap:10px;margin-top:22px}
@@ -125,7 +148,7 @@
   .world{display:flex;flex-direction:column;align-items:flex-start;gap:4px;text-align:left;background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:16px;transition:border-color .15s,transform .15s;position:relative;overflow:hidden}
   .world:hover{transform:translateY(-2px);border-color:var(--ink-3)}
   .world.on{border-color:var(--or);background:linear-gradient(160deg,rgba(217,119,46,.16),var(--card) 60%)}
-  .world b{font-family:var(--brand);font-weight:800;font-size:19px}
+  .world b{font-family:var(--display);font-weight:800;font-size:19px}
   .world span{font-size:13.5px;color:var(--ink-2)}
   .world i{font-style:normal;font-size:12px;font-weight:800;color:var(--or-2);margin-top:6px}
   @media(max-width:640px){
@@ -148,7 +171,7 @@
   .sec-block{padding-top:18px}
   .sec-block + .sec-block{margin-top:34px;border-top:1px solid var(--line);padding-top:34px}
   .sec-head{display:flex;align-items:baseline;gap:14px;flex-wrap:wrap}
-  .sec-head h2{font-family:var(--brand);font-weight:900;font-size:clamp(28px,4vw,40px);letter-spacing:-.015em;color:var(--or)}
+  .sec-head h2{font-family:var(--display);font-weight:900;font-size:clamp(28px,4vw,40px);letter-spacing:-.015em;color:var(--or)}
   .sec-head p{margin:0;color:var(--ink-2)}
 
   /* categorías y buscador */
@@ -170,7 +193,7 @@
 
   /* productos */
   .cat-block{padding:26px 0 6px;scroll-margin-top:130px}
-  .cat-block h2{font-family:var(--brand);font-size:24px;margin-bottom:14px;display:flex;align-items:baseline;gap:10px}
+  .cat-block h2{font-family:var(--display);font-size:24px;margin-bottom:14px;display:flex;align-items:baseline;gap:10px}
   .cat-block h2 small{font-family:var(--body);font-size:13px;color:var(--ink-3);font-weight:600}
   .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:14px}
   .card{background:var(--card);border:1px solid var(--line);border-radius:var(--r);overflow:hidden;display:flex;flex-direction:column;transition:border-color .15s}
@@ -243,21 +266,21 @@
   .story{margin-top:60px;padding:56px 0;border-top:1px solid var(--line);background:linear-gradient(180deg,rgba(19,26,31,.75),rgba(15,20,24,0))}
   #bgfx{position:fixed;inset:0;width:100%;height:100%;z-index:-1;pointer-events:none}
   .story .container{display:grid;grid-template-columns:1.2fr .8fr;gap:30px 50px;align-items:center}
-  .story h2{font-family:var(--brand);font-weight:900;font-size:clamp(30px,4.6vw,48px);letter-spacing:-.015em;margin:10px 0 14px}
+  .story h2{font-family:var(--display);font-weight:900;font-size:clamp(30px,4.6vw,48px);letter-spacing:-.015em;margin:10px 0 14px}
   .story p{color:var(--ink-2);font-size:17px;margin:0;max-width:56ch;white-space:pre-line}
   .stats{display:grid;gap:12px}
   .stat{display:flex;align-items:baseline;gap:12px;border-bottom:1px solid var(--line);padding-bottom:12px}
   .stat:last-child{border-bottom:0}
-  .stat b{font-family:var(--brand);font-weight:900;font-size:34px;color:var(--or)}
+  .stat b{font-family:var(--display);font-weight:900;font-size:34px;color:var(--or)}
   .stat span{color:var(--ink-2);font-weight:600}
   @media(max-width:760px){.story .container{grid-template-columns:1fr}}
 
   /* reseñas */
   .reviews{padding:50px 0 10px}
   .reviews .head{display:flex;align-items:flex-end;justify-content:space-between;gap:16px;flex-wrap:wrap;margin-bottom:20px}
-  .reviews h2{font-family:var(--brand);font-weight:900;font-size:clamp(28px,4vw,42px);letter-spacing:-.015em;margin-top:10px}
+  .reviews h2{font-family:var(--display);font-weight:900;font-size:clamp(28px,4vw,42px);letter-spacing:-.015em;margin-top:10px}
   .rating{display:flex;align-items:center;gap:10px;font-weight:700;color:var(--ink-2)}
-  .rating b{font-family:var(--brand);font-size:30px;color:var(--ink)}
+  .rating b{font-family:var(--display);font-size:30px;color:var(--ink)}
   .stars{color:var(--or-2);letter-spacing:2px}
   .rv-nav{display:flex;gap:8px}
   .rv-nav button{width:42px;height:42px;border-radius:50%;border:1px solid var(--line);background:var(--card);font-size:18px;font-weight:800;color:var(--ink)}
@@ -292,10 +315,10 @@
   .drawer{position:fixed;top:0;right:0;bottom:0;height:100dvh;width:min(460px,100%);background:var(--bg-2);z-index:90;transform:translateX(100%);visibility:hidden;transition:transform .25s ease,visibility 0s .25s;display:flex;flex-direction:column;overflow:hidden;border-left:1px solid var(--line)}
   .drawer.open{transform:none;visibility:visible;transition:transform .25s ease}
   .d-head{display:flex;align-items:center;justify-content:space-between;padding:16px 18px;border-bottom:1px solid var(--line)}
-  .d-head h2{font-family:var(--brand);font-size:24px}
+  .d-head h2{font-family:var(--display);font-size:24px}
   .x{width:40px;height:40px;border-radius:50%;border:1px solid var(--line);background:var(--card);font-size:17px}
   .d-body{flex:1;min-height:0;overflow-y:auto;padding:8px 18px 18px}
-  .d-sec{font-family:var(--brand);font-weight:800;font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--or);margin:16px 0 0}
+  .d-sec{font-family:var(--display);font-weight:800;font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--or);margin:16px 0 0}
   .li{display:grid;grid-template-columns:1fr auto;gap:6px 10px;padding:12px 0;border-bottom:1px solid var(--line);align-items:center}
   .li .n{font-weight:700;font-size:15px;min-width:0}
   .li .n small{display:block;font-weight:500;color:var(--ink-3);font-size:12.5px}
@@ -305,7 +328,7 @@
   .li .rm:hover{border-color:#E5484D;color:#FF7B7F}
   .clear{background:none;border:0;color:var(--ink-3);font-size:13px;font-weight:700;text-decoration:underline;padding:12px 0 0}
   .form{display:flex;flex-direction:column;gap:12px;margin-top:20px}
-  .form h3{font-family:var(--brand);font-size:20px}
+  .form h3{font-family:var(--display);font-size:20px}
   .seg{display:grid;grid-template-columns:1fr 1fr;gap:4px;background:var(--bg);border:1px solid var(--line);border-radius:12px;padding:4px}
   .seg button{border:0;background:none;border-radius:9px;padding:10px;font-weight:800;font-size:14px;color:var(--ink-2)}
   .seg button.on{background:var(--or);color:#111}
@@ -367,9 +390,7 @@
       <div class="table" aria-hidden="true"></div>
       <div id="plates"></div>
       <div class="center">
-        <span class="wm" data-wm></span><small>COCINA ARMENIA</small>
-        <p>Medzé, masas y platos caseros para compartir. Armá tu pedido y te lo preparamos.</p>
-        <button class="cta" data-go-catalog>Ver el catálogo →</button>
+        <span class="wm" data-wm id="mesaWm"></span>
       </div>
     </div>
     <div class="hint" aria-hidden="true"><i></i>Deslizá para servir la mesa</div>
@@ -589,7 +610,8 @@ function renderMesa(){
     ? `<img src="${esc(p.foto)}" alt="">`
     : `<span class="dish" style="background:radial-gradient(circle at 40% 35%, color-mix(in srgb, ${PLATE_COLORS[i % 8]} 70%, white), ${PLATE_COLORS[i % 8]} 70%)"></span>`}<span class="lbl">${esc(p.nombre)}</span></button>`).join("");
   plates = [...$("#plates").children];
-  drawMesa(); playIntro();
+  fitWordmark(); drawMesa(); playIntro();
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(fitWordmark);
 }
 const clamp = (v, a = 0, b = 1) => Math.min(b, Math.max(a, v));
 const easeOut = t => 1 - Math.pow(1 - t, 3);
@@ -603,14 +625,30 @@ function playIntro(){
   const step = now => { introP = clamp((now - start) / 1500); drawMesa(); if (introP < 1) requestAnimationFrame(step); };
   requestAnimationFrame(step);
 }
+// radio final de la ronda de platos
+function ring(){
+  const stage = $("#mesa .stage"), W = stage.offsetWidth, H = stage.offsetHeight;
+  const T = $("#mesa .m-table").offsetWidth;
+  return isPhone() ? {Rx: W * .39, Ry: H * .40} : {Rx: T * .36, Ry: T * .36};
+}
+// el logo del centro se achica para entrar en el hueco que dejan los platos
+function fitWordmark(){
+  const wm = $("#mesaWm"); if (!wm) return;
+  const R = ring(), ps = (plates[0] && plates[0].offsetWidth) || 80;
+  const freeW = R.Rx * Math.cos(Math.PI / 8) - ps / 2 - 18;          // platos de los costados
+  const freeH = R.Ry * Math.sin(3 * Math.PI / 8) - ps / 2 - 34;      // platos de arriba y sus nombres
+  wm.style.fontSize = "100px";
+  const ratioW = wm.offsetWidth / 100, ratioH = wm.offsetHeight / 100;
+  const size = Math.max(26, Math.min(2 * freeW / ratioW, 2 * freeH / ratioH, 120));
+  wm.style.fontSize = size.toFixed(1) + "px";
+}
 function drawMesa(){
   const mesa = $("#mesa"), stage = mesa.querySelector(".stage");
   const total = mesa.offsetHeight - stage.offsetHeight;
   const p = REDUCE ? 1 : isPhone() ? introP * .75 : clamp(-mesa.getBoundingClientRect().top / Math.max(1, total));
   const t = easeOut(clamp(p / .7));
-  const W = stage.offsetWidth, H = stage.offsetHeight, k = .06 + .94 * t;
-  const T = mesa.querySelector(".m-table").offsetWidth;
-  const Rx = (isPhone() ? W * .39 : T * .36) * k, Ry = (isPhone() ? H * .40 : T * .36) * k;
+  const k = .06 + .94 * t, R = ring();
+  const Rx = R.Rx * k, Ry = R.Ry * k;
   const spin = (1 - t) * 220;
   plates.forEach((el, i) => {
     const a = ((i + .5) / plates.length) * Math.PI * 2 + spin * Math.PI / 180 - Math.PI / 2;
@@ -624,7 +662,7 @@ function drawMesa(){
   mesa.querySelector(".table").style.transform = `rotate(${-spin * .3}deg) scale(${.85 + .15 * t})`;
 }
 addEventListener("scroll", () => { if (!isPhone()) requestAnimationFrame(drawMesa); }, {passive: true});
-addEventListener("resize", () => { if (isPhone()) playIntro(); drawMesa(); });
+addEventListener("resize", () => { if (isPhone()) playIntro(); fitWordmark(); drawMesa(); });
 document.querySelectorAll("[data-go-catalog]").forEach(b => b.onclick = () => window.scrollTo({top: $("#info").offsetTop - 64, behavior: "smooth"}));
 
 function renderWorlds(){
@@ -712,7 +750,7 @@ function photo(p){
 // sin unidades: un botón "Agregar". Con unidades: − cantidad + y los atajos +6 / +12
 function ctrlHTML(p, q, pop){
   if (!q) return `<div class="ctrl"><button class="add-btn" data-add="${p.id}" data-n="1"><span aria-hidden="true">+</span> Agregar</button></div>`;
-  const quick = p.unidad === "unidad" && secOf(p) === "cocina"
+  const quick = p.unidad === "unidad" && secOf(p) === "cocina" && !/x\s*\d+\s*u/i.test(p.nombre)
     ? `<button class="quick" data-add="${p.id}" data-n="6">+6</button><button class="quick" data-add="${p.id}" data-n="12">+12</button>` : "";
   return `<div class="ctrl${pop ? " pop" : ""}">
       <div class="stepper">
