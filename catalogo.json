@@ -29,7 +29,9 @@
       "categoria": "Entradas - Medzé",
       "seccion": "cocina",
       "foto": "fotos/hummus-mediano.jpg",
-      "disponible": true
+      "disponible": true,
+      "destacado": true,
+      "descuento": 0
     },
     {
       "id": "babaganoush-mediano",
