@@ -62,6 +62,19 @@
   .mesa .hint i{width:16px;height:24px;border:2px solid var(--ink-3);border-radius:9px;position:relative}
   .mesa .hint i::after{content:"";position:absolute;left:50%;top:4px;width:2px;height:5px;background:var(--or);transform:translateX(-50%);animation:dot 1.4s infinite}
   @keyframes dot{60%{transform:translate(-50%,7px);opacity:0}}
+  /* en celular la mesa ya aparece servida: sin tramo de scroll */
+  @media(max-width:699px){
+    .mesa{height:auto}
+    .mesa .stage{position:relative;top:0;height:min(calc(100svh - 64px),700px);min-height:560px}
+    .mesa .hint{display:none}
+  }
+
+  /* botón flotante de WhatsApp */
+  .wa-float{position:fixed;right:max(16px,env(safe-area-inset-right,0px));bottom:calc(16px + env(safe-area-inset-bottom,0px));z-index:65;width:58px;height:58px;border-radius:50%;background:var(--wa);color:#fff;display:grid;place-items:center;box-shadow:0 12px 28px -8px rgba(0,0,0,.6);transition:transform .25s ease,bottom .25s ease}
+  .wa-float:hover{transform:scale(1.06)}
+  .wa-float svg{width:30px;height:30px}
+  body.has-bar .wa-float{bottom:calc(96px + env(safe-area-inset-bottom,0px))}
+  body.drawer-open .wa-float{transform:scale(0);pointer-events:none}
 
   /* portada */
   .hero{padding:34px 0 28px;position:relative}
@@ -332,6 +345,10 @@
   <span class="go">Ver pedido →</span>
 </button>
 
+<a class="wa-float" id="waFloat" href="#" target="_blank" rel="noopener" aria-label="Escribinos por WhatsApp">
+  <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2zm5.3 14.2c-.2.6-1.3 1.2-1.8 1.3-.5.1-1 .1-1.7-.1-.4-.1-.9-.3-1.5-.6-2.7-1.2-4.4-3.9-4.6-4.1-.1-.2-1.1-1.4-1.1-2.7s.7-1.9.9-2.2c.2-.3.5-.3.7-.3h.5c.2 0 .4 0 .6.5l.8 2c.1.2.1.4 0 .5l-.3.5-.4.4c-.1.1-.3.3-.1.6.2.3.7 1.2 1.6 2 1.1 1 2 1.3 2.3 1.4.3.1.4.1.6-.1l.8-1c.2-.3.4-.2.6-.1l1.9.9c.3.1.5.2.5.3.1.2.1.7-.1 1.3z"/></svg>
+</a>
+
 <div class="overlay" id="overlay"></div>
 <aside class="drawer" id="drawer" aria-label="Tu pedido" aria-hidden="true">
   <div class="d-head">
@@ -412,6 +429,8 @@ async function load(){
 
 function renderInfo(){
   const n = DATA.negocio || {};
+  const num = String(n.whatsapp || "").replace(/\D/g, "");
+  $("#waFloat").href = `https://wa.me/${num}?text=${encodeURIComponent(`¡Hola ${n.nombre || "Aramé"}! Quería hacer una consulta.`)}`;
   $("#fDir").textContent = n.direccion || ""; $("#ftDir").textContent = n.direccion || "";
   $("#fHor").textContent = n.horario || "";
   if (n.aviso){ $("#aviso").textContent = n.aviso; $("#aviso").hidden = false; }
@@ -446,15 +465,24 @@ function renderMesa(){
     ? `<img src="${esc(p.foto)}" alt="">`
     : `<span class="dish" style="background:radial-gradient(circle at 40% 35%, color-mix(in srgb, ${PLATE_COLORS[i % 8]} 70%, white), ${PLATE_COLORS[i % 8]} 70%)"></span>`}<span class="lbl">${esc(p.nombre)}</span></button>`).join("");
   plates = [...$("#plates").children];
-  drawMesa();
+  drawMesa(); playIntro();
 }
 const clamp = (v, a = 0, b = 1) => Math.min(b, Math.max(a, v));
 const easeOut = t => 1 - Math.pow(1 - t, 3);
 const REDUCE = matchMedia("(prefers-reduced-motion: reduce)").matches;
+const isPhone = () => innerWidth < 700;
+let introP = REDUCE ? 1 : 0;
+// en celular los platos se abren solos al cargar, en un segundo y medio
+function playIntro(){
+  if (introP >= 1) return;
+  const start = performance.now();
+  const step = now => { introP = clamp((now - start) / 1500); drawMesa(); if (introP < 1) requestAnimationFrame(step); };
+  requestAnimationFrame(step);
+}
 function drawMesa(){
   const mesa = $("#mesa"), stage = mesa.querySelector(".stage");
   const total = mesa.offsetHeight - stage.offsetHeight;
-  const p = REDUCE ? 1 : clamp(-mesa.getBoundingClientRect().top / Math.max(1, total));
+  const p = REDUCE ? 1 : isPhone() ? introP * .75 : clamp(-mesa.getBoundingClientRect().top / Math.max(1, total));
   const t = easeOut(clamp(p / .7));
   const W = stage.offsetWidth, H = stage.offsetHeight, m = Math.min(W, H), k = .06 + .94 * t;
   const Rx = (W < 700 ? W * .39 : m * .41) * k, Ry = (W < 700 ? H * .40 : m * .37) * k;
@@ -470,8 +498,8 @@ function drawMesa(){
   mesa.style.setProperty("--pe", o2 > .5 ? "auto" : "none");
   mesa.querySelector(".table").style.transform = `rotate(${-spin * .3}deg) scale(${.85 + .15 * t})`;
 }
-addEventListener("scroll", () => requestAnimationFrame(drawMesa), {passive: true});
-addEventListener("resize", drawMesa);
+addEventListener("scroll", () => { if (!isPhone()) requestAnimationFrame(drawMesa); }, {passive: true});
+addEventListener("resize", () => { if (isPhone()) playIntro(); drawMesa(); });
 $("#mesaCta").onclick = () => window.scrollTo({top: $("#info").offsetTop - 64, behavior: "smooth"});
 
 function renderWorlds(){
@@ -640,6 +668,7 @@ function renderCart(){
   const t = totals();
   $("#cartCount").textContent = t.units;
   $("#bar").classList.toggle("show", t.units > 0 && !$("#drawer").classList.contains("open"));
+  document.body.classList.toggle("has-bar", t.units > 0);
   $("#barCount").textContent = `${t.items.length} ${t.items.length === 1 ? "producto" : "productos"} · ${t.units} u.`;
   $("#barTotal").innerHTML = money(t.total) + (t.pending ? ` <small style="font-size:12px;opacity:.75">+ a consultar</small>` : "");
   $("#sTotal").textContent = money(t.total);
@@ -662,10 +691,12 @@ function openCart(){
   refreshLines();
   $("#drawer").classList.add("open"); $("#overlay").classList.add("open");
   $("#drawer").setAttribute("aria-hidden", "false"); $("#bar").classList.remove("show");
+  document.body.classList.add("drawer-open");
 }
 function closeCart(){
   $("#drawer").classList.remove("open"); $("#overlay").classList.remove("open");
   $("#drawer").setAttribute("aria-hidden", "true");
+  document.body.classList.remove("drawer-open");
   renderList(); renderCart();
 }
 $("#cartBtn").onclick = openCart; $("#bar").onclick = openCart;
