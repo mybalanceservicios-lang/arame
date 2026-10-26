@@ -179,7 +179,13 @@
   .ph img{width:100%;height:100%;object-fit:cover;display:block}
   .ph .none{position:absolute;inset:0;display:grid;place-items:center;color:rgba(217,119,46,.35);background:radial-gradient(circle at 50% 40%,#22201C,#172028)}
   .ph .none .wm{font-size:22px;color:rgba(217,119,46,.4)}
-  .top-badge{position:absolute;left:10px;top:10px;display:inline-flex;align-items:center;gap:5px;background:linear-gradient(135deg,#F4B23E,#D9772E);color:#1A1208;font-weight:900;font-size:12px;letter-spacing:.02em;border-radius:999px;padding:4px 10px 4px 8px;box-shadow:0 6px 16px -6px rgba(244,178,62,.7)}
+  .badges{position:absolute;left:10px;top:10px;display:flex;flex-direction:column;align-items:flex-start;gap:5px}
+  .off-badge{background:#E5484D;color:#fff;font-weight:900;font-size:13px;border-radius:999px;padding:3px 10px;box-shadow:0 6px 16px -6px rgba(229,72,77,.7)}
+  .old{color:var(--ink-3);font-size:14px;font-weight:600}
+  .card.promo{border-color:rgba(229,72,77,.45)}
+  .promo-banner{display:flex;align-items:center;gap:10px;margin-top:18px;background:linear-gradient(120deg,rgba(229,72,77,.18),rgba(217,119,46,.16));border:1px solid rgba(229,72,77,.45);border-radius:14px;padding:12px 16px;font-weight:800;font-size:15px;color:var(--ink)}
+  .promo-banner b{background:#E5484D;color:#fff;border-radius:8px;padding:3px 8px;font-size:13px;letter-spacing:.04em}
+  .top-badge{display:inline-flex;align-items:center;gap:5px;background:linear-gradient(135deg,#F4B23E,#D9772E);color:#1A1208;font-weight:900;font-size:12px;letter-spacing:.02em;border-radius:999px;padding:4px 10px 4px 8px;box-shadow:0 6px 16px -6px rgba(244,178,62,.7)}
   .card.top{border-color:rgba(244,178,62,.45)}
   .card.top.in{border-color:var(--or)}
   .ph .qbadge{position:absolute;top:10px;right:10px;background:var(--or);color:#111;font-weight:800;font-size:13px;border-radius:999px;padding:3px 10px}
@@ -215,7 +221,9 @@
     .ph{width:118px;min-width:118px;aspect-ratio:auto;min-height:100%}
     .ph .none .wm{font-size:15px}
     .ph .qbadge{top:6px;right:6px;font-size:12px;padding:2px 8px}
-    .top-badge{left:6px;top:auto;bottom:6px;font-size:10.5px;padding:3px 8px 3px 6px}
+    .badges{left:6px;top:auto;bottom:6px;gap:4px}
+    .top-badge{font-size:10.5px;padding:3px 8px 3px 6px}
+    .off-badge{font-size:11.5px;padding:2px 8px}
     .body{padding:12px}
     .card h3{font-size:16px}
     .desc{font-size:13px;-webkit-line-clamp:2}
@@ -307,6 +315,9 @@
   .form .err{border-color:#E5484D}
   .d-foot{padding:14px 18px calc(16px + env(safe-area-inset-bottom));border-top:1px solid var(--line);background:var(--card)}
   .sum{display:flex;justify-content:space-between;align-items:baseline;font-size:20px;font-weight:800}
+  .sub-row{display:flex;justify-content:space-between;font-size:14.5px;color:var(--ink-2);padding-bottom:4px}
+  .sub-row.promo{color:#FF7B7F;font-weight:800}
+  .promo-hint{margin:6px 0 0;font-size:13px;font-weight:700;color:var(--or-2)}
   .note{font-size:12.5px;color:var(--ink-3);margin:6px 0 0}
   .send{width:100%;display:flex;align-items:center;justify-content:center;gap:9px;margin-top:12px;background:var(--wa);color:#fff;border:0;border-radius:14px;padding:15px;font-weight:800;font-size:16px}
   .send:disabled{background:var(--card-2);color:var(--ink-3);cursor:not-allowed}
@@ -345,6 +356,7 @@
       <span class="kicker">Cocina armenia · Take away</span>
       <h1>Cocina armenia casera, <em>lista para llevar</em></h1>
       <p>Medzé, masas, platos y dulces armenios, y un almacén con productos importados. Armá tu pedido acá y te lo preparamos.</p>
+      <div class="promo-banner" id="mPromo" hidden><b>PROMO</b><span></span></div>
       <div class="facts" id="mFacts"></div>
       <div class="m-ctas">
         <button class="btn-main" data-go-catalog>Ver el catálogo →</button>
@@ -375,6 +387,7 @@
       <span class="fact"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg><span id="fHor"></span></span>
     </div>
     <div class="aviso" id="aviso" hidden></div>
+    <div class="promo-banner" id="promoBanner" hidden><b>PROMO</b><span></span></div>
     <div class="worlds-label" id="worldsLabel">Categorías:</div>
     <nav class="worlds" id="worlds" aria-label="Categorías"></nav>
   </div>
@@ -455,7 +468,10 @@
     </div>
   </div>
   <div class="d-foot">
+    <div class="sub-row" id="sSubRow" hidden><span>Subtotal</span><span id="sSub"></span></div>
+    <div class="sub-row promo" id="sPromoRow" hidden><span id="sPromoLbl"></span><span id="sPromo"></span></div>
     <div class="sum"><span>Total</span><span id="sTotal">$0</span></div>
+    <p class="promo-hint" id="sPromoHint" hidden></p>
     <p class="note" id="sNote"></p>
     <button class="send" id="sendBtn">
       <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2zm5.3 14.2c-.2.6-1.3 1.2-1.8 1.3-.5.1-1 .1-1.7-.1-.4-.1-.9-.3-1.5-.6-2.7-1.2-4.4-3.9-4.6-4.1-.1-.2-1.1-1.4-1.1-2.7s.7-1.9.9-2.2c.2-.3.5-.3.7-.3h.5c.2 0 .4 0 .6.5l.8 2c.1.2.1.4 0 .5l-.3.5-.4.4c-.1.1-.3.3-.1.6.2.3.7 1.2 1.6 2 1.1 1 2 1.3 2.3 1.4.3.1.4.1.6-.1l.8-1c.2-.3.4-.2.6-.1l1.9.9c.3.1.5.2.5.3.1.2.1.7-.1 1.3z"/></svg>
@@ -480,6 +496,19 @@ const UNIT = {unidad:"c/u", docena:"la docena", porción:"la porción", kg:"el k
 const UNIT_PLURAL = {unidad:["unidad","unidades"], docena:["docena","docenas"], porción:["porción","porciones"], kg:["kg","kg"], pote:["pote","potes"], bandeja:["bandeja","bandejas"]};
 const unitName = (u, q) => { const p = UNIT_PLURAL[u]; return p ? p[q === 1 ? 0 : 1] : (u || ""); };
 const hasPrice = p => typeof p.precio === "number" && p.precio > 0;
+// descuento por producto (en %) y precio final
+const discOf = p => hasPrice(p) ? Math.max(0, Math.min(90, Math.round(Number(p.descuento) || 0))) : 0;
+const priceOf = p => discOf(p) ? Math.round(p.precio * (1 - discOf(p) / 100)) : p.precio;
+// descuento en el total de la compra
+function promoTotal(){
+  const pr = DATA && DATA.promos && DATA.promos.total;
+  if (!pr || !pr.activa) return null;
+  const pct = Math.max(0, Math.min(90, Math.round(Number(pr.porcentaje) || 0)));
+  return pct ? {pct, min: Math.max(0, Number(pr.minimo) || 0), texto: pr.texto || ""} : null;
+}
+function promoText(pr){
+  return pr.texto || `${pr.pct}% OFF en el total de tu compra` + (pr.min ? ` desde ${money(pr.min)}` : "");
+}
 
 /* marca: AR + techo + MÉ */
 const ROOF = `<svg viewBox="0 0 100 92" aria-hidden="true"><path d="M2 90 L50 8 L98 90 L80 90 L50 40 L20 90 Z" fill="currentColor"/><path d="M20 90 C 46 70, 70 66, 100 74 L 98 90 Z" fill="currentColor" opacity=".9"/></svg>`;
@@ -524,6 +553,8 @@ function renderInfo(){
   $("#mWa").href = `https://wa.me/${num}?text=${encodeURIComponent(`¡Hola ${n.nombre || "Aramé"}! Quería hacer una consulta.`)}`;
   $("#fHor").textContent = n.horario || "";
   if (n.aviso){ $("#aviso").textContent = n.aviso; $("#aviso").hidden = false; }
+  const pr = promoTotal();
+  ["#promoBanner", "#mPromo"].forEach(sel => { $(sel).hidden = !pr; if (pr) $(sel + " span").textContent = promoText(pr); });
   const h = DATA.historia;
   if (h && (h.titulo || h.texto)){
     $("#stTitle").textContent = h.titulo || ""; $("#stText").textContent = h.texto || "";
@@ -695,11 +726,11 @@ function ctrlHTML(p, q, pop){
 function cardHTML(p){
   const q = cart[p.id] || 0, off = p.disponible === false;
   const priceHTML = hasPrice(p)
-    ? `<span class="price">${money(p.precio)}</span><span class="per">${UNIT[p.unidad] || (p.unidad ? "por " + esc(p.unidad) : "")}</span>`
+    ? `<span class="price">${money(priceOf(p))}</span>${discOf(p) ? `<s class="old">${money(p.precio)}</s>` : ""}<span class="per">${UNIT[p.unidad] || (p.unidad ? "por " + esc(p.unidad) : "")}</span>`
     : `<span class="price na">Precio a consultar</span>`;
   const ctrl = off ? `<div class="off-tag">Sin stock por ahora</div>` : ctrlHTML(p, q);
-  return `<article class="card ${q ? "in" : ""} ${off ? "off" : ""} ${p.destacado ? "top" : ""}" data-card="${p.id}">
-    <button class="ph" data-zoom="${p.id}" aria-label="Ver ${esc(p.nombre)}">${photo(p)}${p.destacado ? `<span class="top-badge">★ Más pedido</span>` : ""}${q ? `<span class="qbadge">${q}</span>` : ""}</button>
+  return `<article class="card ${q ? "in" : ""} ${off ? "off" : ""} ${p.destacado ? "top" : ""} ${discOf(p) ? "promo" : ""}" data-card="${p.id}">
+    <button class="ph" data-zoom="${p.id}" aria-label="Ver ${esc(p.nombre)}">${photo(p)}${p.destacado || discOf(p) ? `<span class="badges">${discOf(p) ? `<span class="off-badge">−${discOf(p)}%</span>` : ""}${p.destacado ? `<span class="top-badge">★ Más pedido</span>` : ""}</span>` : ""}${q ? `<span class="qbadge">${q}</span>` : ""}</button>
     <div class="body">
       <h3>${esc(p.nombre)}</h3>
       ${p.peso ? `<span class="peso">${esc(p.peso)}</span>` : ""}
@@ -778,20 +809,26 @@ function totals(){
   const order = Object.fromEntries(SECS.map((s, i) => [s.id, i]));
   items.sort((a, b) => (order[secOf(a.p)] ?? 0) - (order[secOf(b.p)] ?? 0));
   const priced = items.filter(i => hasPrice(i.p));
-  return {
+  const r = {
     items,
     units: items.reduce((a, i) => a + i.q, 0),
-    total: priced.reduce((a, i) => a + i.p.precio * i.q, 0),
+    sub: priced.reduce((a, i) => a + priceOf(i.p) * i.q, 0),
     pending: items.length - priced.length,
     multi: new Set(items.map(i => secOf(i.p))).size > 1,
   };
+  const pr = promoTotal();
+  r.promo = pr;
+  r.promoOk = !!pr && r.sub > 0 && r.sub >= pr.min;
+  r.promoOff = r.promoOk ? Math.round(r.sub * pr.pct / 100) : 0;
+  r.total = r.sub - r.promoOff;
+  return r;
 }
 const secName = id => (SECS.find(s => s.id === id) || {}).nombre || "";
 
 function lineHTML({p, q}){
   return `<div class="li">
-    <div class="n">${esc(p.nombre)}<small>${hasPrice(p) ? money(p.precio) + " " + (UNIT[p.unidad] || "") : "Precio a consultar"}</small></div>
-    <div class="tot">${hasPrice(p) ? money(p.precio * q) : "—"}</div>
+    <div class="n">${esc(p.nombre)}<small>${hasPrice(p) ? money(priceOf(p)) + " " + (UNIT[p.unidad] || "") + (discOf(p) ? ` · <s>${money(p.precio)}</s> −${discOf(p)}%` : "") : "Precio a consultar"}</small></div>
+    <div class="tot">${hasPrice(p) ? money(priceOf(p) * q) : "—"}</div>
     <div class="stepper">
       <button data-add="${p.id}" data-n="-1" aria-label="Quitar uno">−</button>
       <input type="number" inputmode="numeric" min="0" value="${q}" data-qty="${p.id}" aria-label="Cantidad">
@@ -823,6 +860,15 @@ function renderCart(){
   $("#barCount").textContent = `${t.items.length} ${t.items.length === 1 ? "producto" : "productos"} · ${t.units} u.`;
   $("#barTotal").innerHTML = money(t.total) + (t.pending ? ` <small style="font-size:12px;opacity:.75">+ a consultar</small>` : "");
   $("#sTotal").textContent = money(t.total);
+  $("#sSubRow").hidden = $("#sPromoRow").hidden = !t.promoOk;
+  if (t.promoOk){
+    $("#sSub").textContent = money(t.sub);
+    $("#sPromoLbl").textContent = `Promo ${t.promo.pct}% OFF`;
+    $("#sPromo").textContent = "−" + money(t.promoOff);
+  }
+  const falta = t.promo && t.promo.min && t.sub > 0 && t.sub < t.promo.min ? t.promo.min - t.sub : 0;
+  $("#sPromoHint").hidden = !falta;
+  if (falta) $("#sPromoHint").textContent = `Sumá ${money(falta)} más y tenés ${t.promo.pct}% OFF en el total.`;
   $("#sNote").textContent = t.pending
     ? `${t.pending} ${t.pending === 1 ? "producto tiene" : "productos tienen"} precio a consultar. El total final te lo confirmamos por WhatsApp.`
     : "El pago lo coordinamos por WhatsApp.";
@@ -833,7 +879,7 @@ function renderCart(){
     else {
       const p = byId[f.dataset.qty], q = cart[f.dataset.qty] || 0;
       const tot = f.closest(".li").querySelector(".tot");
-      if (p && tot) tot.textContent = hasPrice(p) ? money(p.precio * q) : "—";
+      if (p && tot) tot.textContent = hasPrice(p) ? money(priceOf(p) * q) : "—";
     }
   }
 }
@@ -888,11 +934,12 @@ $("#sendBtn").onclick = () => {
   for (const {p, q} of t.items){
     const s = secOf(p);
     if (t.multi && s !== last){ if (last) lines.push(""); lines.push(`*${secName(s)}*`); last = s; }
-    lines.push(`• ${q} ${unitName(p.unidad, q)} — ${p.nombre}` + (hasPrice(p) ? ` (${money(p.precio * q)})` : " (precio a consultar)"));
+    lines.push(`• ${q} ${unitName(p.unidad, q)} — ${p.nombre}` + (hasPrice(p) ? ` (${money(priceOf(p) * q)}${discOf(p) ? `, con ${discOf(p)}% off` : ""})` : " (precio a consultar)"));
   }
   const msg = [
     `¡Hola ${DATA.negocio?.nombre || "Aramé"}! Quiero hacer este pedido:`, "",
     ...lines, "",
+    ...(t.promoOk ? [`Subtotal: ${money(t.sub)}`, `Promo ${t.promo.pct}% OFF: −${money(t.promoOff)}`] : []),
     `*Total: ${money(t.total)}*` + (t.pending ? " + productos a consultar" : ""),
     "",
     `Nombre: ${name}`,
@@ -911,7 +958,7 @@ function openZoom(id){
       <h3 style="font-size:22px">${esc(p.nombre)}</h3>
       ${p.peso ? `<span class="peso">${esc(p.peso)}</span>` : ""}
       <p class="desc">${esc(p.descripcion || "")}</p>
-      <div class="price-row">${hasPrice(p) ? `<span class="price">${money(p.precio)}</span><span class="per">${UNIT[p.unidad] || ""}</span>` : `<span class="price na">Precio a consultar</span>`}</div>
+      <div class="price-row">${hasPrice(p) ? `<span class="price">${money(priceOf(p))}</span>${discOf(p) ? `<s class="old">${money(p.precio)}</s>` : ""}<span class="per">${UNIT[p.unidad] || ""}</span>` : `<span class="price na">Precio a consultar</span>`}</div>
       <button class="send" style="background:var(--or);color:#111" data-close-zoom>Volver</button>
     </div>`;
   $("#zoom").classList.add("open");
