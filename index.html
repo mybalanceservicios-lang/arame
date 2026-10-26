@@ -236,6 +236,7 @@
   .quick{height:42px;padding:0 12px;border-radius:12px;border:1px solid var(--line);background:none;font-weight:800;font-size:14px;color:var(--or-2)}
   .quick:active{background:var(--or-soft)}
   .card.off{opacity:.5}
+  .stock-low{align-self:flex-start;margin-top:6px;font-size:12px;font-weight:800;color:#FFB4A1;background:rgba(229,72,77,.14);border-radius:999px;padding:2px 9px}
   .off-tag{font-size:12.5px;font-weight:800;color:var(--ink-3);margin-top:10px}
   .consult{margin-top:10px;font-size:13px;color:var(--ink-3)}
 
@@ -566,6 +567,10 @@ const UNIT = {unidad:"c/u", docena:"la docena", porción:"la porción", kg:"el k
 const UNIT_PLURAL = {unidad:["unidad","unidades"], docena:["docena","docenas"], porción:["porción","porciones"], kg:["kg","kg"], pote:["pote","potes"], bandeja:["bandeja","bandejas"]};
 const unitName = (u, q) => { const p = UNIT_PLURAL[u]; return p ? p[q === 1 ? 0 : 1] : (u || ""); };
 const hasPrice = p => typeof p.precio === "number" && p.precio > 0;
+// stock: número de unidades, o null si el producto no lleva control de stock
+const stockOf = p => typeof p.stock === "number" && isFinite(p.stock) ? Math.max(0, Math.floor(p.stock)) : null;
+const isOff = p => p.disponible === false || stockOf(p) === 0;
+const lowStock = () => Math.max(0, Number(DATA && DATA.stockAviso) || 5);
 // descuento por producto (en %) y precio final
 const discOf = p => hasPrice(p) ? Math.max(0, Math.min(90, Math.round(Number(p.descuento) || 0))) : 0;
 const priceOf = p => discOf(p) ? Math.round(p.precio * (1 - discOf(p) / 100)) : p.precio;
@@ -603,7 +608,11 @@ async function load(){
   DATA.productos = DATA.productos || [];
   SECS = (DATA.secciones && DATA.secciones.length) ? DATA.secciones : [{id:"cocina", nombre:"Cocina", descripcion:""}];
   byId = Object.fromEntries(DATA.productos.map(p => [p.id, p]));
-  for (const id in cart) if (!byId[id] || byId[id].disponible === false || !(cart[id] > 0)) delete cart[id];
+  for (const id in cart){
+    const p = byId[id];
+    if (!p || isOff(p) || !(cart[id] > 0)) delete cart[id];
+    else if (stockOf(p) !== null && cart[id] > stockOf(p)) cart[id] = stockOf(p);
+  }
   // solo se muestran las secciones que tienen productos
   SECS = SECS.filter(s => DATA.productos.some(p => secOf(p) === s.id));
   let fromHash = location.hash.slice(1);
@@ -652,7 +661,7 @@ function renderInfo(){
 const PLATE_COLORS = ["#C98A3E", "#7A4B2A", "#6F8F3A", "#5C6B2E", "#B5542A", "#A8803C", "#8A5A2E", "#9AA455"];
 let plates = [];
 function renderMesa(){
-  const cocina = DATA.productos.filter(p => secOf(p) === (SECS[0] && SECS[0].id) && p.disponible !== false);
+  const cocina = DATA.productos.filter(p => secOf(p) === (SECS[0] && SECS[0].id) && !isOff(p));
   const withPhoto = cocina.filter(p => p.foto), rest = cocina.filter(p => !p.foto);
   const pick = [...withPhoto, ...rest].slice(0, 8);
   $("#plates").innerHTML = pick.map((p, i) => `<button class="plate" data-zoom="${esc(p.id)}" aria-label="${esc(p.nombre)}">${p.foto
@@ -811,7 +820,7 @@ function ctrlHTML(p, q, pop){
 }
 
 function cardHTML(p){
-  const q = cart[p.id] || 0, off = p.disponible === false;
+  const q = cart[p.id] || 0, off = isOff(p);
   const priceHTML = hasPrice(p)
     ? `<span class="price">${money(priceOf(p))}</span>${discOf(p) ? `<s class="old">${money(p.precio)}</s>` : ""}<span class="per">${UNIT[p.unidad] || (p.unidad ? "por " + esc(p.unidad) : "")}</span>`
     : `<span class="price na">Precio a consultar</span>`;
@@ -823,6 +832,7 @@ function cardHTML(p){
       ${p.peso ? `<span class="peso">${esc(p.peso)}</span>` : ""}
       ${p.descripcion ? `<p class="desc">${esc(p.descripcion)}</p>` : ""}
       <div class="price-row">${priceHTML}</div>
+      ${!off && stockOf(p) !== null && stockOf(p) <= lowStock() ? `<span class="stock-low">${stockOf(p) === 1 ? "¡Queda 1!" : `Quedan ${stockOf(p)}`}</span>` : ""}
       ${ctrl}
     </div>
   </article>`;
@@ -835,7 +845,7 @@ function renderList(){
     let inner = "";
     for (const c of catsOf(sec.id, prods)){
       const items = prods.filter(p => secOf(p) === sec.id && (p.categoria || "Otros") === c)
-        .sort((a, b) => (a.disponible === false) - (b.disponible === false) || !!b.destacado - !!a.destacado);
+        .sort((a, b) => isOff(a) - isOff(b) || !!b.destacado - !!a.destacado);
       inner += `<section class="cat-block" data-sec-id="${esc(sec.id)}" data-cat-id="${esc(c)}"><h2>${esc(c)} <small>${items.length}</small></h2><div class="grid">${items.map(cardHTML).join("")}</div></section>`;
     }
     if (!inner) continue;
@@ -868,6 +878,13 @@ document.addEventListener("focusout", e => {
 
 function setQty(id, q, silent){
   q = Math.max(0, Math.min(9999, Math.floor(Number(q) || 0)));
+  const max = byId[id] ? stockOf(byId[id]) : null;
+  if (max !== null && q > max){
+    q = max;
+    toast(max === 1 ? "Queda 1 sola unidad" : `Hay ${max} unidades disponibles`);
+    const inp = document.activeElement;
+    if (inp && inp.matches && inp.matches("[data-qty]")) inp.value = q;
+  }
   const prev = cart[id] || 0;
   if (q) cart[id] = q; else delete cart[id];
   store.set("arame.cart", cart);
