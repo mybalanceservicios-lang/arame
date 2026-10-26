@@ -72,6 +72,14 @@
   .group .row2,.group .row3{margin-bottom:0}
   .row3{display:grid;grid-template-columns:1fr 1fr;gap:10px}
   .sub-h{font-family:var(--serif);font-weight:800;font-size:17px;margin:22px 0 10px;color:var(--ink)}
+  .g-row{display:grid;grid-template-columns:72px 1fr auto;gap:10px;align-items:center;background:var(--bg);border:1px solid var(--line);border-radius:12px;padding:8px;margin-bottom:8px}
+  .g-row img{width:72px;height:90px;object-fit:cover;border-radius:9px;display:block}
+  .g-row .fields{display:grid;gap:6px;min-width:0}
+  .g-row input{font:inherit;font-size:15px;color:var(--ink);background:var(--card);border:1px solid var(--line);border-radius:10px;padding:8px 10px;outline:none;width:100%}
+  .g-row input:focus{border-color:var(--or)}
+  .g-row .acts{display:grid;gap:4px}
+  .g-row .acts button{width:34px;height:30px;border-radius:8px;border:1px solid var(--line);background:none;color:var(--ink-2)}
+  .g-row .acts button:disabled{opacity:.3}
   .pl-row{display:grid;grid-template-columns:1fr 92px;gap:10px;align-items:center;padding:9px 0;border-bottom:1px solid var(--line)}
   .pl-row b{font-size:14.5px;display:block}
   .pl-row small{color:var(--ink-3);font-size:12.5px}
@@ -170,6 +178,7 @@
       <div class="brand">Aramé<small>Panel</small></div>
       <a class="btn ghost" href="./" target="_blank" rel="noopener">Ver tienda ↗</a>
       <button class="btn" id="bPromos">Promociones</button>
+      <button class="btn" id="bGal">Galería</button>
       <button class="btn" id="bNegocio">Datos del negocio</button>
       <button class="btn ghost" id="bPin">Cambiar PIN</button>
       <button class="btn ghost" id="bOut">Salir</button>
@@ -238,6 +247,7 @@
       <label class="f">WhatsApp que recibe los pedidos<input id="nWa" inputmode="tel" placeholder="5491164578338"><span class="help">Con código de país y sin espacios. Ej: 5491164578338</span></label>
       <label class="f">Dirección<input id="nDir"></label>
       <label class="f">Horario<input id="nHor"></label>
+      <label class="f">Instagram (usuario)<input id="nIg" placeholder="aramecocina"><span class="help">Se usa en la galería de fotos de la tienda.</span></label>
       <label class="f">Aviso destacado (opcional)<input id="nAviso" placeholder="Ej: Este sábado cerramos por feriado"><span class="help">Aparece arriba de todo en la tienda. Dejalo vacío para no mostrar nada.</span></label>
       <label class="f">Orden de las categorías<textarea id="nCats" rows="5"></textarea><span class="help">Una por renglón, en el orden en que querés que aparezcan.</span></label>
 
@@ -257,6 +267,22 @@
     <div class="sheet-foot">
       <button class="btn ghost" data-close>Cancelar</button>
       <button class="btn primary" id="nSave">Guardar</button>
+    </div>
+  </div>
+</div>
+
+<!-- galería -->
+<div class="modal" id="mGal" hidden>
+  <div class="sheet">
+    <div class="sheet-head"><h2>Galería de fotos</h2><button class="x" data-close aria-label="Cerrar">✕</button></div>
+    <div class="sheet-body">
+      <p class="help" style="margin:0 0 12px;color:var(--ink-3);font-size:13.5px">Son las fotos del carrusel “Así sale cada día”. Ideal: entre 5 y 8 fotos verticales de Instagram. El link de cada foto es opcional y lleva a la publicación.</p>
+      <div id="gList"></div>
+      <label class="btn" style="width:100%;margin-top:8px">+ Agregar fotos<input type="file" accept="image/*" multiple id="gFile" hidden></label>
+    </div>
+    <div class="sheet-foot">
+      <button class="btn ghost" data-close>Cancelar</button>
+      <button class="btn primary" id="gSave">Guardar galería</button>
     </div>
   </div>
 </div>
@@ -649,7 +675,7 @@ $("#eDel").onclick = async () => {
 $("#bNegocio").onclick = () => {
   const n = DATA.negocio || {};
   $("#nWa").value = n.whatsapp || ""; $("#nDir").value = n.direccion || "";
-  $("#nHor").value = n.horario || ""; $("#nAviso").value = n.aviso || "";
+  $("#nHor").value = n.horario || ""; $("#nAviso").value = n.aviso || ""; $("#nIg").value = n.instagram || "";
   $("#nCats").value = categories().join("\n");
   $("#nSecs").innerHTML = currentSecs().map(x => `<div class="group" data-secid="${esc(x.id)}"><div class="row3">
     <label class="f" style="margin:0">Nombre<input data-k="nombre" value="${esc(x.nombre)}"></label>
@@ -675,7 +701,7 @@ $("#nSave").onclick = async () => {
   busy(true, "Guardando…");
   try{
     await saveCatalog(d => {
-      d.negocio = {...(d.negocio || {}), whatsapp: wa, direccion: $("#nDir").value.trim(), horario: $("#nHor").value.trim(), aviso: $("#nAviso").value.trim()};
+      d.negocio = {...(d.negocio || {}), whatsapp: wa, direccion: $("#nDir").value.trim(), horario: $("#nHor").value.trim(), aviso: $("#nAviso").value.trim(), instagram: $("#nIg").value.trim().replace(/^@/, "")};
       d.categorias = [...new Set(cats)];
       d.secciones = secs; d.historia = historia; d.resenas = resenas;
     }, "Actualizar datos del negocio");
@@ -693,6 +719,53 @@ function addReview(r = {}){
 }
 $("#rvAdd").onclick = () => addReview({});
 $("#rvList").addEventListener("click", e => { const b = e.target.closest("[data-rvdel]"); if (b) b.closest(".rv-item").remove(); });
+
+/* ---------- galería ---------- */
+let GROWS = [];   // {foto, titulo, link, nueva: dataURL}
+function gDraw(){
+  $("#gList").innerHTML = GROWS.length ? GROWS.map((g, i) => `<div class="g-row" data-gi="${i}">
+    <img src="${esc(g.nueva || rawUrl(g.foto))}" alt="">
+    <div class="fields"><input data-k="titulo" placeholder="Título (ej: Lehmeyún)" value="${esc(g.titulo || "")}"><input data-k="link" placeholder="Link de Instagram (opcional)" value="${esc(g.link || "")}"></div>
+    <div class="acts"><button data-mv="-1" aria-label="Subir" ${i === 0 ? "disabled" : ""}>↑</button><button data-mv="1" aria-label="Bajar" ${i === GROWS.length - 1 ? "disabled" : ""}>↓</button><button data-del aria-label="Quitar foto">✕</button></div>
+  </div>`).join("") : `<p style="color:var(--ink-3)">No hay fotos. Agregá algunas para que aparezca el carrusel.</p>`;
+}
+$("#bGal").onclick = () => { GROWS = (DATA.galeria || []).map(g => ({...g})); gDraw(); openModal("#mGal"); };
+$("#gList").addEventListener("input", e => { const r = e.target.closest(".g-row"); if (r && e.target.dataset.k) GROWS[+r.dataset.gi][e.target.dataset.k] = e.target.value; });
+$("#gList").addEventListener("click", e => {
+  const r = e.target.closest(".g-row"); if (!r) return; const i = +r.dataset.gi;
+  const mv = e.target.closest("[data-mv]");
+  if (mv){ const j = i + Number(mv.dataset.mv); [GROWS[i], GROWS[j]] = [GROWS[j], GROWS[i]]; gDraw(); }
+  if (e.target.closest("[data-del]")){ GROWS.splice(i, 1); gDraw(); }
+});
+$("#gFile").onchange = async e => {
+  for (const f of e.target.files){
+    try{ GROWS.push({foto: "", titulo: "", link: "", nueva: await resizeImage(f, 1100, .82)}); }
+    catch(_){ toast("No se pudo leer una de las imágenes.", true); }
+  }
+  e.target.value = ""; gDraw();
+};
+$("#gSave").onclick = async () => {
+  const before = (DATA.galeria || []).map(g => g.foto);
+  $("#gSave").disabled = true;
+  try{
+    let n = 0;
+    for (const g of GROWS){
+      if (!g.nueva) continue;
+      busy(true, `Subiendo foto ${++n}…`);
+      g.foto = `fotos/galeria-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 5)}.jpg`;
+      await putFile(g.foto, g.nueva.split(",")[1], "Foto de la galería");
+      delete g.nueva;
+    }
+    busy(true, "Guardando…");
+    const gal = GROWS.map(g => ({foto: g.foto, titulo: (g.titulo || "").trim(), link: (g.link || "").trim()}));
+    await saveCatalog(d => { d.galeria = gal; }, "Actualizar galería");
+    // solo se borran fotos subidas para la galería (las de productos quedan)
+    const keep = new Set(gal.map(g => g.foto));
+    before.filter(f => f && f.startsWith("fotos/galeria-") && !keep.has(f)).forEach(f => deleteFile(f, "Borrar foto de la galería"));
+    busy(false); closeModals(); toast("Galería guardada ✓ La tienda se actualiza en 1 o 2 minutos.");
+  }catch(e){ busy(false); toast(errText(e), true); }
+  finally{ $("#gSave").disabled = false; }
+};
 
 /* ---------- promociones ---------- */
 const clampPct = v => { const n = Math.round(Number(v) || 0); return n > 0 ? Math.min(90, n) : 0; };

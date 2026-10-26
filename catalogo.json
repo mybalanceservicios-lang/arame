@@ -4,7 +4,8 @@
     "whatsapp": "5491164578338",
     "direccion": "Rawson 2021, Martínez",
     "horario": "Lunes a sábado · 11 a 15 h y 17 a 20 h",
-    "aviso": ""
+    "aviso": "",
+    "instagram": "aramecocina"
   },
   "categorias": [
     "Entradas - Medzé",
@@ -470,6 +471,38 @@
       "texto": "Ideal para pedir take away.",
       "autor": "",
       "fuente": "Google"
+    }
+  ],
+  "galeria": [
+    {
+      "foto": "fotos/hummus-mediano.jpg",
+      "titulo": "Hummus",
+      "link": ""
+    },
+    {
+      "foto": "fotos/lehmeyun-x6.jpg",
+      "titulo": "Lehmeyún",
+      "link": ""
+    },
+    {
+      "foto": "fotos/pasha-boreg-x4.jpg",
+      "titulo": "Pasha Boreg",
+      "link": ""
+    },
+    {
+      "foto": "fotos/tabule.jpg",
+      "titulo": "Tabulé",
+      "link": ""
+    },
+    {
+      "foto": "fotos/backlava.jpg",
+      "titulo": "Backlava",
+      "link": ""
+    },
+    {
+      "foto": "fotos/mahamara.jpg",
+      "titulo": "Mahamara",
+      "link": ""
     }
   ]
 }

@@ -265,6 +265,34 @@
   .loading{padding:60px 0;text-align:center;color:var(--ink-3)}
 
   /* historia */
+  /* galería tipo acordeón */
+  .gallery{padding:60px 0 10px}
+  .g-head{display:flex;align-items:flex-end;justify-content:space-between;gap:16px;flex-wrap:wrap;margin-bottom:22px}
+  .g-head h2{font-family:var(--display);font-weight:900;font-size:clamp(28px,4vw,42px);letter-spacing:-.015em;margin-top:10px}
+  .ig-link{display:inline-flex;align-items:center;gap:8px;border:1px solid var(--line);background:var(--card);border-radius:999px;padding:9px 15px;font-weight:800;font-size:14px}
+  .ig-link:hover{border-color:var(--or)}
+  .acc{display:flex;gap:10px;height:clamp(340px,52vw,520px)}
+  .acc .it{position:relative;flex:1;min-width:0;border-radius:22px;overflow:hidden;border:0;padding:0;background:var(--card);transition:flex .6s cubic-bezier(.2,.8,.2,1)}
+  .acc .it.on{flex:5}
+  .acc img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;transition:transform .8s ease,filter .6s}
+  .acc .it:not(.on) img{filter:brightness(.6) saturate(.85)}
+  .acc .it.on img{transform:scale(1.04)}
+  .acc .cap{position:absolute;left:0;right:0;bottom:0;padding:18px;background:linear-gradient(transparent,rgba(0,0,0,.75));text-align:left;opacity:0;transform:translateY(10px);transition:.4s .2s}
+  .acc .it.on .cap{opacity:1;transform:none}
+  .acc .cap b{font-family:var(--display);font-size:24px;letter-spacing:.015em;display:block;color:#fff}
+  .acc .cap span{font-size:13px;color:#E8D9C8;font-weight:700}
+  .acc .ig{position:absolute;top:12px;right:12px;width:30px;height:30px;border-radius:9px;background:rgba(0,0,0,.45);display:grid;place-items:center;transition:opacity .3s}
+  .acc .it:not(.on) .ig{opacity:0}
+  @media(max-width:600px){.acc{gap:6px;height:420px}.acc .it{border-radius:14px}.acc .it.on{flex:7}.acc .cap b{font-size:20px}}
+  .lb{position:fixed;inset:0;z-index:96;display:grid;place-items:center;padding:20px;background:rgba(8,10,12,.82);backdrop-filter:blur(10px);opacity:0;pointer-events:none;transition:opacity .3s}
+  .lb.open{opacity:1;pointer-events:auto}
+  .lb figure{margin:0;width:min(520px,100%);transform:scale(.92);transition:transform .35s cubic-bezier(.2,.8,.2,1)}
+  .lb.open figure{transform:none}
+  .lb img{width:100%;max-height:72vh;object-fit:cover;border-radius:20px;display:block}
+  .lb figcaption{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-top:12px;flex-wrap:wrap}
+  .lb figcaption b{font-family:var(--display);font-size:24px;letter-spacing:.015em}
+  .lb .x{position:absolute;top:16px;right:16px;width:44px;height:44px;border-radius:50%;border:1px solid var(--line);background:var(--card);font-size:18px}
+
   .story{margin-top:60px;padding:56px 0;border-top:1px solid var(--line);background:linear-gradient(180deg,rgba(19,26,31,.75),rgba(15,20,24,0))}
   #bgfx{position:fixed;inset:0;width:100%;height:100%;z-index:-1;pointer-events:none}
   .story .container{display:grid;grid-template-columns:1.2fr .8fr;gap:30px 50px;align-items:center}
@@ -432,6 +460,16 @@
 <main class="container" id="list"><div class="loading">Cargando productos…</div></main>
 </div>
 
+<section class="gallery" id="gallery" hidden>
+  <div class="container">
+    <div class="g-head">
+      <div><span class="kicker">Desde nuestra cocina</span><h2>Así sale cada día</h2></div>
+      <a class="ig-link" id="gIg" target="_blank" rel="noopener"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor"/></svg><span></span></a>
+    </div>
+    <div class="acc" id="acc"></div>
+  </div>
+</section>
+
 <section class="story" id="story" hidden>
   <div class="container">
     <div>
@@ -503,6 +541,10 @@
   </div>
 </aside>
 
+<div class="lb" id="lb" role="dialog" aria-modal="true" aria-label="Foto ampliada">
+  <button class="x" id="lbX" aria-label="Cerrar">✕</button>
+  <figure><img id="lbImg" alt=""><figcaption><b id="lbN"></b><a class="ig-link" id="lbLink" target="_blank" rel="noopener"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor"/></svg> Ver en Instagram</a></figcaption></figure>
+</div>
 <div class="zoom" id="zoom"><div class="zoom-card" id="zoomCard"></div></div>
 <div class="toast" id="toast"></div>
 
@@ -561,7 +603,7 @@ async function load(){
   SECS = SECS.filter(s => DATA.productos.some(p => secOf(p) === s.id));
   let fromHash = location.hash.slice(1);
   activeSec = SECS.some(s => s.id === fromHash) ? fromHash : (SECS[0] && SECS[0].id);
-  renderInfo(); renderMesa(); renderWorlds(); renderChips(); renderList(); renderCart();
+  renderInfo(); renderMesa(); renderWorlds(); renderChips(); renderList(); renderCart(); renderGallery();
   if (fromHash && fromHash === activeSec) setTimeout(() => goTo(document.getElementById("sec-" + activeSec)), 300);
 }
 
@@ -1062,6 +1104,42 @@ addEventListener("resize", rvArrows);
   if (REDUCE) addEventListener("scroll", () => requestAnimationFrame(draw), {passive: true});
   else requestAnimationFrame(loop);
 })();
+
+/* ---------- galería tipo acordeón ---------- */
+let accI = 0, accHold = 0, accVisible = false, GAL = [];
+const IG_ICON = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor"/></svg>`;
+function renderGallery(){
+  GAL = (DATA.galeria || []).filter(g => g.foto);
+  $("#gallery").hidden = !GAL.length;
+  if (!GAL.length) return;
+  const user = String((DATA.negocio || {}).instagram || "").replace(/^@/, "");
+  $("#gIg").hidden = !user;
+  if (user){ $("#gIg").href = `https://www.instagram.com/${encodeURIComponent(user)}/`; $("#gIg span").textContent = "@" + user; }
+  $("#acc").innerHTML = GAL.map((g, i) => `<button class="it ${i === 0 ? "on" : ""}" data-gi="${i}" aria-label="${esc(g.titulo || "Foto " + (i + 1))}">
+    <img src="${esc(g.foto)}" alt="" loading="lazy"><span class="ig" aria-hidden="true">${IG_ICON}</span>
+    <span class="cap"><b>${esc(g.titulo || "")}</b>${user ? `<span>@${esc(user)}</span>` : ""}</span></button>`).join("");
+  accI = 0;
+}
+function accSet(i){ accI = i; [...$("#acc").children].forEach((b, k) => b.classList.toggle("on", k === i)); }
+$("#acc").addEventListener("mouseover", e => { const b = e.target.closest(".it"); if (b && matchMedia("(hover: hover)").matches){ accHold = Date.now() + 6000; accSet(+b.dataset.gi); } });
+$("#acc").addEventListener("click", e => {
+  const b = e.target.closest(".it"); if (!b) return; accHold = Date.now() + 6000;
+  if (b.classList.contains("on")) openLB(+b.dataset.gi); else accSet(+b.dataset.gi);
+});
+if ("IntersectionObserver" in window) new IntersectionObserver(es => es.forEach(en => accVisible = en.isIntersecting)).observe($("#acc"));
+if (!REDUCE) setInterval(() => { if (accVisible && GAL.length > 1 && Date.now() > accHold && !$("#lb").classList.contains("open")) accSet((accI + 1) % GAL.length); }, 3200);
+
+function openLB(i){
+  const g = GAL[i]; if (!g) return;
+  $("#lbImg").src = g.foto; $("#lbN").textContent = g.titulo || "";
+  const user = String((DATA.negocio || {}).instagram || "").replace(/^@/, "");
+  const link = g.link || (user ? `https://www.instagram.com/${encodeURIComponent(user)}/` : "");
+  $("#lbLink").hidden = !link; if (link) $("#lbLink").href = link;
+  $("#lb").classList.add("open");
+}
+function closeLB(){ $("#lb").classList.remove("open"); }
+$("#lb").addEventListener("click", e => { if (e.target.id === "lb" || e.target.closest("#lbX")) closeLB(); });
+document.addEventListener("keydown", e => { if (e.key === "Escape") closeLB(); });
 
 $("#year").textContent = new Date().getFullYear();
 load();
