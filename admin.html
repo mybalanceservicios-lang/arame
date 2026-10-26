@@ -5,19 +5,18 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Aramé · Panel</title>
 <meta name="robots" content="noindex, nofollow">
-<meta name="theme-color" content="#0D0D0D">
+<meta name="theme-color" content="#0F1418">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Manrope:wght@400;500;600;700;800&family=Noto+Serif+Armenian:wght@600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;800;900&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
   :root{
-    --bg:#0D0D0D; --bg-2:#131313; --card:#181818; --card-2:#202020;
-    --ink:#F5F1EA; --ink-2:#B5ADA2; --ink-3:#7A736B; --line:#2A2A2A;
-    --or:#F26A1B; --or-2:#FF8A3D; --or-soft:rgba(242,106,27,.14);
+    --bg:#0F1418; --bg-2:#131A1F; --card:#172028; --card-2:#1E2830;
+    --ink:#F3EDE4; --ink-2:#AFA79C; --ink-3:#77716A; --line:#26313A;
+    --or:#D9772E; --or-2:#F0954A; --or-soft:rgba(217,119,46,.14);
     --red:#E5484D; --green:#3DBE6B;
-    --serif:"DM Serif Display",Georgia,serif;
+    --serif:"Montserrat","Arial Black",sans-serif;
     --body:"Manrope",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
-    --hy:"Noto Serif Armenian",serif;
   }
   *{box-sizing:border-box}
   body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--body);line-height:1.5;-webkit-font-smoothing:antialiased}
@@ -37,7 +36,7 @@
   .gate{min-height:100dvh;display:grid;place-items:center;padding:24px 16px}
   .gate-card{width:min(420px,100%);background:var(--card);border:1px solid var(--line);border-radius:20px;padding:28px 22px;text-align:center}
   .gate-card.wide{width:min(560px,100%);text-align:left}
-  .brand{font-family:var(--serif);font-size:34px;color:var(--or)}
+  .brand{font-family:var(--serif);font-weight:800;letter-spacing:.04em;font-size:30px;color:var(--or)}
   .brand small{display:block;font-family:var(--body);font-size:13px;color:var(--ink-3);font-weight:700;letter-spacing:.1em;text-transform:uppercase;margin-top:4px}
   .pin{font:inherit;font-size:30px;font-weight:800;letter-spacing:.4em;text-align:center;width:100%;background:var(--bg);border:1px solid var(--line);border-radius:14px;padding:14px;color:var(--ink);outline:none;margin:22px 0 12px}
   .pin:focus{border-color:var(--or)}
@@ -66,13 +65,24 @@
   .search{flex:1;min-width:200px;font:inherit;font-size:15px;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:11px 14px;color:var(--ink);outline:none}
   .search:focus{border-color:var(--or)}
   .count{color:var(--ink-3);font-size:13.5px;font-weight:700}
-  .cat-title{font-family:var(--serif);font-size:26px;margin:26px 0 12px}
+  .cat-title{font-family:var(--serif);font-weight:800;font-size:22px;margin:26px 0 12px}
+  .sec-title{font-family:var(--serif);font-weight:900;font-size:13px;letter-spacing:.16em;text-transform:uppercase;color:var(--or);margin:34px 0 -10px;padding-top:16px;border-top:1px solid var(--line)}
+  .sec-title:first-child{border-top:0;margin-top:10px}
+  .group{background:var(--bg);border:1px solid var(--line);border-radius:14px;padding:14px;margin-bottom:12px}
+  .group .row2,.group .row3{margin-bottom:0}
+  .row3{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+  .sub-h{font-family:var(--serif);font-weight:800;font-size:17px;margin:22px 0 10px;color:var(--ink)}
+  .rv-item{display:grid;grid-template-columns:1fr auto;gap:8px;align-items:start;background:var(--bg);border:1px solid var(--line);border-radius:12px;padding:10px;margin-bottom:8px}
+  .rv-item textarea,.rv-item input{font:inherit;font-size:15px;color:var(--ink);background:var(--card);border:1px solid var(--line);border-radius:10px;padding:9px 11px;outline:none;width:100%}
+  .rv-item .fields{display:grid;gap:6px;min-width:0}
+  .rv-item .fields div{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+  .rv-item button{width:36px;height:36px;border-radius:10px;border:1px solid var(--line);background:none;color:var(--ink-3)}
   .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:12px}
   @media(max-width:480px){.grid{grid-template-columns:1fr 1fr;gap:10px}}
   .sq{background:var(--card);border:1px solid var(--line);border-radius:16px;overflow:hidden;display:flex;flex-direction:column;text-align:left;padding:0}
   .sq .ph{aspect-ratio:1;background:var(--card-2);position:relative;overflow:hidden}
   .sq .ph img{width:100%;height:100%;object-fit:cover;display:block}
-  .sq .ph .none{position:absolute;inset:0;display:grid;place-items:center;font-family:var(--hy);font-size:44px;color:rgba(242,106,27,.35)}
+  .sq .ph .none{position:absolute;inset:0;display:grid;place-items:center;font-family:var(--serif);font-weight:800;font-size:22px;color:rgba(217,119,46,.4)}
   .flags{position:absolute;left:8px;top:8px;display:flex;flex-direction:column;gap:4px;align-items:flex-start}
   .flag{background:rgba(0,0,0,.75);border-radius:999px;padding:2px 8px;font-size:11px;font-weight:800;color:var(--or-2)}
   .flag.off{color:var(--red)}
@@ -87,13 +97,13 @@
   .sheet{background:var(--bg-2);border:1px solid var(--line);width:min(620px,100%);max-height:94dvh;border-radius:20px 20px 0 0;display:flex;flex-direction:column;overflow:hidden}
   @media(min-width:700px){.modal{align-items:center}.sheet{border-radius:20px}}
   .sheet-head{display:flex;align-items:center;justify-content:space-between;padding:16px 18px;border-bottom:1px solid var(--line)}
-  .sheet-head h2{font-family:var(--serif);font-size:26px}
+  .sheet-head h2{font-family:var(--serif);font-weight:800;font-size:22px}
   .x{width:40px;height:40px;border-radius:50%;border:1px solid var(--line);background:var(--card);font-size:17px}
   .sheet-body{padding:18px;overflow-y:auto;flex:1;min-height:0}
   .sheet-foot{padding:14px 18px calc(14px + env(safe-area-inset-bottom));border-top:1px solid var(--line);display:flex;gap:10px;background:var(--card)}
   .sheet-foot .primary{flex:1;padding:14px}
   .photo-edit{display:flex;gap:14px;align-items:center;margin-bottom:16px}
-  .photo-edit .ph{width:120px;height:120px;border-radius:14px;overflow:hidden;background:var(--card-2);flex-shrink:0;display:grid;place-items:center;font-family:var(--hy);font-size:40px;color:rgba(242,106,27,.35)}
+  .photo-edit .ph{width:120px;height:120px;border-radius:14px;overflow:hidden;background:var(--card-2);flex-shrink:0;display:grid;place-items:center;font-family:var(--serif);font-weight:800;font-size:18px;color:rgba(217,119,46,.4)}
   .photo-edit .ph img{width:100%;height:100%;object-fit:cover}
   .photo-edit .acts{display:flex;flex-direction:column;gap:8px}
   .switch{display:flex;align-items:center;justify-content:space-between;gap:12px;background:var(--bg);border:1px solid var(--line);border-radius:12px;padding:12px 14px;margin-bottom:14px;font-weight:700;font-size:14.5px}
@@ -182,9 +192,10 @@
       <label class="f">Nombre<input id="eNombre" placeholder="Ej: Empanada árabe"></label>
       <label class="f">Descripción<textarea id="eDesc" rows="3" placeholder="Qué lleva, cómo es…"></textarea></label>
       <div class="row2">
-        <label class="f">Peso o presentación<input id="ePeso" placeholder="Ej: 250 g · caja x12"></label>
+        <label class="f">Sección<select id="eSec"></select></label>
         <label class="f">Categoría<input id="eCat" list="catList" placeholder="Ej: Empanadas"></label>
       </div>
+      <label class="f">Peso o presentación<input id="ePeso" placeholder="Ej: 350 g aprox. · caja x12 · 500 ml"></label>
       <div class="row2">
         <label class="f">Precio ($)<input id="ePrecio" type="number" inputmode="numeric" min="0" step="1" placeholder="Vacío = a consultar"></label>
         <label class="f">Se vende por
@@ -219,6 +230,19 @@
       <label class="f">Horario<input id="nHor"></label>
       <label class="f">Aviso destacado (opcional)<input id="nAviso" placeholder="Ej: Este sábado cerramos por feriado"><span class="help">Aparece arriba de todo en la tienda. Dejalo vacío para no mostrar nada.</span></label>
       <label class="f">Orden de las categorías<textarea id="nCats" rows="5"></textarea><span class="help">Una por renglón, en el orden en que querés que aparezcan.</span></label>
+
+      <h3 class="sub-h">Secciones de la tienda</h3>
+      <div id="nSecs"></div>
+
+      <h3 class="sub-h">Nuestra historia</h3>
+      <label class="f">Título<input id="hTit" placeholder="Ej: Cocina armenia de familia desde 1998"></label>
+      <label class="f">Texto<textarea id="hTxt" rows="5"></textarea></label>
+      <label class="f" style="margin-bottom:6px">Datos destacados<span class="help">Ej: “4,7 ★” · “en Google”. Para que aparezca la calificación arriba, el número tiene que llevar ★.</span></label>
+      <div id="hDatos"></div>
+
+      <h3 class="sub-h">Reseñas</h3>
+      <div id="rvList"></div>
+      <button class="btn" id="rvAdd" type="button">+ Agregar reseña</button>
     </div>
     <div class="sheet-foot">
       <button class="btn ghost" data-close>Cancelar</button>
@@ -430,8 +454,10 @@ async function saveCatalog(mutate, message){
 }
 
 /* ---------- listado ---------- */
-function categories(){
-  const used = [...new Set(DATA.productos.map(p => p.categoria || "Otros"))];
+function currentSecs(){ return (DATA.secciones && DATA.secciones.length) ? DATA.secciones : [{id: "cocina", nombre: "Cocina", descripcion: ""}]; }
+function secOf(p){ const S = currentSecs(); return (S.find(x => x.id === p.seccion) || S[0]).id; }
+function categories(prods = DATA.productos){
+  const used = [...new Set(prods.map(p => p.categoria || "Otros"))];
   const ordered = (DATA.categorias || []).filter(c => used.includes(c));
   return [...ordered, ...used.filter(c => !ordered.includes(c))];
 }
@@ -442,8 +468,12 @@ function render(){
   const prods = DATA.productos.filter(p => !q || norm(p.nombre + " " + (p.descripcion || "") + " " + (p.categoria || "")).includes(q));
   $("#cnt").textContent = `${DATA.productos.length} productos`;
   let html = "";
-  for (const c of categories()){
-    const items = prods.filter(p => (p.categoria || "Otros") === c);
+  for (const sec of currentSecs()){
+   const inSec = prods.filter(p => secOf(p) === sec.id);
+   if (!inSec.length) continue;
+   html += `<div class="sec-title">${esc(sec.nombre)}</div>`;
+   for (const c of categories(inSec)){
+    const items = inSec.filter(p => (p.categoria || "Otros") === c);
     if (!items.length) continue;
     html += `<h2 class="cat-title">${esc(c)}</h2><div class="grid">` + items.map(p => {
       const flags = [
@@ -452,7 +482,7 @@ function render(){
         !(p.precio > 0) ? `<span class="flag">Sin precio</span>` : "",
       ].join("");
       return `<div class="sq">
-        <div class="ph">${p.foto ? `<img src="${esc(photoSrc(p))}" alt="" loading="lazy">` : `<span class="none">Ա</span>`}<div class="flags">${flags}</div></div>
+        <div class="ph">${p.foto ? `<img src="${esc(photoSrc(p))}" alt="" loading="lazy">` : `<span class="none">ARAMÉ</span>`}<div class="flags">${flags}</div></div>
         <div class="in">
           <h3>${esc(p.nombre)}</h3>
           ${p.peso ? `<span class="meta">${esc(p.peso)}</span>` : ""}
@@ -461,6 +491,7 @@ function render(){
         </div>
       </div>`;
     }).join("") + `</div>`;
+   }
   }
   $("#list").innerHTML = html || `<p style="color:var(--ink-3);padding:30px 0">No hay productos que coincidan.</p>`;
   $("#catList").innerHTML = categories().map(c => `<option value="${esc(c)}">`).join("");
@@ -475,13 +506,15 @@ document.addEventListener("click", e => { if (e.target.closest("[data-close]") |
 document.addEventListener("keydown", e => { if (e.key === "Escape") closeModals(); });
 
 function setPhotoPreview(src){
-  $("#ePh").innerHTML = src ? `<img src="${esc(src)}" alt="">` : "Ա";
+  $("#ePh").innerHTML = src ? `<img src="${esc(src)}" alt="">` : "ARAMÉ";
   $("#eNoPhoto").hidden = !src;
 }
 
 function openEditor(id){
   const p = id ? DATA.productos.find(x => x.id === id) : null;
-  editing = p ? {...p} : {id: null, nombre: "", descripcion: "", peso: "", precio: null, unidad: "unidad", categoria: "", foto: "", disponible: true};
+  editing = p ? {...p} : {id: null, nombre: "", descripcion: "", peso: "", precio: null, unidad: "unidad", categoria: "", foto: "", disponible: true, seccion: currentSecs()[0].id};
+  $("#eSec").innerHTML = currentSecs().map(x => `<option value="${esc(x.id)}">${esc(x.nombre)}</option>`).join("");
+  $("#eSec").value = secOf(editing);
   newPhoto = null;
   $("#eTitle").textContent = p ? "Editar producto" : "Nuevo producto";
   $("#eNombre").value = editing.nombre; $("#eDesc").value = editing.descripcion || "";
@@ -530,6 +563,7 @@ $("#eSave").onclick = async () => {
     precio: precio > 0 ? precio : null,
     unidad: $("#eUnidad").value,
     categoria: $("#eCat").value.trim() || "Otros",
+    seccion: $("#eSec").value,
     disponible: $("#eDisp").checked,
   };
   const isNew = !editing.id;
@@ -576,21 +610,47 @@ $("#bNegocio").onclick = () => {
   $("#nWa").value = n.whatsapp || ""; $("#nDir").value = n.direccion || "";
   $("#nHor").value = n.horario || ""; $("#nAviso").value = n.aviso || "";
   $("#nCats").value = categories().join("\n");
+  $("#nSecs").innerHTML = currentSecs().map(x => `<div class="group" data-secid="${esc(x.id)}"><div class="row3">
+    <label class="f" style="margin:0">Nombre<input data-k="nombre" value="${esc(x.nombre)}"></label>
+    <label class="f" style="margin:0">Descripción corta<input data-k="descripcion" value="${esc(x.descripcion || "")}"></label></div></div>`).join("");
+  const h = DATA.historia || {};
+  $("#hTit").value = h.titulo || ""; $("#hTxt").value = h.texto || "";
+  const datos = [...(h.datos || [])]; while (datos.length < 3) datos.push({valor: "", etiqueta: ""});
+  $("#hDatos").innerHTML = datos.slice(0, 3).map(d => `<div class="group"><div class="row3">
+    <label class="f" style="margin:0">Valor<input data-k="valor" value="${esc(d.valor)}" placeholder="4,7 ★"></label>
+    <label class="f" style="margin:0">Texto<input data-k="etiqueta" value="${esc(d.etiqueta)}" placeholder="en Google"></label></div></div>`).join("");
+  $("#rvList").innerHTML = ""; (DATA.resenas || []).forEach(addReview);
   openModal("#mNeg");
 };
 $("#nSave").onclick = async () => {
   const wa = $("#nWa").value.replace(/\D/g, "");
   if (wa.length < 10){ toast("Revisá el número de WhatsApp.", true); return; }
   const cats = $("#nCats").value.split("\n").map(s => s.trim()).filter(Boolean);
+  const val = (el, k) => el.querySelector(`[data-k="${k}"]`).value.trim();
+  const secs = [...document.querySelectorAll("#nSecs [data-secid]")].map(g => ({id: g.dataset.secid, nombre: val(g, "nombre") || g.dataset.secid, descripcion: val(g, "descripcion")}));
+  const historia = {titulo: $("#hTit").value.trim(), texto: $("#hTxt").value.trim(),
+    datos: [...document.querySelectorAll("#hDatos .group")].map(g => ({valor: val(g, "valor"), etiqueta: val(g, "etiqueta")})).filter(d => d.valor)};
+  const resenas = [...document.querySelectorAll("#rvList .rv-item")].map(g => ({texto: val(g, "texto"), autor: val(g, "autor"), fuente: val(g, "fuente")})).filter(r => r.texto);
   busy(true, "Guardando…");
   try{
     await saveCatalog(d => {
       d.negocio = {...(d.negocio || {}), whatsapp: wa, direccion: $("#nDir").value.trim(), horario: $("#nHor").value.trim(), aviso: $("#nAviso").value.trim()};
       d.categorias = [...new Set(cats)];
+      d.secciones = secs; d.historia = historia; d.resenas = resenas;
     }, "Actualizar datos del negocio");
     busy(false); closeModals(); render(); toast("Guardado ✓ La tienda se actualiza en 1 o 2 minutos.");
   }catch(e){ busy(false); toast(errText(e), true); }
 };
+
+function addReview(r = {}){
+  const el = document.createElement("div"); el.className = "rv-item";
+  el.innerHTML = `<div class="fields"><textarea data-k="texto" rows="2" placeholder="Lo que dijo el cliente">${esc(r.texto || "")}</textarea>
+    <div><input data-k="autor" placeholder="Nombre" value="${esc(r.autor || "")}"><input data-k="fuente" placeholder="Google" value="${esc(r.fuente || "Google")}"></div></div>
+    <button type="button" aria-label="Borrar reseña" data-rvdel>✕</button>`;
+  $("#rvList").appendChild(el);
+}
+$("#rvAdd").onclick = () => addReview({});
+$("#rvList").addEventListener("click", e => { const b = e.target.closest("[data-rvdel]"); if (b) b.closest(".rv-item").remove(); });
 
 /* ---------- cambiar PIN ---------- */
 $("#bPin").onclick = () => { $("#cPin").value = ""; $("#cPin2").value = ""; openModal("#mPin"); };

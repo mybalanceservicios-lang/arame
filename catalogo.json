@@ -6,18 +6,239 @@
     "horario": "Lunes a sábado · 11 a 15 h y 17 a 20 h",
     "aviso": ""
   },
-  "categorias": ["Empanadas y masas", "Platos", "Dips y ensaladas", "Dulces"],
+  "categorias": [
+    "Entradas - Medzé",
+    "Empanadas y masas",
+    "Platos",
+    "Dulces",
+    "Aceites de oliva",
+    "Shishas"
+  ],
   "productos": [
-    {"id": "empanada-arabe", "nombre": "Empanada árabe", "descripcion": "Masa casera rellena de carne, tomate, cebolla y limón.", "peso": "", "precio": null, "unidad": "unidad", "categoria": "Empanadas y masas", "foto": "", "disponible": true},
-    {"id": "lehmeyun", "nombre": "Lehmeyun", "descripcion": "Masa fina con carne picada, morrón, tomate y especias armenias.", "peso": "", "precio": null, "unidad": "unidad", "categoria": "Empanadas y masas", "foto": "", "disponible": true},
-    {"id": "milhojas-cuatro-quesos", "nombre": "Mil hojas de cuatro quesos", "descripcion": "Capas de masa con cuatro quesos, al horno.", "peso": "", "precio": null, "unidad": "porción", "categoria": "Empanadas y masas", "foto": "", "disponible": true},
-    {"id": "sarma", "nombre": "Sarma (niños envueltos)", "descripcion": "Hojas de parra rellenas de arroz y carne.", "peso": "", "precio": null, "unidad": "unidad", "categoria": "Platos", "foto": "", "disponible": true},
-    {"id": "keppe", "nombre": "Keppe al horno", "descripcion": "Trigo burgol y carne, con relleno especiado.", "peso": "", "precio": null, "unidad": "porción", "categoria": "Platos", "foto": "", "disponible": true},
-    {"id": "falafel", "nombre": "Falafel", "descripcion": "Croquetas de garbanzo con hierbas y especias.", "peso": "", "precio": null, "unidad": "unidad", "categoria": "Platos", "foto": "", "disponible": true},
-    {"id": "hummus", "nombre": "Hummus", "descripcion": "Puré de garbanzos con tahine, limón y aceite de oliva.", "peso": "", "precio": null, "unidad": "pote", "categoria": "Dips y ensaladas", "foto": "", "disponible": true},
-    {"id": "babaganush", "nombre": "Babaganush", "descripcion": "Berenjena ahumada con tahine y limón.", "peso": "", "precio": null, "unidad": "pote", "categoria": "Dips y ensaladas", "foto": "", "disponible": true},
-    {"id": "tabule", "nombre": "Tabulé", "descripcion": "Trigo burgol, perejil, tomate, cebolla, menta y limón.", "peso": "", "precio": null, "unidad": "pote", "categoria": "Dips y ensaladas", "foto": "", "disponible": true},
-    {"id": "paklava", "nombre": "Paklavá", "descripcion": "Masa filo con nueces y almíbar.", "peso": "", "precio": null, "unidad": "porción", "categoria": "Dulces", "foto": "", "disponible": true},
-    {"id": "kadaif", "nombre": "Kadaif", "descripcion": "Hebras de masa crocante con nueces y almíbar.", "peso": "", "precio": null, "unidad": "porción", "categoria": "Dulces", "foto": "", "disponible": true}
+    {
+      "id": "hummus-mediano",
+      "nombre": "Hummus Mediano",
+      "descripcion": "Puré de garbanzos.",
+      "peso": "350 g aprox.",
+      "precio": 8200,
+      "unidad": "unidad",
+      "categoria": "Entradas - Medzé",
+      "foto": "fotos/hummus-catalogo.jpg",
+      "disponible": true,
+      "seccion": "cocina"
+    },
+    {
+      "id": "babaganoush-mediano",
+      "nombre": "Babaganoush Mediano",
+      "descripcion": "Puré de berenjenas ahumadas.",
+      "peso": "",
+      "precio": 9800,
+      "unidad": "unidad",
+      "categoria": "Entradas - Medzé",
+      "foto": "fotos/babaganoush-catalogo.jpg",
+      "disponible": true,
+      "seccion": "cocina"
+    },
+    {
+      "id": "mahamara",
+      "nombre": "Mahamara",
+      "descripcion": "Puré de morrones ahumados con nueces.",
+      "peso": "",
+      "precio": 9200,
+      "unidad": "unidad",
+      "categoria": "Entradas - Medzé",
+      "foto": "fotos/mahamara-catalogo.jpg",
+      "disponible": true,
+      "seccion": "cocina"
+    },
+    {
+      "id": "tabule",
+      "nombre": "Tabulé",
+      "descripcion": "Trigo burgol, perejil, tomate, cebolla, menta y limón.",
+      "peso": "",
+      "precio": null,
+      "unidad": "pote",
+      "categoria": "Entradas - Medzé",
+      "foto": "",
+      "disponible": true,
+      "seccion": "cocina"
+    },
+    {
+      "id": "empanada-arabe",
+      "nombre": "Empanada árabe",
+      "descripcion": "Masa casera rellena de carne, tomate, cebolla y limón.",
+      "peso": "",
+      "precio": null,
+      "unidad": "unidad",
+      "categoria": "Empanadas y masas",
+      "foto": "",
+      "disponible": true,
+      "seccion": "cocina"
+    },
+    {
+      "id": "lehmeyun",
+      "nombre": "Lehmeyun",
+      "descripcion": "Masa fina con carne picada, morrón, tomate y especias armenias.",
+      "peso": "",
+      "precio": null,
+      "unidad": "unidad",
+      "categoria": "Empanadas y masas",
+      "foto": "",
+      "disponible": true,
+      "seccion": "cocina"
+    },
+    {
+      "id": "milhojas-cuatro-quesos",
+      "nombre": "Mil hojas de cuatro quesos",
+      "descripcion": "Capas de masa con cuatro quesos, al horno.",
+      "peso": "",
+      "precio": null,
+      "unidad": "porción",
+      "categoria": "Empanadas y masas",
+      "foto": "",
+      "disponible": true,
+      "seccion": "cocina"
+    },
+    {
+      "id": "sarma",
+      "nombre": "Sarma (niños envueltos)",
+      "descripcion": "Hojas de parra rellenas de arroz y carne.",
+      "peso": "",
+      "precio": null,
+      "unidad": "unidad",
+      "categoria": "Platos",
+      "foto": "",
+      "disponible": true,
+      "seccion": "cocina"
+    },
+    {
+      "id": "keppe",
+      "nombre": "Keppe al horno",
+      "descripcion": "Trigo burgol y carne, con relleno especiado.",
+      "peso": "",
+      "precio": null,
+      "unidad": "porción",
+      "categoria": "Platos",
+      "foto": "",
+      "disponible": true,
+      "seccion": "cocina"
+    },
+    {
+      "id": "falafel",
+      "nombre": "Falafel",
+      "descripcion": "Croquetas de garbanzo con hierbas y especias.",
+      "peso": "",
+      "precio": null,
+      "unidad": "unidad",
+      "categoria": "Platos",
+      "foto": "",
+      "disponible": true,
+      "seccion": "cocina"
+    },
+    {
+      "id": "paklava",
+      "nombre": "Paklavá",
+      "descripcion": "Masa filo con nueces y almíbar.",
+      "peso": "",
+      "precio": null,
+      "unidad": "porción",
+      "categoria": "Dulces",
+      "foto": "",
+      "disponible": true,
+      "seccion": "cocina"
+    },
+    {
+      "id": "kadaif",
+      "nombre": "Kadaif",
+      "descripcion": "Hebras de masa crocante con nueces y almíbar.",
+      "peso": "",
+      "precio": null,
+      "unidad": "porción",
+      "categoria": "Dulces",
+      "foto": "",
+      "disponible": true,
+      "seccion": "cocina"
+    },
+    {
+      "id": "aceite-oliva-importado",
+      "nombre": "Aceite de oliva extra virgen importado",
+      "descripcion": "Producto de ejemplo: cargá acá el aceite real, su origen y presentación.",
+      "peso": "",
+      "precio": null,
+      "unidad": "unidad",
+      "categoria": "Aceites de oliva",
+      "foto": "",
+      "disponible": true,
+      "seccion": "almacen"
+    },
+    {
+      "id": "shisha-turca",
+      "nombre": "Shisha turca",
+      "descripcion": "Producto de ejemplo: cargá acá el modelo real, medidas y qué incluye.",
+      "peso": "",
+      "precio": null,
+      "unidad": "unidad",
+      "categoria": "Shishas",
+      "foto": "",
+      "disponible": true,
+      "seccion": "shishas"
+    }
+  ],
+  "secciones": [
+    {
+      "id": "cocina",
+      "nombre": "Cocina",
+      "descripcion": "Medzé, masas, platos y dulces caseros."
+    },
+    {
+      "id": "almacen",
+      "nombre": "Almacén",
+      "descripcion": "Aceites de oliva importados y productos de almacén."
+    },
+    {
+      "id": "shishas",
+      "nombre": "Shishas",
+      "descripcion": "Shishas y accesorios traídos de Turquía."
+    }
+  ],
+  "historia": {
+    "titulo": "Cocina armenia de familia",
+    "texto": "Aramé es cocina armenia casera, atendida por sus dueños, frente a la estación de Martínez. Preparamos medzé para compartir, masas, platos y dulces con recetas de familia, y sumamos un almacén con productos importados.",
+    "datos": [
+      {
+        "valor": "4,7 ★",
+        "etiqueta": "en Google"
+      },
+      {
+        "valor": "+350",
+        "etiqueta": "opiniones"
+      },
+      {
+        "valor": "Lu a Sá",
+        "etiqueta": "take away"
+      }
+    ]
+  },
+  "resenas": [
+    {
+      "texto": "El mejor local de comida armenia.",
+      "autor": "Marcos Rodríguez Sola",
+      "fuente": "Google"
+    },
+    {
+      "texto": "El hummus está hecho increíble.",
+      "autor": "",
+      "fuente": "Google"
+    },
+    {
+      "texto": "Te asesoran de lo mejor.",
+      "autor": "",
+      "fuente": "Google"
+    },
+    {
+      "texto": "Recomiendo la ensalada tabule, keppe fritas, lajmashum y aceitunas negras griegas.",
+      "autor": "",
+      "fuente": "Google"
+    }
   ]
 }

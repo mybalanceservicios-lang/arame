@@ -4,21 +4,20 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Aramé · Cocina armenia</title>
-<meta name="description" content="Aramé, cocina armenia take away en Martínez. Armá tu pedido online y envialo por WhatsApp.">
-<meta name="theme-color" content="#0D0D0D">
+<meta name="description" content="Aramé, cocina armenia take away en Martínez. Comida casera, almacén importado y shishas. Armá tu pedido online y envialo por WhatsApp.">
+<meta name="theme-color" content="#0F1418">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Manrope:wght@400;500;600;700;800&family=Noto+Serif+Armenian:wght@600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700;800;900&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
   :root{
-    --bg:#0D0D0D; --bg-2:#131313; --card:#181818; --card-2:#202020;
-    --ink:#F5F1EA; --ink-2:#B5ADA2; --ink-3:#7A736B;
-    --line:#2A2A2A;
-    --or:#F26A1B; --or-2:#FF8A3D; --or-deep:#C9520E; --or-soft:rgba(242,106,27,.14);
+    --bg:#0F1418; --bg-2:#131A1F; --card:#172028; --card-2:#1E2830;
+    --ink:#F3EDE4; --ink-2:#AFA79C; --ink-3:#77716A;
+    --line:#26313A;
+    --or:#D9772E; --or-2:#F0954A; --or-deep:#A85A1F; --or-soft:rgba(217,119,46,.14);
     --wa:#1FA855;
-    --serif:"DM Serif Display",Georgia,serif;
+    --brand:"Montserrat","Arial Black",sans-serif;
     --body:"Manrope",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
-    --hy:"Noto Serif Armenian",serif;
     --r:16px;
   }
   *{box-sizing:border-box}
@@ -27,37 +26,77 @@
   body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--body);line-height:1.5;-webkit-font-smoothing:antialiased;overflow-x:hidden}
   a{color:inherit;text-decoration:none}
   button{font:inherit;color:inherit;cursor:pointer;-webkit-tap-highlight-color:transparent}
-  h1,h2,h3{margin:0;line-height:1.1;font-weight:400}
+  h1,h2,h3{margin:0;line-height:1.1;font-weight:800;text-wrap:balance}
   .container{max-width:1160px;margin:0 auto;padding:0 16px}
 
+  /* marca: AR + techo + MÉ, como el logo */
+  .wm{display:inline-flex;align-items:flex-end;font-family:var(--brand);font-weight:800;color:var(--or);letter-spacing:.04em;line-height:.8}
+  .wm svg{height:.86em;width:.92em;margin:0 .02em;overflow:visible}
+
   /* encabezado */
-  header{position:sticky;top:0;z-index:50;background:rgba(13,13,13,.9);backdrop-filter:blur(12px);border-bottom:1px solid var(--line)}
+  header{position:sticky;top:0;z-index:50;background:rgba(15,20,24,.92);backdrop-filter:blur(12px);border-bottom:1px solid var(--line)}
   .nav{display:flex;align-items:center;gap:14px;height:64px}
-  .logo{display:flex;align-items:baseline;gap:9px}
-  .logo b{font-family:var(--serif);font-weight:400;font-size:28px;color:var(--or);letter-spacing:.01em}
-  .logo span{font-family:var(--hy);font-size:15px;color:var(--ink-3)}
+  .logo{display:flex;flex-direction:column;align-items:center;gap:5px}
+  .logo .wm{font-size:24px}
+  .logo small{font-family:var(--brand);font-weight:700;font-size:8.5px;letter-spacing:.34em;color:var(--or)}
   .cart-btn{margin-left:auto;display:flex;align-items:center;gap:8px;background:var(--or);color:#111;border:0;border-radius:999px;padding:10px 16px;font-weight:800;font-size:14px}
   .cart-btn .count{background:#111;color:var(--or);border-radius:999px;min-width:22px;height:22px;display:grid;place-items:center;font-size:12px;padding:0 6px}
   .cart-btn.bump{animation:bump .3s ease}
   @keyframes bump{50%{transform:scale(1.08)}}
 
+  /* portada: la mesa armenia. El tramo de scroll es corto para que los platos se abran rápido */
+  .mesa{height:150vh;height:150svh;position:relative}
+  .mesa .stage{position:sticky;top:64px;height:calc(100vh - 64px);height:calc(100svh - 64px);overflow:hidden;display:grid;place-items:center;background:radial-gradient(70% 60% at 50% 50%,#1C252C,var(--bg) 75%)}
+  .mesa{--ps:clamp(58px,15vmin,136px)}
+  .table{position:absolute;width:min(90vmin,740px);aspect-ratio:1;border-radius:50%;background:repeating-radial-gradient(circle at 50% 50%,#2A2119 0 3px,#2E241B 3px 7px);box-shadow:inset 0 0 0 10px #3A2C20,inset 0 0 120px rgba(0,0,0,.6),0 40px 80px -30px rgba(0,0,0,.8)}
+  .plate{position:absolute;left:50%;top:50%;width:var(--ps);height:var(--ps);margin:calc(var(--ps) / -2) 0 0 calc(var(--ps) / -2);border-radius:50%;background:#EDE6DA;box-shadow:0 14px 26px -10px rgba(0,0,0,.7);will-change:transform;border:0;padding:0;cursor:pointer}
+  .plate img,.plate .dish{position:absolute;inset:8%;width:84%;height:84%;border-radius:50%;object-fit:cover;display:block}
+  .plate .lbl{position:absolute;left:50%;top:104%;transform:translateX(-50%);white-space:nowrap;max-width:min(140px,30vw);overflow:hidden;text-overflow:ellipsis;font-weight:800;font-size:12px;color:var(--ink);background:rgba(15,20,24,.85);padding:3px 9px;border-radius:999px;opacity:var(--lbl,0);pointer-events:none}
+  @media(min-width:700px){.mesa .center{transform:translateY(-34px)}}
+  .mesa .center{position:relative;z-index:2;text-align:center;pointer-events:none;display:flex;flex-direction:column;align-items:center}
+  .mesa .center .wm{font-size:clamp(46px,11vmin,108px)}
+  .mesa .center small{font-family:var(--brand);font-weight:700;color:var(--or);letter-spacing:.34em;font-size:clamp(10px,2vmin,18px);margin-top:.6em}
+  .mesa .center p{margin:16px auto 0;max-width:min(30ch,58vw);color:var(--ink-2);font-size:clamp(14px,2.1vmin,17px);opacity:var(--o2,0);transform:translateY(calc((1 - var(--o2,0)) * 12px))}
+  .mesa .cta{margin-top:14px;background:var(--or);color:#111;font-weight:800;border-radius:12px;padding:12px 18px;border:0;opacity:var(--o2,0);pointer-events:var(--pe,none)}
+  .mesa .hint{position:absolute;bottom:18px;left:50%;transform:translateX(-50%);display:flex;align-items:center;gap:8px;font-size:13px;color:var(--ink-3);font-weight:700;opacity:calc(1 - var(--o2,0) * 2)}
+  .mesa .hint i{width:16px;height:24px;border:2px solid var(--ink-3);border-radius:9px;position:relative}
+  .mesa .hint i::after{content:"";position:absolute;left:50%;top:4px;width:2px;height:5px;background:var(--or);transform:translateX(-50%);animation:dot 1.4s infinite}
+  @keyframes dot{60%{transform:translate(-50%,7px);opacity:0}}
+
   /* portada */
-  .hero{padding:40px 0 26px;position:relative}
-  .hero::before{content:"";position:absolute;inset:-64px 0 auto 0;height:420px;background:radial-gradient(60% 70% at 85% 0%,rgba(242,106,27,.22),transparent 70%);pointer-events:none}
+  .hero{padding:34px 0 28px;position:relative}
+  .hero::before{content:"";position:absolute;inset:-64px 0 auto 0;height:420px;background:radial-gradient(60% 70% at 85% 0%,rgba(217,119,46,.2),transparent 70%);pointer-events:none}
   .hero .container{position:relative}
-  .kicker{display:inline-flex;align-items:center;gap:8px;font-size:12px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:var(--or)}
+  .kicker{display:inline-flex;align-items:center;gap:8px;font-size:12px;font-weight:800;letter-spacing:.14em;text-transform:uppercase;color:var(--or)}
   .kicker::before{content:"";width:22px;height:2px;background:var(--or)}
-  .hero h1{font-family:var(--serif);font-size:clamp(40px,7vw,76px);margin:14px 0 12px;letter-spacing:-.01em}
-  .hero h1 em{color:var(--or);font-style:italic}
+  .hero h1{font-family:var(--brand);font-weight:900;font-size:clamp(36px,6.6vw,70px);margin:14px 0 12px;letter-spacing:-.02em}
+  .hero h1 em{color:var(--or);font-style:normal}
   .hero p{color:var(--ink-2);font-size:17px;max-width:560px;margin:0}
   .facts{display:flex;flex-wrap:wrap;gap:10px;margin-top:22px}
   .fact{display:flex;align-items:center;gap:8px;background:var(--card);border:1px solid var(--line);border-radius:999px;padding:8px 14px;font-size:13.5px;color:var(--ink-2)}
   .fact b{color:var(--ink);font-weight:700}
   .fact svg{color:var(--or);flex-shrink:0}
-  .aviso{margin-top:18px;background:var(--or-soft);border:1px solid rgba(242,106,27,.4);color:var(--or-2);border-radius:12px;padding:12px 14px;font-weight:700;font-size:14.5px}
+  .fact.star b{color:var(--or-2)}
+  .aviso{margin-top:18px;background:var(--or-soft);border:1px solid rgba(217,119,46,.4);color:var(--or-2);border-radius:12px;padding:12px 14px;font-weight:700;font-size:14.5px}
+
+  /* secciones del negocio */
+  .worlds{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:28px}
+  .world{display:flex;flex-direction:column;align-items:flex-start;gap:4px;text-align:left;background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:16px;transition:border-color .15s,transform .15s;position:relative;overflow:hidden}
+  .world:hover{transform:translateY(-2px);border-color:var(--ink-3)}
+  .world.on{border-color:var(--or);background:linear-gradient(160deg,rgba(217,119,46,.16),var(--card) 60%)}
+  .world b{font-family:var(--brand);font-weight:800;font-size:19px}
+  .world span{font-size:13.5px;color:var(--ink-2)}
+  .world i{font-style:normal;font-size:12px;font-weight:800;color:var(--or-2);margin-top:6px}
+  @media(max-width:640px){
+    .worlds{grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+    .world{padding:12px 10px}
+    .world b{font-size:15px}
+    .world span{display:none}
+    .world i{margin-top:2px}
+  }
 
   /* categorías y buscador */
-  .toolbar{position:sticky;top:64px;z-index:40;background:rgba(13,13,13,.94);backdrop-filter:blur(12px);border-bottom:1px solid var(--line);padding:10px 0}
+  .toolbar{position:sticky;top:64px;z-index:40;background:rgba(15,20,24,.95);backdrop-filter:blur(12px);border-bottom:1px solid var(--line);padding:10px 0}
   .toolbar .container{display:flex;gap:10px;align-items:center}
   .chips{display:flex;gap:8px;overflow-x:auto;scrollbar-width:none;flex:1}
   .chips::-webkit-scrollbar{display:none}
@@ -72,16 +111,17 @@
 
   /* productos */
   .cat-block{padding:26px 0 6px;scroll-margin-top:130px}
-  .cat-block h2{font-family:var(--serif);font-size:30px;margin-bottom:14px;display:flex;align-items:baseline;gap:10px}
+  .cat-block h2{font-family:var(--brand);font-size:24px;margin-bottom:14px;display:flex;align-items:baseline;gap:10px}
   .cat-block h2 small{font-family:var(--body);font-size:13px;color:var(--ink-3);font-weight:600}
   .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:14px}
   .card{background:var(--card);border:1px solid var(--line);border-radius:var(--r);overflow:hidden;display:flex;flex-direction:column;transition:border-color .15s}
   .card.in{border-color:var(--or)}
   .ph{aspect-ratio:4/3;background:var(--card-2);position:relative;overflow:hidden;border:0;padding:0;display:block;width:100%}
   .ph img{width:100%;height:100%;object-fit:cover;display:block}
-  .ph .none{position:absolute;inset:0;display:grid;place-items:center;font-family:var(--hy);font-size:56px;color:rgba(242,106,27,.35);background:radial-gradient(circle at 50% 40%,#262019,#171717)}
+  .ph .none{position:absolute;inset:0;display:grid;place-items:center;color:rgba(217,119,46,.35);background:radial-gradient(circle at 50% 40%,#22201C,#172028)}
+  .ph .none .wm{font-size:22px;color:rgba(217,119,46,.4)}
   .ph .qbadge{position:absolute;top:10px;right:10px;background:var(--or);color:#111;font-weight:800;font-size:13px;border-radius:999px;padding:3px 10px}
-  .body{padding:14px 14px 14px;display:flex;flex-direction:column;gap:4px;flex:1}
+  .body{padding:14px;display:flex;flex-direction:column;gap:4px;flex:1;min-width:0}
   .card h3{font-size:17px;font-weight:800;letter-spacing:-.005em}
   .peso{font-size:12.5px;color:var(--or-2);font-weight:700}
   .desc{margin:0;font-size:14px;color:var(--ink-2);display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
@@ -99,13 +139,14 @@
   .quick:active{background:var(--or-soft)}
   .card.off{opacity:.5}
   .off-tag{font-size:12.5px;font-weight:800;color:var(--ink-3);margin-top:10px}
+  .consult{margin-top:10px;font-size:13px;color:var(--ink-3)}
 
   /* móvil: tarjetas horizontales para ver más productos */
   @media(max-width:600px){
     .grid{grid-template-columns:1fr;gap:10px}
     .card{flex-direction:row}
     .ph{width:118px;min-width:118px;aspect-ratio:auto;min-height:100%}
-    .ph .none{font-size:38px}
+    .ph .none .wm{font-size:15px}
     .ph .qbadge{top:6px;right:6px;font-size:12px;padding:2px 8px}
     .body{padding:12px}
     .card h3{font-size:16px}
@@ -121,11 +162,37 @@
   .empty{padding:36px;text-align:center;color:var(--ink-2);border:1px dashed var(--line);border-radius:var(--r);margin-top:26px}
   .loading{padding:60px 0;text-align:center;color:var(--ink-3)}
 
-  footer{padding:40px 0 120px;color:var(--ink-3);font-size:13.5px;border-top:1px solid var(--line);margin-top:40px}
+  /* historia */
+  .story{margin-top:60px;padding:56px 0;border-top:1px solid var(--line);background:linear-gradient(180deg,var(--bg-2),var(--bg))}
+  .story .container{display:grid;grid-template-columns:1.2fr .8fr;gap:30px 50px;align-items:center}
+  .story h2{font-family:var(--brand);font-weight:900;font-size:clamp(30px,4.6vw,48px);letter-spacing:-.015em;margin:10px 0 14px}
+  .story p{color:var(--ink-2);font-size:17px;margin:0;max-width:56ch;white-space:pre-line}
+  .stats{display:grid;gap:12px}
+  .stat{display:flex;align-items:baseline;gap:12px;border-bottom:1px solid var(--line);padding-bottom:12px}
+  .stat:last-child{border-bottom:0}
+  .stat b{font-family:var(--brand);font-weight:900;font-size:34px;color:var(--or)}
+  .stat span{color:var(--ink-2);font-weight:600}
+  @media(max-width:760px){.story .container{grid-template-columns:1fr}}
+
+  /* reseñas */
+  .reviews{padding:50px 0 10px}
+  .reviews .head{display:flex;align-items:flex-end;justify-content:space-between;gap:16px;flex-wrap:wrap;margin-bottom:20px}
+  .reviews h2{font-family:var(--brand);font-weight:900;font-size:clamp(28px,4vw,42px);letter-spacing:-.015em;margin-top:10px}
+  .rating{display:flex;align-items:center;gap:10px;font-weight:700;color:var(--ink-2)}
+  .rating b{font-family:var(--brand);font-size:30px;color:var(--ink)}
+  .stars{color:var(--or-2);letter-spacing:2px}
+  .rv-track{display:grid;grid-auto-flow:column;grid-auto-columns:minmax(260px,340px);gap:14px;overflow-x:auto;scroll-snap-type:x mandatory;padding-bottom:12px;scrollbar-width:thin}
+  .rv{scroll-snap-align:start;background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:20px;display:flex;flex-direction:column;gap:12px;min-width:0}
+  .rv q{font-size:17px;line-height:1.45;quotes:"“" "”"}
+  .rv .who{margin-top:auto;display:flex;align-items:center;gap:10px;font-size:13.5px;color:var(--ink-2)}
+  .rv .av{width:32px;height:32px;border-radius:50%;background:var(--or-soft);color:var(--or-2);display:grid;place-items:center;font-weight:800}
+
+  footer{padding:40px 0 120px;color:var(--ink-3);font-size:13.5px;border-top:1px solid var(--line);margin-top:50px}
   footer .container{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap}
+  footer a{color:var(--ink-2);text-decoration:underline}
 
   /* barra inferior con el total */
-  .bar{position:fixed;left:50%;bottom:14px;transform:translate(-50%,140%);width:min(560px,calc(100% - 24px));z-index:60;display:flex;align-items:center;gap:12px;background:var(--or);color:#111;border:0;border-radius:16px;padding:12px 12px 12px 18px;box-shadow:0 16px 40px -12px rgba(242,106,27,.55);transition:transform .25s ease}
+  .bar{position:fixed;left:50%;bottom:14px;transform:translate(-50%,140%);width:min(560px,calc(100% - 24px));z-index:60;display:flex;align-items:center;gap:12px;background:var(--or);color:#111;border:0;border-radius:16px;padding:12px 12px 12px 18px;box-shadow:0 16px 40px -12px rgba(217,119,46,.55);transition:transform .25s ease}
   .bar.show{transform:translate(-50%,0)}
   .bar .t{display:flex;flex-direction:column;align-items:flex-start;line-height:1.2;text-align:left}
   .bar .t small{font-weight:700;font-size:12.5px;opacity:.8}
@@ -138,18 +205,19 @@
   .drawer{position:fixed;top:0;right:0;bottom:0;height:100dvh;width:min(460px,100%);background:var(--bg-2);z-index:90;transform:translateX(100%);visibility:hidden;transition:transform .25s ease,visibility 0s .25s;display:flex;flex-direction:column;overflow:hidden;border-left:1px solid var(--line)}
   .drawer.open{transform:none;visibility:visible;transition:transform .25s ease}
   .d-head{display:flex;align-items:center;justify-content:space-between;padding:16px 18px;border-bottom:1px solid var(--line)}
-  .d-head h2{font-family:var(--serif);font-size:28px}
+  .d-head h2{font-family:var(--brand);font-size:24px}
   .x{width:40px;height:40px;border-radius:50%;border:1px solid var(--line);background:var(--card);font-size:17px}
   .d-body{flex:1;min-height:0;overflow-y:auto;padding:8px 18px 18px}
+  .d-sec{font-family:var(--brand);font-weight:800;font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--or);margin:16px 0 0}
   .li{display:grid;grid-template-columns:1fr auto;gap:6px 10px;padding:12px 0;border-bottom:1px solid var(--line);align-items:center}
-  .li .n{font-weight:700;font-size:15px}
+  .li .n{font-weight:700;font-size:15px;min-width:0}
   .li .n small{display:block;font-weight:500;color:var(--ink-3);font-size:12.5px}
   .li .tot{font-weight:800;text-align:right}
   .li .stepper{max-width:150px}
   .li .rm{background:none;border:0;color:var(--ink-3);font-size:13px;font-weight:700;text-decoration:underline;justify-self:end}
   .clear{background:none;border:0;color:var(--ink-3);font-size:13px;font-weight:700;text-decoration:underline;padding:12px 0 0}
   .form{display:flex;flex-direction:column;gap:12px;margin-top:20px}
-  .form h3{font-family:var(--serif);font-size:22px}
+  .form h3{font-family:var(--brand);font-size:20px}
   .seg{display:grid;grid-template-columns:1fr 1fr;gap:4px;background:var(--bg);border:1px solid var(--line);border-radius:12px;padding:4px}
   .seg button{border:0;background:none;border-radius:9px;padding:10px;font-weight:800;font-size:14px;color:var(--ink-2)}
   .seg button.on{background:var(--or);color:#111}
@@ -173,13 +241,15 @@
 
   .toast{position:fixed;left:50%;top:76px;transform:translate(-50%,-10px);background:#fff;color:#111;padding:10px 16px;border-radius:999px;font-weight:700;font-size:14px;opacity:0;transition:.2s;z-index:100;pointer-events:none;max-width:calc(100% - 32px);text-align:center}
   .toast.show{opacity:1;transform:translate(-50%,0)}
+  :focus-visible{outline:2px solid var(--or-2);outline-offset:2px}
+  @media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
 </style>
 </head>
 <body>
 
 <header>
   <div class="container nav">
-    <a href="#" class="logo"><b>Aramé</b><span>Արամէ</span></a>
+    <a href="#" class="logo" aria-label="Aramé, Cocina Armenia"><span class="wm" data-wm></span><small>COCINA ARMENIA</small></a>
     <button class="cart-btn" id="cartBtn" aria-label="Ver mi pedido">
       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 7h14l-1.5 11a2 2 0 0 1-2 1.7h-7a2 2 0 0 1-2-1.7z"/><path d="M9 10V6a3 3 0 0 1 6 0v4"/></svg>
       Mi pedido <span class="count" id="cartCount">0</span>
@@ -187,20 +257,35 @@
   </div>
 </header>
 
-<section class="hero">
+<section class="mesa" id="mesa" aria-label="Aramé, cocina armenia">
+  <div class="stage">
+    <div class="table" aria-hidden="true"></div>
+    <div id="plates"></div>
+    <div class="center">
+      <span class="wm" data-wm></span><small>COCINA ARMENIA</small>
+      <p>Medzé, masas y platos caseros para compartir. Armá tu pedido y te lo preparamos.</p>
+      <button class="cta" id="mesaCta">Ver el catálogo →</button>
+    </div>
+    <div class="hint" aria-hidden="true"><i></i>Deslizá para servir la mesa</div>
+  </div>
+</section>
+
+<section class="hero" id="info">
   <div class="container">
     <span class="kicker">Cocina armenia · Take away</span>
     <h1>Armá tu pedido <em>en un minuto</em></h1>
     <p>Elegí los productos y las cantidades, y mandanos el pedido por WhatsApp. Te respondemos para confirmar y coordinar el pago.</p>
     <div class="facts">
+      <span class="fact star" id="fRating" hidden><b></b></span>
       <span class="fact"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 21s-7-6.2-7-11.5A7 7 0 0 1 19 9.5C19 14.8 12 21 12 21z"/><circle cx="12" cy="9.5" r="2.5"/></svg><b id="fDir"></b></span>
       <span class="fact"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg><span id="fHor"></span></span>
     </div>
     <div class="aviso" id="aviso" hidden></div>
+    <nav class="worlds" id="worlds" aria-label="Secciones"></nav>
   </div>
 </section>
 
-<div class="toolbar">
+<div class="toolbar" id="toolbar">
   <div class="container">
     <div class="chips" id="chips"></div>
     <label class="search">
@@ -212,9 +297,30 @@
 
 <main class="container" id="list"><div class="loading">Cargando productos…</div></main>
 
+<section class="story" id="story" hidden>
+  <div class="container">
+    <div>
+      <span class="kicker">Nuestra historia</span>
+      <h2 id="stTitle"></h2>
+      <p id="stText"></p>
+    </div>
+    <div class="stats" id="stStats"></div>
+  </div>
+</section>
+
+<section class="reviews" id="reviews" hidden>
+  <div class="container">
+    <div class="head">
+      <div><span class="kicker">Lo que dicen nuestros clientes</span><h2>Reseñas</h2></div>
+      <div class="rating" id="rvRating"></div>
+    </div>
+    <div class="rv-track" id="rvTrack"></div>
+  </div>
+</section>
+
 <footer>
   <div class="container">
-    <span>© <span id="year"></span> Aramé · Cocina armenia</span>
+    <span>© <span id="year"></span> Aramé · Cocina armenia · <span id="ftDir"></span></span>
     <span>Diseñado por <b>RT Design</b></span>
   </div>
 </footer>
@@ -271,9 +377,16 @@ const UNIT_PLURAL = {unidad:["unidad","unidades"], docena:["docena","docenas"], 
 const unitName = (u, q) => { const p = UNIT_PLURAL[u]; return p ? p[q === 1 ? 0 : 1] : (u || ""); };
 const hasPrice = p => typeof p.precio === "number" && p.precio > 0;
 
-let DATA = null, byId = {};
+/* marca: AR + techo + MÉ */
+const ROOF = `<svg viewBox="0 0 100 92" aria-hidden="true"><path d="M2 90 L50 8 L98 90 L80 90 L50 40 L20 90 Z" fill="currentColor"/><path d="M20 90 C 46 70, 70 66, 100 74 L 98 90 Z" fill="currentColor" opacity=".9"/></svg>`;
+const WM = `AR${ROOF}MÉ`;
+document.querySelectorAll("[data-wm]").forEach(el => el.innerHTML = WM);
+
+let DATA = null, byId = {}, SECS = [];
 let cart = store.get("arame.cart", {});
-let activeCat = "Todo", query = "", mode = "retiro";
+let activeSec = null, activeCat = "Todo", query = "", mode = "retiro";
+
+const secOf = p => (SECS.find(s => s.id === p.seccion) || SECS[0]).id;
 
 async function load(){
   try{
@@ -284,35 +397,119 @@ async function load(){
     $("#list").innerHTML = `<div class="empty">No pudimos cargar los productos. Probá recargar la página.</div>`;
     return;
   }
-  DATA.productos = (DATA.productos || []);
+  DATA.productos = DATA.productos || [];
+  SECS = (DATA.secciones && DATA.secciones.length) ? DATA.secciones : [{id:"cocina", nombre:"Cocina", descripcion:""}];
   byId = Object.fromEntries(DATA.productos.map(p => [p.id, p]));
   for (const id in cart) if (!byId[id] || byId[id].disponible === false || !(cart[id] > 0)) delete cart[id];
-  const n = DATA.negocio || {};
-  $("#fDir").textContent = n.direccion || "";
-  $("#fHor").textContent = n.horario || "";
-  if (n.aviso){ $("#aviso").textContent = n.aviso; $("#aviso").hidden = false; }
-  renderChips(); renderList(); renderCart();
+  // solo se muestran las secciones que tienen productos
+  SECS = SECS.filter(s => DATA.productos.some(p => secOf(p) === s.id));
+  let fromHash = location.hash.slice(1);
+  activeSec = SECS.some(s => s.id === fromHash) ? fromHash : (SECS[0] && SECS[0].id);
+  renderInfo(); renderMesa(); renderWorlds(); renderChips(); renderList(); renderCart();
 }
 
+function renderInfo(){
+  const n = DATA.negocio || {};
+  $("#fDir").textContent = n.direccion || ""; $("#ftDir").textContent = n.direccion || "";
+  $("#fHor").textContent = n.horario || "";
+  if (n.aviso){ $("#aviso").textContent = n.aviso; $("#aviso").hidden = false; }
+  const h = DATA.historia;
+  if (h && (h.titulo || h.texto)){
+    $("#stTitle").textContent = h.titulo || ""; $("#stText").textContent = h.texto || "";
+    $("#stStats").innerHTML = (h.datos || []).filter(d => d.valor).map(d => `<div class="stat"><b>${esc(d.valor)}</b><span>${esc(d.etiqueta)}</span></div>`).join("");
+    $("#story").hidden = false;
+  }
+  const rv = (DATA.resenas || []).filter(r => r.texto);
+  const star = (h && (h.datos || []).find(d => /★/.test(d.valor)));
+  if (star){ $("#fRating b").textContent = `${star.valor} ${star.etiqueta}`; $("#fRating").hidden = false; }
+  if (rv.length){
+    $("#rvTrack").innerHTML = rv.map(r => `<figure class="rv" style="margin:0"><q>${esc(r.texto)}</q>
+      <figcaption class="who"><span class="av">${esc((r.autor || "C").trim()[0].toUpperCase())}</span><span>${esc(r.autor || "Cliente")}${r.fuente ? " · " + esc(r.fuente) : ""}</span></figcaption></figure>`).join("");
+    if (star){
+      const opin = (h.datos || []).find(d => /opini/i.test(d.etiqueta));
+      $("#rvRating").innerHTML = `<b>${esc(star.valor.replace("★", "").trim())}</b><span><span class="stars">★★★★★</span><br>${opin ? esc(opin.valor + " " + opin.etiqueta) : ""} ${esc(star.etiqueta)}</span>`;
+    }
+    $("#reviews").hidden = false;
+  }
+}
+
+/* ---------- la mesa ---------- */
+const PLATE_COLORS = ["#C98A3E", "#7A4B2A", "#6F8F3A", "#5C6B2E", "#B5542A", "#A8803C", "#8A5A2E", "#9AA455"];
+let plates = [];
+function renderMesa(){
+  const cocina = DATA.productos.filter(p => secOf(p) === (SECS[0] && SECS[0].id) && p.disponible !== false);
+  const withPhoto = cocina.filter(p => p.foto), rest = cocina.filter(p => !p.foto);
+  const pick = [...withPhoto, ...rest].slice(0, 8);
+  $("#plates").innerHTML = pick.map((p, i) => `<button class="plate" data-zoom="${esc(p.id)}" aria-label="${esc(p.nombre)}">${p.foto
+    ? `<img src="${esc(p.foto)}" alt="">`
+    : `<span class="dish" style="background:radial-gradient(circle at 40% 35%, color-mix(in srgb, ${PLATE_COLORS[i % 8]} 70%, white), ${PLATE_COLORS[i % 8]} 70%)"></span>`}<span class="lbl">${esc(p.nombre)}</span></button>`).join("");
+  plates = [...$("#plates").children];
+  drawMesa();
+}
+const clamp = (v, a = 0, b = 1) => Math.min(b, Math.max(a, v));
+const easeOut = t => 1 - Math.pow(1 - t, 3);
+const REDUCE = matchMedia("(prefers-reduced-motion: reduce)").matches;
+function drawMesa(){
+  const mesa = $("#mesa"), stage = mesa.querySelector(".stage");
+  const total = mesa.offsetHeight - stage.offsetHeight;
+  const p = REDUCE ? 1 : clamp(-mesa.getBoundingClientRect().top / Math.max(1, total));
+  const t = easeOut(clamp(p / .7));
+  const W = stage.offsetWidth, H = stage.offsetHeight, m = Math.min(W, H), k = .06 + .94 * t;
+  const Rx = (W < 700 ? W * .39 : m * .41) * k, Ry = (W < 700 ? H * .40 : m * .37) * k;
+  const spin = (1 - t) * 220;
+  plates.forEach((el, i) => {
+    const a = ((i + .5) / plates.length) * Math.PI * 2 + spin * Math.PI / 180 - Math.PI / 2;
+    el.style.transform = `translate(${Math.cos(a) * Rx}px, ${Math.sin(a) * Ry}px) scale(${.55 + .45 * t}) rotate(${spin * .6}deg)`;
+    el.style.zIndex = t > .5 ? 1 : 3;
+  });
+  const o2 = clamp((p - .45) / .3);
+  mesa.style.setProperty("--lbl", clamp((p - .4) / .25));
+  mesa.style.setProperty("--o2", o2);
+  mesa.style.setProperty("--pe", o2 > .5 ? "auto" : "none");
+  mesa.querySelector(".table").style.transform = `rotate(${-spin * .3}deg) scale(${.85 + .15 * t})`;
+}
+addEventListener("scroll", () => requestAnimationFrame(drawMesa), {passive: true});
+addEventListener("resize", drawMesa);
+$("#mesaCta").onclick = () => window.scrollTo({top: $("#info").offsetTop - 64, behavior: "smooth"});
+
+function renderWorlds(){
+  if (SECS.length < 2){ $("#worlds").hidden = true; return; }
+  $("#worlds").innerHTML = SECS.map(s => {
+    const n = DATA.productos.filter(p => secOf(p) === s.id).length;
+    return `<button class="world ${s.id === activeSec ? "on" : ""}" data-sec="${esc(s.id)}" aria-pressed="${s.id === activeSec}">
+      <b>${esc(s.nombre)}</b><span>${esc(s.descripcion || "")}</span><i>${n} ${n === 1 ? "producto" : "productos"}</i></button>`;
+  }).join("");
+}
+$("#worlds").addEventListener("click", e => {
+  const b = e.target.closest("[data-sec]"); if (!b) return;
+  activeSec = b.dataset.sec; activeCat = "Todo";
+  try{ history.replaceState(null, "", "#" + activeSec); }catch(_){}
+  renderWorlds(); renderChips(); renderList();
+  window.scrollTo({top: $("#toolbar").offsetTop - 64, behavior: "smooth"});
+});
+
 function categories(){
-  const used = [...new Set(DATA.productos.map(p => p.categoria || "Otros"))];
+  const prods = DATA.productos.filter(p => query || secOf(p) === activeSec);
+  const used = [...new Set(prods.map(p => p.categoria || "Otros"))];
   const ordered = (DATA.categorias || []).filter(c => used.includes(c));
   return [...ordered, ...used.filter(c => !ordered.includes(c))];
 }
 
 function renderChips(){
-  const cats = ["Todo", ...categories()];
-  $("#chips").innerHTML = cats.map(c => `<button class="chip ${c === activeCat ? "on" : ""}" data-cat="${esc(c)}">${esc(c)}</button>`).join("");
+  const cats = categories();
+  if (!cats.includes(activeCat)) activeCat = "Todo";
+  $("#chips").innerHTML = (cats.length > 1 ? ["Todo", ...cats] : cats).map(c =>
+    `<button class="chip ${c === activeCat || cats.length === 1 ? "on" : ""}" data-cat="${esc(c)}">${esc(c)}</button>`).join("");
 }
 $("#chips").addEventListener("click", e => {
   const b = e.target.closest(".chip"); if (!b) return;
   activeCat = b.dataset.cat; renderChips(); renderList();
   window.scrollTo({top: $("#list").offsetTop - 140, behavior: "smooth"});
 });
-$("#search").addEventListener("input", e => { query = e.target.value.trim(); renderList(); });
+$("#search").addEventListener("input", e => { query = e.target.value.trim(); renderChips(); renderList(); });
 
-function photo(p, cls = ""){
-  return p.foto ? `<img src="${esc(p.foto)}" alt="${esc(p.nombre)}" loading="lazy" class="${cls}">` : `<span class="none">Ա</span>`;
+function photo(p){
+  return p.foto ? `<img src="${esc(p.foto)}" alt="${esc(p.nombre)}" loading="lazy">` : `<span class="none"><span class="wm">${WM}</span></span>`;
 }
 
 function cardHTML(p){
@@ -320,7 +517,8 @@ function cardHTML(p){
   const priceHTML = hasPrice(p)
     ? `<span class="price">${money(p.precio)}</span><span class="per">${UNIT[p.unidad] || (p.unidad ? "por " + esc(p.unidad) : "")}</span>`
     : `<span class="price na">Precio a consultar</span>`;
-  const quick = p.unidad === "unidad" ? `<button class="quick" data-add="${p.id}" data-n="6">+6</button><button class="quick" data-add="${p.id}" data-n="12">+12</button>` : "";
+  const quick = p.unidad === "unidad" && secOf(p) === "cocina"
+    ? `<button class="quick" data-add="${p.id}" data-n="6">+6</button><button class="quick" data-add="${p.id}" data-n="12">+12</button>` : "";
   const ctrl = off ? `<div class="off-tag">Sin stock por ahora</div>` : `
     <div class="ctrl">
       <div class="stepper">
@@ -343,7 +541,7 @@ function cardHTML(p){
 
 function renderList(){
   const q = norm(query);
-  const match = p => !q || norm(p.nombre + " " + (p.descripcion || "") + " " + (p.categoria || "")).includes(q);
+  const match = p => q ? norm(p.nombre + " " + (p.descripcion || "") + " " + (p.categoria || "")).includes(q) : secOf(p) === activeSec;
   const cats = activeCat === "Todo" ? categories() : [activeCat];
   let html = "";
   for (const c of cats){
@@ -396,14 +594,18 @@ document.addEventListener("focusin", e => { if (e.target.matches("[data-qty]")) 
 
 function totals(){
   const items = Object.entries(cart).filter(([id]) => byId[id]).map(([id, q]) => ({p: byId[id], q}));
+  const order = Object.fromEntries(SECS.map((s, i) => [s.id, i]));
+  items.sort((a, b) => (order[secOf(a.p)] ?? 0) - (order[secOf(b.p)] ?? 0));
   const priced = items.filter(i => hasPrice(i.p));
   return {
     items,
     units: items.reduce((a, i) => a + i.q, 0),
     total: priced.reduce((a, i) => a + i.p.precio * i.q, 0),
     pending: items.length - priced.length,
+    multi: new Set(items.map(i => secOf(i.p))).size > 1,
   };
 }
+const secName = id => (SECS.find(s => s.id === id) || {}).nombre || "";
 
 function lineHTML({p, q}){
   return `<div class="li">
@@ -420,8 +622,14 @@ function lineHTML({p, q}){
 
 function refreshLines(){
   const t = totals();
+  let html = "", last = null;
+  for (const it of t.items){
+    const s = secOf(it.p);
+    if (t.multi && s !== last){ html += `<div class="d-sec">${esc(secName(s))}</div>`; last = s; }
+    html += lineHTML(it);
+  }
   $("#lines").innerHTML = t.items.length
-    ? t.items.map(lineHTML).join("") + `<button class="clear" id="clearCart">Vaciar pedido</button>`
+    ? html + `<button class="clear" id="clearCart">Vaciar pedido</button>`
     : `<div class="empty">Todavía no agregaste productos.</div>`;
   $("#form").hidden = !t.items.length;
 }
@@ -437,7 +645,6 @@ function renderCart(){
     ? `${t.pending} ${t.pending === 1 ? "producto tiene" : "productos tienen"} precio a consultar. El total final te lo confirmamos por WhatsApp.`
     : "El pago lo coordinamos por WhatsApp.";
   $("#sendBtn").disabled = !t.items.length;
-  // si el carrito está abierto, refrescar líneas sin pisar el campo que se está editando
   if ($("#drawer").classList.contains("open")){
     const f = document.activeElement;
     if (!(f && f.matches("#lines [data-qty]"))) refreshLines();
@@ -493,10 +700,15 @@ $("#sendBtn").onclick = () => {
     return;
   }
   store.set("arame.cliente", {name, addr});
+  const lines = []; let last = null;
+  for (const {p, q} of t.items){
+    const s = secOf(p);
+    if (t.multi && s !== last){ if (last) lines.push(""); lines.push(`*${secName(s)}*`); last = s; }
+    lines.push(`• ${q} ${unitName(p.unidad, q)} — ${p.nombre}` + (hasPrice(p) ? ` (${money(p.precio * q)})` : " (precio a consultar)"));
+  }
   const msg = [
     `¡Hola ${DATA.negocio?.nombre || "Aramé"}! Quiero hacer este pedido:`, "",
-    ...t.items.map(({p, q}) => `• ${q} ${unitName(p.unidad, q)} — ${p.nombre}` + (hasPrice(p) ? ` (${money(p.precio * q)})` : " (precio a consultar)")),
-    "",
+    ...lines, "",
     `*Total: ${money(t.total)}*` + (t.pending ? " + productos a consultar" : ""),
     "",
     `Nombre: ${name}`,
