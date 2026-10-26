@@ -48,11 +48,15 @@
   .mesa{height:150vh;height:150svh;position:relative}
   .mesa .stage{position:sticky;top:64px;height:calc(100vh - 64px);height:calc(100svh - 64px);overflow:hidden;display:grid;place-items:center;background:radial-gradient(70% 60% at 50% 50%,#1C252C,var(--bg) 75%)}
   .mesa{--ps:clamp(58px,15vmin,136px)}
+  .m-table{position:absolute;inset:0;display:grid;place-items:center}
+  #plates{position:absolute;inset:0;pointer-events:none}
+  #plates .plate{pointer-events:auto}
+  .m-table .center,.m-table .table{grid-area:1/1}
+  .m-text{display:none}
   .table{position:absolute;width:min(90vmin,740px);aspect-ratio:1;border-radius:50%;background:repeating-radial-gradient(circle at 50% 50%,#2A2119 0 3px,#2E241B 3px 7px);box-shadow:inset 0 0 0 10px #3A2C20,inset 0 0 120px rgba(0,0,0,.6),0 40px 80px -30px rgba(0,0,0,.8)}
   .plate{position:absolute;left:50%;top:50%;width:var(--ps);height:var(--ps);margin:calc(var(--ps) / -2) 0 0 calc(var(--ps) / -2);border-radius:50%;background:#EDE6DA;box-shadow:0 14px 26px -10px rgba(0,0,0,.7);will-change:transform;border:0;padding:0;cursor:pointer}
   .plate img,.plate .dish{position:absolute;inset:8%;width:84%;height:84%;border-radius:50%;object-fit:cover;display:block}
   .plate .lbl{position:absolute;left:50%;top:104%;transform:translateX(-50%);white-space:nowrap;max-width:min(140px,30vw);overflow:hidden;text-overflow:ellipsis;font-weight:800;font-size:12px;color:var(--ink);background:rgba(15,20,24,.85);padding:3px 9px;border-radius:999px;opacity:var(--lbl,0);pointer-events:none}
-  @media(min-width:700px){.mesa .center{transform:translateY(-34px)}}
   .mesa .center{position:relative;z-index:2;text-align:center;pointer-events:none;display:flex;flex-direction:column;align-items:center}
   .mesa .center .wm{font-size:clamp(46px,11vmin,108px)}
   .mesa .center small{font-family:var(--brand);font-weight:700;color:var(--or);letter-spacing:.34em;font-size:clamp(10px,2vmin,18px);margin-top:.6em}
@@ -62,6 +66,28 @@
   .mesa .hint i{width:16px;height:24px;border:2px solid var(--ink-3);border-radius:9px;position:relative}
   .mesa .hint i::after{content:"";position:absolute;left:50%;top:4px;width:2px;height:5px;background:var(--or);transform:translateX(-50%);animation:dot 1.4s infinite}
   @keyframes dot{60%{transform:translate(-50%,7px);opacity:0}}
+  /* computadora: texto a la izquierda, mesa a la derecha */
+  @media(min-width:700px){
+    .mesa .stage{grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:40px;align-items:center;justify-items:stretch;padding:0 max(24px,calc((100vw - 1160px) / 2 + 16px))}
+    .m-text{display:block;min-width:0;position:relative;z-index:2}
+    .mesa .stage{background:radial-gradient(50% 70% at 75% 50%,#1C252C,var(--bg) 75%)}
+    .m-text h1{font-family:var(--brand);font-weight:900;font-size:clamp(34px,4.4vw,60px);letter-spacing:-.02em;margin:14px 0 14px}
+    .m-text h1 em{color:var(--or);font-style:normal}
+    .m-text p{color:var(--ink-2);font-size:17px;max-width:46ch;margin:0}
+    .m-ctas{display:flex;gap:12px;flex-wrap:wrap;margin-top:26px}
+    .btn-main{background:var(--or);color:#111;border:0;border-radius:12px;padding:14px 20px;font-weight:800;font-size:15px}
+    .btn-main:hover{background:var(--or-2)}
+    .btn-line{border:1px solid var(--line);border-radius:12px;padding:13px 20px;font-weight:800;font-size:15px;color:var(--ink)}
+    .btn-line:hover{border-color:var(--ink-3)}
+    .m-table{position:relative;inset:auto;width:min(100%,calc(100vh - 120px),640px);aspect-ratio:1;justify-self:center;--ps:clamp(56px,6.8vw,112px)}
+    .m-table .table{width:100%}
+    .m-table .center{transform:none}
+    .m-table .center .wm{font-size:clamp(36px,4.6vw,72px)}
+    .m-table .center p,.m-table .center .cta{display:none}
+    #info .kicker,#info h1,#info>.container>p,#info .facts{display:none}
+    #info{padding-top:10px}
+  }
+
   /* en celular la mesa ya aparece servida: sin tramo de scroll */
   @media(max-width:699px){
     .mesa{height:auto}
@@ -272,12 +298,24 @@
 
 <section class="mesa" id="mesa" aria-label="Aramé, cocina armenia">
   <div class="stage">
-    <div class="table" aria-hidden="true"></div>
-    <div id="plates"></div>
-    <div class="center">
-      <span class="wm" data-wm></span><small>COCINA ARMENIA</small>
-      <p>Medzé, masas y platos caseros para compartir. Armá tu pedido y te lo preparamos.</p>
-      <button class="cta" id="mesaCta">Ver el catálogo →</button>
+    <div class="m-text">
+      <span class="kicker">Cocina armenia · Take away</span>
+      <h1>Cocina armenia casera, <em>lista para llevar</em></h1>
+      <p>Medzé, masas, platos y dulces armenios, y un almacén con productos importados. Armá tu pedido acá y te lo preparamos.</p>
+      <div class="facts" id="mFacts"></div>
+      <div class="m-ctas">
+        <button class="btn-main" data-go-catalog>Ver el catálogo →</button>
+        <a class="btn-line" id="mWa" href="#" target="_blank" rel="noopener">Escribinos</a>
+      </div>
+    </div>
+    <div class="m-table">
+      <div class="table" aria-hidden="true"></div>
+      <div id="plates"></div>
+      <div class="center">
+        <span class="wm" data-wm></span><small>COCINA ARMENIA</small>
+        <p>Medzé, masas y platos caseros para compartir. Armá tu pedido y te lo preparamos.</p>
+        <button class="cta" data-go-catalog>Ver el catálogo →</button>
+      </div>
     </div>
     <div class="hint" aria-hidden="true"><i></i>Deslizá para servir la mesa</div>
   </div>
@@ -432,6 +470,7 @@ function renderInfo(){
   const num = String(n.whatsapp || "").replace(/\D/g, "");
   $("#waFloat").href = `https://wa.me/${num}?text=${encodeURIComponent(`¡Hola ${n.nombre || "Aramé"}! Quería hacer una consulta.`)}`;
   $("#fDir").textContent = n.direccion || ""; $("#ftDir").textContent = n.direccion || "";
+  $("#mWa").href = `https://wa.me/${num}?text=${encodeURIComponent(`¡Hola ${n.nombre || "Aramé"}! Quería hacer una consulta.`)}`;
   $("#fHor").textContent = n.horario || "";
   if (n.aviso){ $("#aviso").textContent = n.aviso; $("#aviso").hidden = false; }
   const h = DATA.historia;
@@ -452,6 +491,8 @@ function renderInfo(){
     }
     $("#reviews").hidden = false;
   }
+  // copia de los datos (calificación, dirección, horario) en la columna de la portada
+  $("#mFacts").innerHTML = [...document.querySelectorAll("#info .facts .fact")].filter(f => !f.hidden).map(f => f.outerHTML.replace(/ id="[^"]*"/g, "")).join("");
 }
 
 /* ---------- la mesa ---------- */
@@ -484,8 +525,9 @@ function drawMesa(){
   const total = mesa.offsetHeight - stage.offsetHeight;
   const p = REDUCE ? 1 : isPhone() ? introP * .75 : clamp(-mesa.getBoundingClientRect().top / Math.max(1, total));
   const t = easeOut(clamp(p / .7));
-  const W = stage.offsetWidth, H = stage.offsetHeight, m = Math.min(W, H), k = .06 + .94 * t;
-  const Rx = (W < 700 ? W * .39 : m * .41) * k, Ry = (W < 700 ? H * .40 : m * .37) * k;
+  const W = stage.offsetWidth, H = stage.offsetHeight, k = .06 + .94 * t;
+  const T = mesa.querySelector(".m-table").offsetWidth;
+  const Rx = (isPhone() ? W * .39 : T * .36) * k, Ry = (isPhone() ? H * .40 : T * .36) * k;
   const spin = (1 - t) * 220;
   plates.forEach((el, i) => {
     const a = ((i + .5) / plates.length) * Math.PI * 2 + spin * Math.PI / 180 - Math.PI / 2;
@@ -500,7 +542,7 @@ function drawMesa(){
 }
 addEventListener("scroll", () => { if (!isPhone()) requestAnimationFrame(drawMesa); }, {passive: true});
 addEventListener("resize", () => { if (isPhone()) playIntro(); drawMesa(); });
-$("#mesaCta").onclick = () => window.scrollTo({top: $("#info").offsetTop - 64, behavior: "smooth"});
+document.querySelectorAll("[data-go-catalog]").forEach(b => b.onclick = () => window.scrollTo({top: $("#info").offsetTop - 64, behavior: "smooth"}));
 
 function renderWorlds(){
   if (SECS.length < 2){ $("#worlds").hidden = true; return; }
