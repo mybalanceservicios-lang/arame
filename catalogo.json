@@ -1,0 +1,23 @@
+{
+  "negocio": {
+    "nombre": "Aramé",
+    "whatsapp": "5491164578338",
+    "direccion": "Rawson 2021, Martínez",
+    "horario": "Lunes a sábado · 11 a 15 h y 17 a 20 h",
+    "aviso": ""
+  },
+  "categorias": ["Empanadas y masas", "Platos", "Dips y ensaladas", "Dulces"],
+  "productos": [
+    {"id": "empanada-arabe", "nombre": "Empanada árabe", "descripcion": "Masa casera rellena de carne, tomate, cebolla y limón.", "peso": "", "precio": null, "unidad": "unidad", "categoria": "Empanadas y masas", "foto": "", "disponible": true},
+    {"id": "lehmeyun", "nombre": "Lehmeyun", "descripcion": "Masa fina con carne picada, morrón, tomate y especias armenias.", "peso": "", "precio": null, "unidad": "unidad", "categoria": "Empanadas y masas", "foto": "", "disponible": true},
+    {"id": "milhojas-cuatro-quesos", "nombre": "Mil hojas de cuatro quesos", "descripcion": "Capas de masa con cuatro quesos, al horno.", "peso": "", "precio": null, "unidad": "porción", "categoria": "Empanadas y masas", "foto": "", "disponible": true},
+    {"id": "sarma", "nombre": "Sarma (niños envueltos)", "descripcion": "Hojas de parra rellenas de arroz y carne.", "peso": "", "precio": null, "unidad": "unidad", "categoria": "Platos", "foto": "", "disponible": true},
+    {"id": "keppe", "nombre": "Keppe al horno", "descripcion": "Trigo burgol y carne, con relleno especiado.", "peso": "", "precio": null, "unidad": "porción", "categoria": "Platos", "foto": "", "disponible": true},
+    {"id": "falafel", "nombre": "Falafel", "descripcion": "Croquetas de garbanzo con hierbas y especias.", "peso": "", "precio": null, "unidad": "unidad", "categoria": "Platos", "foto": "", "disponible": true},
+    {"id": "hummus", "nombre": "Hummus", "descripcion": "Puré de garbanzos con tahine, limón y aceite de oliva.", "peso": "", "precio": null, "unidad": "pote", "categoria": "Dips y ensaladas", "foto": "", "disponible": true},
+    {"id": "babaganush", "nombre": "Babaganush", "descripcion": "Berenjena ahumada con tahine y limón.", "peso": "", "precio": null, "unidad": "pote", "categoria": "Dips y ensaladas", "foto": "", "disponible": true},
+    {"id": "tabule", "nombre": "Tabulé", "descripcion": "Trigo burgol, perejil, tomate, cebolla, menta y limón.", "peso": "", "precio": null, "unidad": "pote", "categoria": "Dips y ensaladas", "foto": "", "disponible": true},
+    {"id": "paklava", "nombre": "Paklavá", "descripcion": "Masa filo con nueces y almíbar.", "peso": "", "precio": null, "unidad": "porción", "categoria": "Dulces", "foto": "", "disponible": true},
+    {"id": "kadaif", "nombre": "Kadaif", "descripcion": "Hebras de masa crocante con nueces y almíbar.", "peso": "", "precio": null, "unidad": "porción", "categoria": "Dulces", "foto": "", "disponible": true}
+  ]
+}

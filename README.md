@@ -1,25 +1,30 @@
-# Arame · Tienda web
+# Aramé · Tienda web
 
-Tienda online de comida casera. Es un solo archivo (`index.html`), sin servidor ni base de datos: el cliente arma su pedido y lo envía por WhatsApp.
+Tienda online de Aramé (cocina armenia, Martínez). El cliente arma el pedido y lo manda por WhatsApp. No hay pasarela de pago: el pago se coordina por WhatsApp.
 
-## Qué tiene
+## Archivos
 
-- Menú con categorías, buscador y etiquetas (vegetariano, más pedido)
-- Carrito con cantidades (se guarda si el cliente cierra la página)
-- Envío o retiro, pedido mínimo y envío gratis desde cierto monto
-- Pedido armado automáticamente en un mensaje de WhatsApp
-- Horarios con aviso de "abierto / cerrado ahora"
-- Funciona en celular y computadora
+- `index.html`: la tienda.
+- `admin.html`: el panel para editar el catálogo (se entra con PIN).
+- `catalogo.json`: productos, precios y datos del negocio. Lo modifica el panel.
+- `fotos/`: fotos de los productos, subidas desde el panel.
+- `admin/llave.json`: lo crea el panel la primera vez. Es el permiso de GitHub cifrado con el PIN.
 
-## Cómo personalizarla
+## Publicar la web (una sola vez)
 
-Abrí `index.html` y buscá el bloque `CONFIGURACIÓN` dentro del `<script>`:
+1. En GitHub, entrá al repositorio → **Settings → Pages**.
+2. En **Source** elegí **Deploy from a branch**, la rama principal del repositorio y la carpeta **/ (root)**. Guardá.
+3. En uno o dos minutos la web queda en `https://mybalanceservicios-lang.github.io/arame/`.
+   El panel queda en `https://mybalanceservicios-lang.github.io/arame/admin.html`.
 
-- `CONFIG.whatsapp`: tu número con código de país, sin `+` (ej. `5491122334455`)
-- `CONFIG.address`, `shipCost`, `freeShipFrom`, `minOrderShip`, `hours`
-- `PRODUCTS`: nombre, descripción, precio y categoría de cada plato
-- `CATS`: las categorías del menú
+## Configurar el panel (una sola vez)
 
-## Publicarla
+Abrí `admin.html` y seguí los pasos que aparecen en pantalla: crear un token de GitHub con permiso solo sobre este repositorio y elegir un PIN numérico. Después, cualquiera que sepa el PIN puede editar desde cualquier celular o computadora.
 
-Activá GitHub Pages (Settings → Pages → rama principal, carpeta raíz) o subí `index.html` a cualquier hosting.
+Usá un PIN de 8 números o más y no lo compartas.
+
+## Editar el catálogo
+
+En el panel, cada producto es un cuadrado con un botón **Editar**: nombre, descripción, peso o presentación, precio, unidad de venta, categoría, foto y stock. Los cambios aparecen en la tienda en 1 o 2 minutos.
+
+En **Datos del negocio** se cambia el WhatsApp que recibe los pedidos, la dirección, el horario, un aviso destacado y el orden de las categorías.

@@ -1,0 +1,614 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Aramé · Panel</title>
+<meta name="robots" content="noindex, nofollow">
+<meta name="theme-color" content="#0D0D0D">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Manrope:wght@400;500;600;700;800&family=Noto+Serif+Armenian:wght@600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#0D0D0D; --bg-2:#131313; --card:#181818; --card-2:#202020;
+    --ink:#F5F1EA; --ink-2:#B5ADA2; --ink-3:#7A736B; --line:#2A2A2A;
+    --or:#F26A1B; --or-2:#FF8A3D; --or-soft:rgba(242,106,27,.14);
+    --red:#E5484D; --green:#3DBE6B;
+    --serif:"DM Serif Display",Georgia,serif;
+    --body:"Manrope",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
+    --hy:"Noto Serif Armenian",serif;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--body);line-height:1.5;-webkit-font-smoothing:antialiased}
+  a{color:var(--or-2)}
+  button{font:inherit;color:inherit;cursor:pointer;-webkit-tap-highlight-color:transparent}
+  h1,h2,h3{margin:0;font-weight:400;line-height:1.15}
+  [hidden]{display:none!important}
+  .container{max-width:1160px;margin:0 auto;padding:0 16px}
+
+  .btn{display:inline-flex;align-items:center;justify-content:center;gap:7px;border:1px solid var(--line);background:var(--card);border-radius:12px;padding:10px 15px;font-weight:800;font-size:14px;white-space:nowrap}
+  .btn.primary{background:var(--or);border-color:var(--or);color:#111}
+  .btn.danger{background:none;border-color:rgba(229,72,77,.5);color:var(--red)}
+  .btn.ghost{background:none}
+  .btn:disabled{opacity:.5;cursor:wait}
+
+  /* pantallas de acceso */
+  .gate{min-height:100dvh;display:grid;place-items:center;padding:24px 16px}
+  .gate-card{width:min(420px,100%);background:var(--card);border:1px solid var(--line);border-radius:20px;padding:28px 22px;text-align:center}
+  .gate-card.wide{width:min(560px,100%);text-align:left}
+  .brand{font-family:var(--serif);font-size:34px;color:var(--or)}
+  .brand small{display:block;font-family:var(--body);font-size:13px;color:var(--ink-3);font-weight:700;letter-spacing:.1em;text-transform:uppercase;margin-top:4px}
+  .pin{font:inherit;font-size:30px;font-weight:800;letter-spacing:.4em;text-align:center;width:100%;background:var(--bg);border:1px solid var(--line);border-radius:14px;padding:14px;color:var(--ink);outline:none;margin:22px 0 12px}
+  .pin:focus{border-color:var(--or)}
+  .pin.shake{animation:shake .35s;border-color:var(--red)}
+  @keyframes shake{25%{transform:translateX(-8px)}75%{transform:translateX(8px)}}
+  .gate .btn{width:100%;padding:14px}
+  .msg{min-height:22px;font-size:14px;font-weight:700;color:var(--red);margin-top:10px}
+  .steps{margin:14px 0 18px;padding-left:20px;color:var(--ink-2);font-size:14.5px}
+  .steps li{margin-bottom:6px}
+  .steps b{color:var(--ink)}
+
+  /* formulario */
+  .f{display:flex;flex-direction:column;gap:5px;font-size:13px;font-weight:700;color:var(--ink-2);margin-bottom:14px}
+  .f input,.f textarea,.f select{font:inherit;font-size:16px;font-weight:500;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:12px;padding:11px 13px;outline:none;width:100%}
+  .f input:focus,.f textarea:focus,.f select:focus{border-color:var(--or)}
+  .f .help{font-weight:500;color:var(--ink-3);font-size:12.5px}
+  .row2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+  @media(max-width:480px){.row2{grid-template-columns:1fr}}
+
+  /* panel */
+  header{position:sticky;top:0;z-index:30;background:rgba(13,13,13,.92);backdrop-filter:blur(12px);border-bottom:1px solid var(--line)}
+  .top{display:flex;align-items:center;gap:10px;min-height:64px;flex-wrap:wrap;padding:8px 0}
+  .top .brand{font-size:26px;margin-right:auto}
+  .top .brand small{display:inline;margin-left:8px;font-size:11px}
+  .bar2{display:flex;gap:10px;align-items:center;margin:18px 0 6px;flex-wrap:wrap}
+  .search{flex:1;min-width:200px;font:inherit;font-size:15px;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:11px 14px;color:var(--ink);outline:none}
+  .search:focus{border-color:var(--or)}
+  .count{color:var(--ink-3);font-size:13.5px;font-weight:700}
+  .cat-title{font-family:var(--serif);font-size:26px;margin:26px 0 12px}
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:12px}
+  @media(max-width:480px){.grid{grid-template-columns:1fr 1fr;gap:10px}}
+  .sq{background:var(--card);border:1px solid var(--line);border-radius:16px;overflow:hidden;display:flex;flex-direction:column;text-align:left;padding:0}
+  .sq .ph{aspect-ratio:1;background:var(--card-2);position:relative;overflow:hidden}
+  .sq .ph img{width:100%;height:100%;object-fit:cover;display:block}
+  .sq .ph .none{position:absolute;inset:0;display:grid;place-items:center;font-family:var(--hy);font-size:44px;color:rgba(242,106,27,.35)}
+  .flags{position:absolute;left:8px;top:8px;display:flex;flex-direction:column;gap:4px;align-items:flex-start}
+  .flag{background:rgba(0,0,0,.75);border-radius:999px;padding:2px 8px;font-size:11px;font-weight:800;color:var(--or-2)}
+  .flag.off{color:var(--red)}
+  .sq .in{padding:10px 12px 12px;display:flex;flex-direction:column;gap:2px;flex:1}
+  .sq h3{font-size:15px;font-weight:800}
+  .sq .meta{font-size:12.5px;color:var(--ink-3)}
+  .sq .pr{font-weight:800;margin-top:auto;padding-top:6px}
+  .sq .edit{margin-top:8px;width:100%;padding:9px;font-size:13.5px}
+
+  /* editor */
+  .modal{position:fixed;inset:0;z-index:60;background:rgba(0,0,0,.75);display:flex;align-items:flex-end;justify-content:center}
+  .sheet{background:var(--bg-2);border:1px solid var(--line);width:min(620px,100%);max-height:94dvh;border-radius:20px 20px 0 0;display:flex;flex-direction:column;overflow:hidden}
+  @media(min-width:700px){.modal{align-items:center}.sheet{border-radius:20px}}
+  .sheet-head{display:flex;align-items:center;justify-content:space-between;padding:16px 18px;border-bottom:1px solid var(--line)}
+  .sheet-head h2{font-family:var(--serif);font-size:26px}
+  .x{width:40px;height:40px;border-radius:50%;border:1px solid var(--line);background:var(--card);font-size:17px}
+  .sheet-body{padding:18px;overflow-y:auto;flex:1;min-height:0}
+  .sheet-foot{padding:14px 18px calc(14px + env(safe-area-inset-bottom));border-top:1px solid var(--line);display:flex;gap:10px;background:var(--card)}
+  .sheet-foot .primary{flex:1;padding:14px}
+  .photo-edit{display:flex;gap:14px;align-items:center;margin-bottom:16px}
+  .photo-edit .ph{width:120px;height:120px;border-radius:14px;overflow:hidden;background:var(--card-2);flex-shrink:0;display:grid;place-items:center;font-family:var(--hy);font-size:40px;color:rgba(242,106,27,.35)}
+  .photo-edit .ph img{width:100%;height:100%;object-fit:cover}
+  .photo-edit .acts{display:flex;flex-direction:column;gap:8px}
+  .switch{display:flex;align-items:center;justify-content:space-between;gap:12px;background:var(--bg);border:1px solid var(--line);border-radius:12px;padding:12px 14px;margin-bottom:14px;font-weight:700;font-size:14.5px}
+  .switch input{width:22px;height:22px;accent-color:var(--or)}
+
+  .toast{position:fixed;left:50%;bottom:20px;transform:translate(-50%,20px);background:#fff;color:#111;padding:11px 18px;border-radius:999px;font-weight:700;font-size:14px;opacity:0;transition:.2s;z-index:100;pointer-events:none;max-width:calc(100% - 32px);text-align:center}
+  .toast.show{opacity:1;transform:translate(-50%,0)}
+  .toast.err{background:var(--red);color:#fff}
+  .busy{position:fixed;inset:0;z-index:90;background:rgba(0,0,0,.55);display:grid;place-items:center}
+  .busy div{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px 22px;font-weight:700;display:flex;gap:12px;align-items:center}
+  .spin{width:20px;height:20px;border:3px solid var(--line);border-top-color:var(--or);border-radius:50%;animation:spin .8s linear infinite}
+  @keyframes spin{to{transform:rotate(360deg)}}
+  .loading{min-height:100dvh;display:grid;place-items:center;color:var(--ink-3)}
+</style>
+</head>
+<body>
+
+<div class="loading" id="scrLoading"><div class="spin"></div></div>
+
+<!-- configuración inicial (una sola vez) -->
+<div class="gate" id="scrSetup" hidden>
+  <div class="gate-card wide">
+    <div class="brand">Aramé<small>Configuración inicial del panel</small></div>
+    <p style="color:var(--ink-2);margin:16px 0 0">Esto se hace <b>una sola vez</b>. Le da permiso al panel para guardar cambios en la web. Después solo se entra con el PIN.</p>
+    <ol class="steps">
+      <li>Entrá a <a href="https://github.com/settings/personal-access-tokens/new" target="_blank" rel="noopener">crear un token en GitHub</a> con la cuenta dueña del repositorio.</li>
+      <li>Nombre: <b>Panel Aramé</b>. Vencimiento: el más largo posible.</li>
+      <li>En <b>Repository access</b> elegí <b>Only select repositories</b> → <b id="repoName"></b>.</li>
+      <li>En <b>Permissions → Repository permissions → Contents</b> elegí <b>Read and write</b>.</li>
+      <li>Tocá <b>Generate token</b>, copialo y pegalo acá abajo.</li>
+    </ol>
+    <label class="f">Token de GitHub<input id="sToken" type="password" autocomplete="off" placeholder="github_pat_…"></label>
+    <div class="row2">
+      <label class="f">PIN nuevo (6 a 10 números)<input id="sPin" type="password" inputmode="numeric" autocomplete="new-password" maxlength="10"></label>
+      <label class="f">Repetí el PIN<input id="sPin2" type="password" inputmode="numeric" autocomplete="new-password" maxlength="10"></label>
+    </div>
+    <button class="btn primary" id="sGo" style="width:100%;padding:14px">Guardar y entrar</button>
+    <div class="msg" id="sMsg"></div>
+  </div>
+</div>
+
+<!-- PIN -->
+<div class="gate" id="scrPin" hidden>
+  <form class="gate-card" id="pinForm">
+    <div class="brand">Aramé<small>Panel del catálogo</small></div>
+    <input class="pin" id="pin" type="password" inputmode="numeric" autocomplete="current-password" maxlength="10" placeholder="••••••" aria-label="PIN" autofocus>
+    <button class="btn primary" id="pinGo">Entrar</button>
+    <div class="msg" id="pinMsg"></div>
+    <button type="button" class="btn ghost" id="pinReset" style="margin-top:8px;border:0;color:var(--ink-3);font-size:13px">¿El token de GitHub venció? Volver a configurar</button>
+  </form>
+</div>
+
+<!-- panel -->
+<div id="scrMain" hidden>
+  <header>
+    <div class="container top">
+      <div class="brand">Aramé<small>Panel</small></div>
+      <a class="btn ghost" href="./" target="_blank" rel="noopener">Ver tienda ↗</a>
+      <button class="btn" id="bNegocio">Datos del negocio</button>
+      <button class="btn ghost" id="bPin">Cambiar PIN</button>
+      <button class="btn ghost" id="bOut">Salir</button>
+    </div>
+  </header>
+  <main class="container" style="padding-bottom:60px">
+    <div class="bar2">
+      <button class="btn primary" id="bNew">+ Nuevo producto</button>
+      <input class="search" id="q" type="search" placeholder="Buscar producto">
+      <span class="count" id="cnt"></span>
+    </div>
+    <div id="list"></div>
+  </main>
+</div>
+
+<!-- editor de producto -->
+<div class="modal" id="mEdit" hidden>
+  <div class="sheet">
+    <div class="sheet-head"><h2 id="eTitle">Editar producto</h2><button class="x" data-close aria-label="Cerrar">✕</button></div>
+    <div class="sheet-body">
+      <div class="photo-edit">
+        <div class="ph" id="ePh"></div>
+        <div class="acts">
+          <label class="btn primary">Subir foto<input type="file" accept="image/*" id="eFile" hidden></label>
+          <button class="btn ghost" id="eNoPhoto">Quitar foto</button>
+        </div>
+      </div>
+      <label class="f">Nombre<input id="eNombre" placeholder="Ej: Empanada árabe"></label>
+      <label class="f">Descripción<textarea id="eDesc" rows="3" placeholder="Qué lleva, cómo es…"></textarea></label>
+      <div class="row2">
+        <label class="f">Peso o presentación<input id="ePeso" placeholder="Ej: 250 g · caja x12"></label>
+        <label class="f">Categoría<input id="eCat" list="catList" placeholder="Ej: Empanadas"></label>
+      </div>
+      <div class="row2">
+        <label class="f">Precio ($)<input id="ePrecio" type="number" inputmode="numeric" min="0" step="1" placeholder="Vacío = a consultar"></label>
+        <label class="f">Se vende por
+          <select id="eUnidad">
+            <option value="unidad">Unidad</option>
+            <option value="docena">Docena</option>
+            <option value="porción">Porción</option>
+            <option value="kg">Kilo</option>
+            <option value="pote">Pote</option>
+            <option value="bandeja">Bandeja</option>
+          </select>
+        </label>
+      </div>
+      <label class="switch">Disponible (hay stock)<input type="checkbox" id="eDisp"></label>
+      <button class="btn danger" id="eDel" style="width:100%">Eliminar producto</button>
+    </div>
+    <div class="sheet-foot">
+      <button class="btn ghost" data-close>Cancelar</button>
+      <button class="btn primary" id="eSave">Guardar</button>
+    </div>
+  </div>
+</div>
+<datalist id="catList"></datalist>
+
+<!-- datos del negocio -->
+<div class="modal" id="mNeg" hidden>
+  <div class="sheet">
+    <div class="sheet-head"><h2>Datos del negocio</h2><button class="x" data-close aria-label="Cerrar">✕</button></div>
+    <div class="sheet-body">
+      <label class="f">WhatsApp que recibe los pedidos<input id="nWa" inputmode="tel" placeholder="5491164578338"><span class="help">Con código de país y sin espacios. Ej: 5491164578338</span></label>
+      <label class="f">Dirección<input id="nDir"></label>
+      <label class="f">Horario<input id="nHor"></label>
+      <label class="f">Aviso destacado (opcional)<input id="nAviso" placeholder="Ej: Este sábado cerramos por feriado"><span class="help">Aparece arriba de todo en la tienda. Dejalo vacío para no mostrar nada.</span></label>
+      <label class="f">Orden de las categorías<textarea id="nCats" rows="5"></textarea><span class="help">Una por renglón, en el orden en que querés que aparezcan.</span></label>
+    </div>
+    <div class="sheet-foot">
+      <button class="btn ghost" data-close>Cancelar</button>
+      <button class="btn primary" id="nSave">Guardar</button>
+    </div>
+  </div>
+</div>
+
+<!-- cambiar PIN -->
+<div class="modal" id="mPin" hidden>
+  <div class="sheet">
+    <div class="sheet-head"><h2>Cambiar PIN</h2><button class="x" data-close aria-label="Cerrar">✕</button></div>
+    <div class="sheet-body">
+      <label class="f">PIN nuevo (6 a 10 números)<input id="cPin" type="password" inputmode="numeric" maxlength="10" autocomplete="new-password"></label>
+      <label class="f">Repetí el PIN nuevo<input id="cPin2" type="password" inputmode="numeric" maxlength="10" autocomplete="new-password"></label>
+      <p style="color:var(--ink-3);font-size:13px;margin:0">El PIN nuevo sirve en todos los dispositivos. Avisale a la otra persona que lo usa.</p>
+    </div>
+    <div class="sheet-foot">
+      <button class="btn ghost" data-close>Cancelar</button>
+      <button class="btn primary" id="cSave">Cambiar PIN</button>
+    </div>
+  </div>
+</div>
+
+<div class="busy" id="busy" hidden><div><span class="spin"></span><span id="busyTxt">Guardando…</span></div></div>
+<div class="toast" id="toast"></div>
+
+<script>
+/* ============================================================
+   Repositorio donde vive la web (GitHub Pages)
+   ============================================================ */
+const REPO = { owner: "mybalanceservicios-lang", name: "arame" };
+const CATALOG = "catalogo.json";
+const KEYFILE = "admin/llave.json";
+const API = `https://api.github.com/repos/${REPO.owner}/${REPO.name}`;
+
+const $ = s => document.querySelector(s);
+const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const money = n => "$" + Math.round(n).toLocaleString("es-AR");
+const norm = s => String(s).toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "");
+const UNIT = {unidad:"c/u", docena:"la docena", porción:"la porción", kg:"el kg", pote:"el pote", bandeja:"la bandeja"};
+
+let TOKEN = null, BRANCH = null, DATA = null, editing = null, newPhoto = null;
+
+/* ---------- utilidades ---------- */
+const b64enc = str => { const b = new TextEncoder().encode(str); let s = ""; for (let i = 0; i < b.length; i += 0x8000) s += String.fromCharCode(...b.subarray(i, i + 0x8000)); return btoa(s); };
+const b64dec = b64 => new TextDecoder().decode(Uint8Array.from(atob(b64.replace(/\s/g, "")), c => c.charCodeAt(0)));
+const bytesToB64 = b => btoa(String.fromCharCode(...b));
+const b64ToBytes = s => Uint8Array.from(atob(s), c => c.charCodeAt(0));
+
+function toast(m, err){
+  const el = $("#toast"); el.textContent = m; el.classList.toggle("err", !!err); el.classList.add("show");
+  clearTimeout(toast.t); toast.t = setTimeout(() => el.classList.remove("show"), err ? 4500 : 2600);
+}
+function busy(on, txt){ $("#busy").hidden = !on; if (txt) $("#busyTxt").textContent = txt; }
+function show(id){ ["#scrLoading","#scrSetup","#scrPin","#scrMain"].forEach(s => $(s).hidden = s !== id); }
+const validPin = p => /^\d{6,10}$/.test(p);
+
+/* ---------- GitHub ---------- */
+async function gh(path, opts = {}){
+  const headers = {"Accept": "application/vnd.github+json", "X-GitHub-Api-Version": "2022-11-28"};
+  if (TOKEN) headers.Authorization = "Bearer " + TOKEN;
+  if (opts.body) headers["Content-Type"] = "application/json";
+  const r = await fetch(API + path, {...opts, headers, cache: "no-store"});
+  if (!r.ok){ const e = new Error("GitHub " + r.status); e.status = r.status; try{ e.detail = (await r.json()).message; }catch(_){} throw e; }
+  return r.status === 204 ? null : r.json();
+}
+async function getFile(path){
+  const ref = BRANCH ? `?ref=${encodeURIComponent(BRANCH)}` : "";
+  const f = await gh(`/contents/${path}${ref}`);
+  return {sha: f.sha, text: b64dec(f.content)};
+}
+async function putFile(path, contentB64, message, sha){
+  const body = {message, content: contentB64, branch: BRANCH};
+  if (sha) body.sha = sha;
+  return gh(`/contents/${path}`, {method: "PUT", body: JSON.stringify(body)});
+}
+async function deleteFile(path, message){
+  try{
+    const f = await gh(`/contents/${path}?ref=${encodeURIComponent(BRANCH)}`);
+    await gh(`/contents/${path}`, {method: "DELETE", body: JSON.stringify({message, sha: f.sha, branch: BRANCH})});
+  }catch(e){ /* si no existe, no pasa nada */ }
+}
+const rawUrl = p => `https://raw.githubusercontent.com/${REPO.owner}/${REPO.name}/${BRANCH}/${p}`;
+function errText(e){
+  if (e.status === 401) return "El token de GitHub venció o fue borrado. Hay que configurar el panel de nuevo.";
+  if (e.status === 403) return "GitHub no dejó guardar (permiso o límite). Probá en un minuto.";
+  if (!navigator.onLine) return "Sin conexión a internet.";
+  return "No se pudo guardar. Probá de nuevo." + (e.detail ? " (" + e.detail + ")" : "");
+}
+
+/* ---------- cifrado del token con el PIN ---------- */
+const ITER = 600000;
+async function deriveKey(pin, salt, iter){
+  const base = await crypto.subtle.importKey("raw", new TextEncoder().encode(pin), "PBKDF2", false, ["deriveKey"]);
+  return crypto.subtle.deriveKey({name: "PBKDF2", salt, iterations: iter, hash: "SHA-256"}, base, {name: "AES-GCM", length: 256}, false, ["encrypt", "decrypt"]);
+}
+async function sealToken(token, pin){
+  const salt = crypto.getRandomValues(new Uint8Array(16)), iv = crypto.getRandomValues(new Uint8Array(12));
+  const key = await deriveKey(pin, salt, ITER);
+  const ct = new Uint8Array(await crypto.subtle.encrypt({name: "AES-GCM", iv}, key, new TextEncoder().encode(token)));
+  return {v: 1, iter: ITER, salt: bytesToB64(salt), iv: bytesToB64(iv), ct: bytesToB64(ct)};
+}
+async function openToken(sealed, pin){
+  const key = await deriveKey(pin, b64ToBytes(sealed.salt), sealed.iter);
+  const pt = await crypto.subtle.decrypt({name: "AES-GCM", iv: b64ToBytes(sealed.iv)}, key, b64ToBytes(sealed.ct));
+  return new TextDecoder().decode(pt);
+}
+
+/* ---------- inicio ---------- */
+let SEALED = null, KEYSHA = null;
+async function boot(){
+  $("#repoName").textContent = `${REPO.owner}/${REPO.name}`;
+  try{
+    const repo = await gh("");
+    BRANCH = repo.default_branch;
+  }catch(e){
+    $("#scrLoading").innerHTML = `<p style="padding:20px;text-align:center">No se pudo conectar con GitHub. Revisá la conexión y recargá.</p>`;
+    return;
+  }
+  try{
+    const f = await getFile(KEYFILE);
+    SEALED = JSON.parse(f.text); KEYSHA = f.sha;
+  }catch(e){
+    if (e.status === 404){ show("#scrSetup"); return; }
+    $("#scrLoading").innerHTML = `<p style="padding:20px;text-align:center">No se pudo conectar con GitHub. Recargá en un minuto.</p>`;
+    return;
+  }
+  let saved = null; try{ saved = sessionStorage.getItem("arame.t"); }catch(_){}
+  if (saved){ TOKEN = saved; if (await enter()) return; TOKEN = null; }
+  show("#scrPin"); $("#pin").focus();
+}
+
+$("#sGo").onclick = async () => {
+  const token = $("#sToken").value.trim(), p1 = $("#sPin").value, p2 = $("#sPin2").value;
+  const m = $("#sMsg");
+  if (!token) return m.textContent = "Pegá el token de GitHub.";
+  if (!validPin(p1)) return m.textContent = "El PIN tiene que tener entre 6 y 10 números.";
+  if (p1 !== p2) return m.textContent = "Los PIN no coinciden.";
+  m.textContent = ""; $("#sGo").disabled = true; busy(true, "Verificando token…");
+  try{
+    TOKEN = token;
+    const repo = await gh("");
+    if (!repo.permissions || !repo.permissions.push) throw Object.assign(new Error("perm"), {perm: true});
+    BRANCH = repo.default_branch;
+    busy(true, "Guardando…");
+    SEALED = await sealToken(token, p1);
+    const r = await putFile(KEYFILE, b64enc(JSON.stringify(SEALED, null, 2)), "Configurar panel del catálogo", KEYSHA);
+    KEYSHA = r.content.sha;
+    busy(false);
+    await enter();
+  }catch(e){
+    busy(false); TOKEN = null;
+    m.textContent = e.perm ? "Ese token no tiene permiso de escritura (Contents: Read and write) en el repositorio."
+      : e.status === 401 ? "El token no es válido. Copialo de nuevo."
+      : e.status === 404 ? "El token no tiene acceso a este repositorio. Revisá el paso 3."
+      : "No se pudo guardar. " + (e.detail || "");
+  }finally{ $("#sGo").disabled = false; }
+};
+
+$("#pinForm").onsubmit = async e => {
+  e.preventDefault();
+  const pin = $("#pin").value, m = $("#pinMsg");
+  if (!validPin(pin)){ m.textContent = "El PIN tiene entre 6 y 10 números."; return; }
+  $("#pinGo").disabled = true; m.textContent = ""; $("#pinGo").textContent = "Verificando…";
+  try{
+    TOKEN = await openToken(SEALED, pin);
+  }catch(_){
+    TOKEN = null; m.textContent = "PIN incorrecto.";
+    const el = $("#pin"); el.classList.remove("shake"); void el.offsetWidth; el.classList.add("shake"); el.select();
+    $("#pinGo").disabled = false; $("#pinGo").textContent = "Entrar";
+    return;
+  }
+  const ok = await enter();
+  $("#pinGo").disabled = false; $("#pinGo").textContent = "Entrar";
+  if (!ok) m.textContent = "El PIN es correcto pero el token de GitHub ya no funciona. Hay que volver a configurar el panel.";
+};
+
+async function enter(){
+  try{
+    const f = await getFile(CATALOG);
+    DATA = JSON.parse(f.text);
+  }catch(e){
+    if (e.status === 401){ try{ sessionStorage.removeItem("arame.t"); }catch(_){} return false; }
+    toast("No se pudo cargar el catálogo. Recargá la página.", true); return false;
+  }
+  try{ sessionStorage.setItem("arame.t", TOKEN); }catch(_){}
+  show("#scrMain"); render();
+  return true;
+}
+
+$("#pinReset").onclick = () => { $("#sMsg").textContent = ""; show("#scrSetup"); };
+
+$("#bOut").onclick = () => { try{ sessionStorage.removeItem("arame.t"); }catch(_){} TOKEN = null; DATA = null; $("#pin").value = ""; show("#scrPin"); };
+
+/* ---------- guardar en el catálogo ---------- */
+// Lee la última versión, aplica el cambio y guarda. Si alguien guardó al mismo tiempo, reintenta.
+async function saveCatalog(mutate, message){
+  for (let i = 0; i < 3; i++){
+    const f = await getFile(CATALOG);
+    const data = JSON.parse(f.text);
+    mutate(data);
+    try{
+      await putFile(CATALOG, b64enc(JSON.stringify(data, null, 2) + "\n"), message, f.sha);
+      DATA = data; return;
+    }catch(e){ if (e.status !== 409 && e.status !== 422) throw e; }
+  }
+  throw new Error("conflicto");
+}
+
+/* ---------- listado ---------- */
+function categories(){
+  const used = [...new Set(DATA.productos.map(p => p.categoria || "Otros"))];
+  const ordered = (DATA.categorias || []).filter(c => used.includes(c));
+  return [...ordered, ...used.filter(c => !ordered.includes(c))];
+}
+function photoSrc(p){ return p.foto ? rawUrl(p.foto) : ""; }
+
+function render(){
+  const q = norm($("#q").value.trim());
+  const prods = DATA.productos.filter(p => !q || norm(p.nombre + " " + (p.descripcion || "") + " " + (p.categoria || "")).includes(q));
+  $("#cnt").textContent = `${DATA.productos.length} productos`;
+  let html = "";
+  for (const c of categories()){
+    const items = prods.filter(p => (p.categoria || "Otros") === c);
+    if (!items.length) continue;
+    html += `<h2 class="cat-title">${esc(c)}</h2><div class="grid">` + items.map(p => {
+      const flags = [
+        p.disponible === false ? `<span class="flag off">Sin stock</span>` : "",
+        !p.foto ? `<span class="flag">Sin foto</span>` : "",
+        !(p.precio > 0) ? `<span class="flag">Sin precio</span>` : "",
+      ].join("");
+      return `<div class="sq">
+        <div class="ph">${p.foto ? `<img src="${esc(photoSrc(p))}" alt="" loading="lazy">` : `<span class="none">Ա</span>`}<div class="flags">${flags}</div></div>
+        <div class="in">
+          <h3>${esc(p.nombre)}</h3>
+          ${p.peso ? `<span class="meta">${esc(p.peso)}</span>` : ""}
+          <span class="pr">${p.precio > 0 ? money(p.precio) + ` <span class="meta">${UNIT[p.unidad] || ""}</span>` : `<span class="meta">Precio a consultar</span>`}</span>
+          <button class="btn edit" data-edit="${esc(p.id)}">Editar</button>
+        </div>
+      </div>`;
+    }).join("") + `</div>`;
+  }
+  $("#list").innerHTML = html || `<p style="color:var(--ink-3);padding:30px 0">No hay productos que coincidan.</p>`;
+  $("#catList").innerHTML = categories().map(c => `<option value="${esc(c)}">`).join("");
+}
+$("#q").addEventListener("input", render);
+$("#list").addEventListener("click", e => { const b = e.target.closest("[data-edit]"); if (b) openEditor(b.dataset.edit); });
+
+/* ---------- editor ---------- */
+function openModal(id){ $(id).hidden = false; document.body.style.overflow = "hidden"; }
+function closeModals(){ document.querySelectorAll(".modal").forEach(m => m.hidden = true); document.body.style.overflow = ""; }
+document.addEventListener("click", e => { if (e.target.closest("[data-close]") || e.target.classList.contains("modal")) closeModals(); });
+document.addEventListener("keydown", e => { if (e.key === "Escape") closeModals(); });
+
+function setPhotoPreview(src){
+  $("#ePh").innerHTML = src ? `<img src="${esc(src)}" alt="">` : "Ա";
+  $("#eNoPhoto").hidden = !src;
+}
+
+function openEditor(id){
+  const p = id ? DATA.productos.find(x => x.id === id) : null;
+  editing = p ? {...p} : {id: null, nombre: "", descripcion: "", peso: "", precio: null, unidad: "unidad", categoria: "", foto: "", disponible: true};
+  newPhoto = null;
+  $("#eTitle").textContent = p ? "Editar producto" : "Nuevo producto";
+  $("#eNombre").value = editing.nombre; $("#eDesc").value = editing.descripcion || "";
+  $("#ePeso").value = editing.peso || ""; $("#eCat").value = editing.categoria || "";
+  $("#ePrecio").value = editing.precio > 0 ? editing.precio : "";
+  $("#eUnidad").value = editing.unidad || "unidad";
+  $("#eDisp").checked = editing.disponible !== false;
+  $("#eDel").hidden = !p;
+  $("#eFile").value = "";
+  setPhotoPreview(photoSrc(editing));
+  openModal("#mEdit");
+  if (!p) setTimeout(() => $("#eNombre").focus(), 50);
+}
+$("#bNew").onclick = () => openEditor(null);
+
+// achica la foto antes de subirla para que la web cargue rápido
+async function resizeImage(file, max = 1200, quality = .82){
+  let bmp;
+  try{ bmp = await createImageBitmap(file, {imageOrientation: "from-image"}); }
+  catch(_){ bmp = await new Promise((res, rej) => { const i = new Image(); i.onload = () => res(i); i.onerror = rej; i.src = URL.createObjectURL(file); }); }
+  const w = bmp.width, h = bmp.height, s = Math.min(1, max / Math.max(w, h));
+  const c = document.createElement("canvas"); c.width = Math.round(w * s); c.height = Math.round(h * s);
+  c.getContext("2d").drawImage(bmp, 0, 0, c.width, c.height);
+  return c.toDataURL("image/jpeg", quality);
+}
+$("#eFile").onchange = async e => {
+  const file = e.target.files[0]; if (!file) return;
+  try{
+    newPhoto = await resizeImage(file);
+    setPhotoPreview(newPhoto);
+  }catch(_){ toast("No se pudo leer esa imagen. Probá con otra.", true); }
+};
+$("#eNoPhoto").onclick = () => { newPhoto = ""; setPhotoPreview(""); };
+
+function slug(s){ return norm(s).replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "").slice(0, 40) || "producto"; }
+
+$("#eSave").onclick = async () => {
+  const nombre = $("#eNombre").value.trim();
+  if (!nombre){ toast("Poné un nombre al producto.", true); $("#eNombre").focus(); return; }
+  const precioTxt = $("#ePrecio").value.trim();
+  const precio = precioTxt === "" ? null : Math.max(0, Math.round(Number(precioTxt)));
+  const fields = {
+    nombre,
+    descripcion: $("#eDesc").value.trim(),
+    peso: $("#ePeso").value.trim(),
+    precio: precio > 0 ? precio : null,
+    unidad: $("#eUnidad").value,
+    categoria: $("#eCat").value.trim() || "Otros",
+    disponible: $("#eDisp").checked,
+  };
+  const isNew = !editing.id;
+  const id = editing.id || `${slug(nombre)}-${Math.random().toString(36).slice(2, 6)}`;
+  const oldPhoto = editing.foto || "";
+  $("#eSave").disabled = true;
+  try{
+    let foto = oldPhoto;
+    if (newPhoto){
+      busy(true, "Subiendo foto…");
+      foto = `fotos/${slug(nombre)}-${Date.now().toString(36)}.jpg`;
+      await putFile(foto, newPhoto.split(",")[1], `Foto de ${nombre}`);
+    } else if (newPhoto === "") foto = "";
+    busy(true, "Guardando…");
+    await saveCatalog(d => {
+      d.productos = d.productos || [];
+      const p = {id, ...fields, foto};
+      const i = d.productos.findIndex(x => x.id === id);
+      if (i >= 0) d.productos[i] = {...d.productos[i], ...p}; else d.productos.push(p);
+      d.categorias = d.categorias || [];
+      if (!d.categorias.includes(p.categoria)) d.categorias.push(p.categoria);
+    }, `${isNew ? "Agregar" : "Editar"} ${nombre}`);
+    if (oldPhoto && oldPhoto !== foto && oldPhoto.startsWith("fotos/")) deleteFile(oldPhoto, `Borrar foto vieja de ${nombre}`);
+    busy(false); closeModals(); render();
+    toast("Guardado ✓ La tienda se actualiza en 1 o 2 minutos.");
+  }catch(e){ busy(false); toast(errText(e), true); }
+  finally{ $("#eSave").disabled = false; }
+};
+
+$("#eDel").onclick = async () => {
+  if (!editing.id || !confirm(`¿Eliminar "${editing.nombre}"? No se puede deshacer.`)) return;
+  const {id, foto, nombre} = editing;
+  busy(true, "Eliminando…");
+  try{
+    await saveCatalog(d => { d.productos = (d.productos || []).filter(x => x.id !== id); }, `Eliminar ${nombre}`);
+    if (foto && foto.startsWith("fotos/")) deleteFile(foto, `Borrar foto de ${nombre}`);
+    busy(false); closeModals(); render(); toast("Producto eliminado.");
+  }catch(e){ busy(false); toast(errText(e), true); }
+};
+
+/* ---------- datos del negocio ---------- */
+$("#bNegocio").onclick = () => {
+  const n = DATA.negocio || {};
+  $("#nWa").value = n.whatsapp || ""; $("#nDir").value = n.direccion || "";
+  $("#nHor").value = n.horario || ""; $("#nAviso").value = n.aviso || "";
+  $("#nCats").value = categories().join("\n");
+  openModal("#mNeg");
+};
+$("#nSave").onclick = async () => {
+  const wa = $("#nWa").value.replace(/\D/g, "");
+  if (wa.length < 10){ toast("Revisá el número de WhatsApp.", true); return; }
+  const cats = $("#nCats").value.split("\n").map(s => s.trim()).filter(Boolean);
+  busy(true, "Guardando…");
+  try{
+    await saveCatalog(d => {
+      d.negocio = {...(d.negocio || {}), whatsapp: wa, direccion: $("#nDir").value.trim(), horario: $("#nHor").value.trim(), aviso: $("#nAviso").value.trim()};
+      d.categorias = [...new Set(cats)];
+    }, "Actualizar datos del negocio");
+    busy(false); closeModals(); render(); toast("Guardado ✓ La tienda se actualiza en 1 o 2 minutos.");
+  }catch(e){ busy(false); toast(errText(e), true); }
+};
+
+/* ---------- cambiar PIN ---------- */
+$("#bPin").onclick = () => { $("#cPin").value = ""; $("#cPin2").value = ""; openModal("#mPin"); };
+$("#cSave").onclick = async () => {
+  const p1 = $("#cPin").value, p2 = $("#cPin2").value;
+  if (!validPin(p1)){ toast("El PIN tiene que tener entre 6 y 10 números.", true); return; }
+  if (p1 !== p2){ toast("Los PIN no coinciden.", true); return; }
+  busy(true, "Cambiando PIN…");
+  try{
+    const sealed = await sealToken(TOKEN, p1);
+    const cur = await getFile(KEYFILE);
+    const r = await putFile(KEYFILE, b64enc(JSON.stringify(sealed, null, 2)), "Cambiar PIN del panel", cur.sha);
+    SEALED = sealed; KEYSHA = r.content.sha;
+    busy(false); closeModals(); toast("PIN cambiado ✓");
+  }catch(e){ busy(false); toast(errText(e), true); }
+};
+
+boot();
+</script>
+</body>
+</html>
