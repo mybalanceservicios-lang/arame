@@ -228,7 +228,8 @@
     {
       "texto": "El hummus está hecho increíble.",
       "autor": "",
-      "fuente": "Google"
+      "fuente": "Google",
+      "plato": "Hummus"
     },
     {
       "texto": "Te asesoran de lo mejor.",
@@ -238,7 +239,8 @@
     {
       "texto": "Recomiendo la ensalada tabule, keppe fritas, lajmashum y aceitunas negras griegas.",
       "autor": "",
-      "fuente": "Google"
+      "fuente": "Google",
+      "plato": "Tabulé y keppe"
     },
     {
       "texto": "Lo mejor en su tipo en zona norte.",

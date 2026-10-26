@@ -115,6 +115,9 @@
   .fact b{color:var(--ink);font-weight:700}
   .fact svg{color:var(--or);flex-shrink:0}
   .fact.star b{color:var(--or-2)}
+  a.fact.link{transition:border-color .15s,background .15s}
+  a.fact.link:hover{border-color:var(--or);background:var(--card-2)}
+  .fact .ext{color:var(--ink-3)}
   .aviso{margin-top:18px;background:var(--or-soft);border:1px solid rgba(217,119,46,.4);color:var(--or-2);border-radius:12px;padding:12px 14px;font-weight:700;font-size:14.5px}
 
   /* secciones del negocio */
@@ -176,6 +179,9 @@
   .ph img{width:100%;height:100%;object-fit:cover;display:block}
   .ph .none{position:absolute;inset:0;display:grid;place-items:center;color:rgba(217,119,46,.35);background:radial-gradient(circle at 50% 40%,#22201C,#172028)}
   .ph .none .wm{font-size:22px;color:rgba(217,119,46,.4)}
+  .top-badge{position:absolute;left:10px;top:10px;display:inline-flex;align-items:center;gap:5px;background:linear-gradient(135deg,#F4B23E,#D9772E);color:#1A1208;font-weight:900;font-size:12px;letter-spacing:.02em;border-radius:999px;padding:4px 10px 4px 8px;box-shadow:0 6px 16px -6px rgba(244,178,62,.7)}
+  .card.top{border-color:rgba(244,178,62,.45)}
+  .card.top.in{border-color:var(--or)}
   .ph .qbadge{position:absolute;top:10px;right:10px;background:var(--or);color:#111;font-weight:800;font-size:13px;border-radius:999px;padding:3px 10px}
   .body{padding:14px;display:flex;flex-direction:column;gap:4px;flex:1;min-width:0}
   .card h3{font-size:17px;font-weight:800;letter-spacing:-.005em}
@@ -209,6 +215,7 @@
     .ph{width:118px;min-width:118px;aspect-ratio:auto;min-height:100%}
     .ph .none .wm{font-size:15px}
     .ph .qbadge{top:6px;right:6px;font-size:12px;padding:2px 8px}
+    .top-badge{left:6px;top:auto;bottom:6px;font-size:10.5px;padding:3px 8px 3px 6px}
     .body{padding:12px}
     .card h3{font-size:16px}
     .desc{font-size:13px;-webkit-line-clamp:2}
@@ -225,7 +232,8 @@
   .loading{padding:60px 0;text-align:center;color:var(--ink-3)}
 
   /* historia */
-  .story{margin-top:60px;padding:56px 0;border-top:1px solid var(--line);background:linear-gradient(180deg,var(--bg-2),var(--bg))}
+  .story{margin-top:60px;padding:56px 0;border-top:1px solid var(--line);background:linear-gradient(180deg,rgba(19,26,31,.75),rgba(15,20,24,0))}
+  #bgfx{position:fixed;inset:0;width:100%;height:100%;z-index:-1;pointer-events:none}
   .story .container{display:grid;grid-template-columns:1.2fr .8fr;gap:30px 50px;align-items:center}
   .story h2{font-family:var(--brand);font-weight:900;font-size:clamp(30px,4.6vw,48px);letter-spacing:-.015em;margin:10px 0 14px}
   .story p{color:var(--ink-2);font-size:17px;margin:0;max-width:56ch;white-space:pre-line}
@@ -285,7 +293,8 @@
   .li .n small{display:block;font-weight:500;color:var(--ink-3);font-size:12.5px}
   .li .tot{font-weight:800;text-align:right}
   .li .stepper{max-width:150px}
-  .li .rm{background:none;border:0;color:var(--ink-3);font-size:13px;font-weight:700;text-decoration:underline;justify-self:end}
+  .li .rm{display:inline-flex;align-items:center;gap:6px;background:none;border:1px solid var(--line);border-radius:10px;padding:7px 11px;color:var(--ink-2);font-size:13px;font-weight:700;justify-self:end}
+  .li .rm:hover{border-color:#E5484D;color:#FF7B7F}
   .clear{background:none;border:0;color:var(--ink-3);font-size:13px;font-weight:700;text-decoration:underline;padding:12px 0 0}
   .form{display:flex;flex-direction:column;gap:12px;margin-top:20px}
   .form h3{font-family:var(--brand);font-size:20px}
@@ -317,6 +326,8 @@
 </style>
 </head>
 <body>
+
+<canvas id="bgfx" aria-hidden="true"></canvas>
 
 <header>
   <div class="container nav">
@@ -359,8 +370,8 @@
     <h1>Armá tu pedido <em>en un minuto</em></h1>
     <p>Elegí los productos y las cantidades, y mandanos el pedido por WhatsApp. Te respondemos para confirmar y coordinar el pago.</p>
     <div class="facts">
-      <span class="fact star" id="fRating" hidden><b></b></span>
-      <span class="fact"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 21s-7-6.2-7-11.5A7 7 0 0 1 19 9.5C19 14.8 12 21 12 21z"/><circle cx="12" cy="9.5" r="2.5"/></svg><b id="fDir"></b></span>
+      <a class="fact star link" id="fRating" hidden target="_blank" rel="noopener" title="Ver las reseñas en Google"><b></b><svg class="ext" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M7 17 17 7M9 7h8v8"/></svg></a>
+      <a class="fact link" id="fDirLink" target="_blank" rel="noopener" title="Ver en Google Maps"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 21s-7-6.2-7-11.5A7 7 0 0 1 19 9.5C19 14.8 12 21 12 21z"/><circle cx="12" cy="9.5" r="2.5"/></svg><b id="fDir"></b><svg class="ext" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M7 17 17 7M9 7h8v8"/></svg></a>
       <span class="fact"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg><span id="fHor"></span></span>
     </div>
     <div class="aviso" id="aviso" hidden></div>
@@ -505,6 +516,9 @@ async function load(){
 function renderInfo(){
   const n = DATA.negocio || {};
   const num = String(n.whatsapp || "").replace(/\D/g, "");
+  const place = `${n.nombre || "Aramé"} ${n.direccion || ""}`.trim();
+  $("#fDirLink").href = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(place)}`;
+  $("#fRating").href = `https://www.google.com/search?q=${encodeURIComponent(place + " opiniones")}`;
   $("#waFloat").href = `https://wa.me/${num}?text=${encodeURIComponent(`¡Hola ${n.nombre || "Aramé"}! Quería hacer una consulta.`)}`;
   $("#fDir").textContent = n.direccion || ""; $("#ftDir").textContent = n.direccion || "";
   $("#mWa").href = `https://wa.me/${num}?text=${encodeURIComponent(`¡Hola ${n.nombre || "Aramé"}! Quería hacer una consulta.`)}`;
@@ -524,7 +538,7 @@ function renderInfo(){
       <figcaption class="who"><span class="av">${esc((r.autor || "C").trim()[0].toUpperCase())}</span><span>${esc(r.autor || "Cliente")}${r.fuente ? " · " + esc(r.fuente) : ""}</span></figcaption></figure>`).join("");
     if (star){
       const opin = (h.datos || []).find(d => /opini/i.test(d.etiqueta));
-      $("#rvRating").innerHTML = `<b>${esc(star.valor.replace("★", "").trim())}</b><span><span class="stars">★★★★★</span><br>${opin ? esc(opin.valor + " " + opin.etiqueta) : ""} ${esc(star.etiqueta)}</span>`;
+      $("#rvRating").innerHTML = `<a href="${$("#fRating").href}" target="_blank" rel="noopener" style="display:flex;align-items:center;gap:10px" title="Ver las reseñas en Google"><b>${esc(star.valor.replace("★", "").trim())}</b><span><span class="stars">★★★★★</span><br>${opin ? esc(opin.valor + " " + opin.etiqueta) : ""} ${esc(star.etiqueta)} ↗</span></a>`;
     }
     $("#reviews").hidden = false;
     requestAnimationFrame(rvArrows);
@@ -684,8 +698,8 @@ function cardHTML(p){
     ? `<span class="price">${money(p.precio)}</span><span class="per">${UNIT[p.unidad] || (p.unidad ? "por " + esc(p.unidad) : "")}</span>`
     : `<span class="price na">Precio a consultar</span>`;
   const ctrl = off ? `<div class="off-tag">Sin stock por ahora</div>` : ctrlHTML(p, q);
-  return `<article class="card ${q ? "in" : ""} ${off ? "off" : ""}" data-card="${p.id}">
-    <button class="ph" data-zoom="${p.id}" aria-label="Ver ${esc(p.nombre)}">${photo(p)}${q ? `<span class="qbadge">${q}</span>` : ""}</button>
+  return `<article class="card ${q ? "in" : ""} ${off ? "off" : ""} ${p.destacado ? "top" : ""}" data-card="${p.id}">
+    <button class="ph" data-zoom="${p.id}" aria-label="Ver ${esc(p.nombre)}">${photo(p)}${p.destacado ? `<span class="top-badge">★ Más pedido</span>` : ""}${q ? `<span class="qbadge">${q}</span>` : ""}</button>
     <div class="body">
       <h3>${esc(p.nombre)}</h3>
       ${p.peso ? `<span class="peso">${esc(p.peso)}</span>` : ""}
@@ -703,7 +717,7 @@ function renderList(){
     let inner = "";
     for (const c of catsOf(sec.id, prods)){
       const items = prods.filter(p => secOf(p) === sec.id && (p.categoria || "Otros") === c)
-        .sort((a, b) => (a.disponible === false) - (b.disponible === false));
+        .sort((a, b) => (a.disponible === false) - (b.disponible === false) || !!b.destacado - !!a.destacado);
       inner += `<section class="cat-block" data-sec-id="${esc(sec.id)}" data-cat-id="${esc(c)}"><h2>${esc(c)} <small>${items.length}</small></h2><div class="grid">${items.map(cardHTML).join("")}</div></section>`;
     }
     if (!inner) continue;
@@ -783,7 +797,7 @@ function lineHTML({p, q}){
       <input type="number" inputmode="numeric" min="0" value="${q}" data-qty="${p.id}" aria-label="Cantidad">
       <button data-add="${p.id}" data-n="1" aria-label="Agregar uno">+</button>
     </div>
-    <button class="rm" data-rm="${p.id}">Quitar</button>
+    <button class="rm" data-rm="${p.id}" aria-label="Quitar ${esc(p.nombre)} del pedido"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16M10 11v6M14 11v6M6 7l1 12a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2l1-12M9 7V4h6v3"/></svg>Quitar</button>
   </div>`;
 }
 
@@ -919,6 +933,48 @@ function rvArrows(){
 $("#rvPrev").onclick = () => rvMove(-1); $("#rvNext").onclick = () => rvMove(1);
 rvT.addEventListener("scroll", () => requestAnimationFrame(rvArrows), {passive: true});
 addEventListener("resize", rvArrows);
+
+/* ---------- fondo: ondas cobre que se mueven despacio ---------- */
+(function(){
+  const c = $("#bgfx"), x = c.getContext("2d");
+  let w = 0, h = 0, last = 0;
+  const t0 = performance.now(), GAP = 86;
+  function size(){
+    const dpr = Math.min(devicePixelRatio || 1, 1.5);
+    w = innerWidth; h = innerHeight;
+    c.width = w * dpr; c.height = h * dpr; x.setTransform(dpr, 0, 0, dpr, 0, 0);
+  }
+  function draw(now){
+    const t = REDUCE ? 0 : (now - t0) / 1000;
+    x.clearRect(0, 0, w, h);
+    // brillo que se desplaza lento
+    const gx = w * (.78 + .12 * Math.sin(t * .06)), gy = h * (.3 + .15 * Math.cos(t * .05));
+    const g = x.createRadialGradient(gx, gy, 0, gx, gy, Math.max(w, h) * .6);
+    g.addColorStop(0, "rgba(217,119,46,.13)"); g.addColorStop(1, "rgba(217,119,46,0)");
+    x.fillStyle = g; x.fillRect(0, 0, w, h);
+    // ondas: acompañan el scroll un poco más lento que la página
+    const shift = scrollY * .12, k0 = Math.floor(shift / GAP), off = shift % GAP;
+    x.lineWidth = 1.4;
+    for (let j = -1; j <= Math.ceil(h / GAP) + 1; j++){
+      const k = k0 + j, y0 = j * GAP - off;
+      x.strokeStyle = `rgba(217,119,46,${(.12 + .07 * Math.sin(k * 1.3)).toFixed(3)})`;
+      x.beginPath();
+      for (let px = -20; px <= w + 20; px += 14){
+        const y = y0 + 22 * Math.sin(px * .0055 + k * .55 + t * .22) + 9 * Math.sin(px * .014 - t * .17 + k);
+        px === -20 ? x.moveTo(px, y) : x.lineTo(px, y);
+      }
+      x.stroke();
+    }
+  }
+  function loop(now){
+    if (!document.hidden && now - last > 40){ last = now; draw(now); }
+    requestAnimationFrame(loop);
+  }
+  size(); draw(performance.now());
+  addEventListener("resize", () => { size(); draw(performance.now()); });
+  if (REDUCE) addEventListener("scroll", () => requestAnimationFrame(draw), {passive: true});
+  else requestAnimationFrame(loop);
+})();
 
 $("#year").textContent = new Date().getFullYear();
 load();

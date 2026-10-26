@@ -210,6 +210,7 @@
         </label>
       </div>
       <label class="switch">Disponible (hay stock)<input type="checkbox" id="eDisp"></label>
+      <label class="switch"><span>★ Más pedido<br><small style="font-weight:500;color:var(--ink-3)">Aparece con un cartel dorado y primero en su categoría</small></span><input type="checkbox" id="eTop"></label>
       <button class="btn danger" id="eDel" style="width:100%">Eliminar producto</button>
     </div>
     <div class="sheet-foot">
@@ -477,6 +478,7 @@ function render(){
     if (!items.length) continue;
     html += `<h2 class="cat-title">${esc(c)}</h2><div class="grid">` + items.map(p => {
       const flags = [
+        p.destacado ? `<span class="flag" style="background:linear-gradient(135deg,#F4B23E,#D9772E);color:#1A1208">★ Más pedido</span>` : "",
         p.disponible === false ? `<span class="flag off">Sin stock</span>` : "",
         !p.foto ? `<span class="flag">Sin foto</span>` : "",
         !(p.precio > 0) ? `<span class="flag">Sin precio</span>` : "",
@@ -522,6 +524,7 @@ function openEditor(id){
   $("#ePrecio").value = editing.precio > 0 ? editing.precio : "";
   $("#eUnidad").value = editing.unidad || "unidad";
   $("#eDisp").checked = editing.disponible !== false;
+  $("#eTop").checked = !!editing.destacado;
   $("#eDel").hidden = !p;
   $("#eFile").value = "";
   setPhotoPreview(photoSrc(editing));
@@ -565,6 +568,7 @@ $("#eSave").onclick = async () => {
     categoria: $("#eCat").value.trim() || "Otros",
     seccion: $("#eSec").value,
     disponible: $("#eDisp").checked,
+    destacado: $("#eTop").checked,
   };
   const isNew = !editing.id;
   const id = editing.id || `${slug(nombre)}-${Math.random().toString(36).slice(2, 6)}`;
