@@ -274,6 +274,8 @@
       <label class="f">Dirección<input id="nDir"></label>
       <label class="f">Horario<input id="nHor"></label>
       <label class="f">Instagram (usuario)<input id="nIg" placeholder="aramecocina"><span class="help">Se usa en la galería de fotos de la tienda.</span></label>
+      <label class="f">Envíos (opcional)<input id="nEnv" placeholder="Ej: Envíos en San Isidro y Vicente López. Costo según zona."><span class="help">Lo usa el asistente de consultas de la tienda cuando preguntan por envíos.</span></label>
+      <label class="f">Formas de pago (opcional)<input id="nPago" placeholder="Ej: Efectivo, transferencia y Mercado Pago."><span class="help">Lo usa el asistente de consultas cuando preguntan cómo pagar.</span></label>
       <label class="f">Aviso destacado (opcional)<input id="nAviso" placeholder="Ej: Este sábado cerramos por feriado"><span class="help">Aparece arriba de todo en la tienda. Dejalo vacío para no mostrar nada.</span></label>
       <label class="f">Orden de las categorías<textarea id="nCats" rows="5"></textarea><span class="help">Una por renglón, en el orden en que querés que aparezcan.</span></label>
 
@@ -741,7 +743,7 @@ $("#eDel").onclick = async () => {
 $("#bNegocio").onclick = () => {
   const n = DATA.negocio || {};
   $("#nWa").value = n.whatsapp || ""; $("#nDir").value = n.direccion || "";
-  $("#nHor").value = n.horario || ""; $("#nAviso").value = n.aviso || ""; $("#nIg").value = n.instagram || "";
+  $("#nHor").value = n.horario || ""; $("#nAviso").value = n.aviso || ""; $("#nIg").value = n.instagram || ""; $("#nEnv").value = n.envios || ""; $("#nPago").value = n.pagos || "";
   $("#nCats").value = categories().join("\n");
   $("#nSecs").innerHTML = currentSecs().map(x => `<div class="group" data-secid="${esc(x.id)}"><div class="row3">
     <label class="f" style="margin:0">Nombre<input data-k="nombre" value="${esc(x.nombre)}"></label>
@@ -767,7 +769,7 @@ $("#nSave").onclick = async () => {
   busy(true, "Guardando…");
   try{
     await saveCatalog(d => {
-      d.negocio = {...(d.negocio || {}), whatsapp: wa, direccion: $("#nDir").value.trim(), horario: $("#nHor").value.trim(), aviso: $("#nAviso").value.trim(), instagram: $("#nIg").value.trim().replace(/^@/, "")};
+      d.negocio = {...(d.negocio || {}), whatsapp: wa, direccion: $("#nDir").value.trim(), horario: $("#nHor").value.trim(), aviso: $("#nAviso").value.trim(), instagram: $("#nIg").value.trim().replace(/^@/, ""), envios: $("#nEnv").value.trim(), pagos: $("#nPago").value.trim()};
       d.categorias = [...new Set(cats)];
       d.secciones = secs; d.historia = historia; d.resenas = resenas;
     }, "Actualizar datos del negocio");
