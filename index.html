@@ -327,9 +327,13 @@
   footer .container{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap}
   footer a{color:var(--ink-2);text-decoration:underline}
   footer .container{align-items:center}
-  .rt-badge{display:inline-flex;align-items:center;gap:8px;background:#1C1733;border:1px solid #4A3F86;border-radius:999px;padding:8px 16px;font-weight:800;font-size:13px;color:#D8D3F0;letter-spacing:.01em}
-  .rt-badge b{color:#AFA2FF;font-weight:800}
-  .rt-badge .dot{width:6px;height:6px;background:#AFA2FF;border-radius:1px;transform:rotate(45deg);flex-shrink:0}
+  .rt-watermark{position:fixed;left:max(16px,env(safe-area-inset-left,0px));bottom:calc(16px + env(safe-area-inset-bottom,0px));z-index:65;display:inline-flex;align-items:center;gap:8px;background:#1C1733;border:1px solid #4A3F86;border-radius:999px;padding:8px 16px;font-weight:800;font-size:13px;color:#D8D3F0;letter-spacing:.01em;text-decoration:none;cursor:pointer;transition:transform .25s ease,bottom .25s ease,background .2s ease}
+  .rt-watermark:hover{background:#262050}
+  .rt-watermark b{color:#AFA2FF;font-weight:800}
+  .rt-watermark .dot{width:6px;height:6px;background:#AFA2FF;border-radius:1px;transform:rotate(45deg);flex-shrink:0}
+  body.has-bar .rt-watermark{bottom:calc(96px + env(safe-area-inset-bottom,0px))}
+  body.drawer-open .rt-watermark{transform:scale(0);pointer-events:none}
+  @media(max-width:480px){.rt-watermark{font-size:11.5px;padding:7px 13px}}
 
   /* barra inferior con el total */
   .bar{position:fixed;left:50%;bottom:14px;transform:translate(-50%,140%);width:min(560px,calc(100% - 24px));z-index:60;display:flex;align-items:center;gap:12px;background:var(--or);color:#111;border:0;border-radius:16px;padding:12px 12px 12px 18px;box-shadow:0 16px 40px -12px rgba(217,119,46,.55);transition:transform .25s ease}
@@ -495,7 +499,6 @@
 <footer>
   <div class="container">
     <span>© <span id="year"></span> Aramé · Cocina armenia · <span id="ftDir"></span></span>
-    <span class="rt-badge"><span class="dot" aria-hidden="true"></span>Diseñado por <b>RT Design</b></span>
   </div>
 </footer>
 
@@ -507,6 +510,8 @@
 <a class="wa-float" id="waFloat" href="#" target="_blank" rel="noopener" aria-label="Escribinos por WhatsApp">
   <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2zm5.3 14.2c-.2.6-1.3 1.2-1.8 1.3-.5.1-1 .1-1.7-.1-.4-.1-.9-.3-1.5-.6-2.7-1.2-4.4-3.9-4.6-4.1-.1-.2-1.1-1.4-1.1-2.7s.7-1.9.9-2.2c.2-.3.5-.3.7-.3h.5c.2 0 .4 0 .6.5l.8 2c.1.2.1.4 0 .5l-.3.5-.4.4c-.1.1-.3.3-.1.6.2.3.7 1.2 1.6 2 1.1 1 2 1.3 2.3 1.4.3.1.4.1.6-.1l.8-1c.2-.3.4-.2.6-.1l1.9.9c.3.1.5.2.5.3.1.2.1.7-.1 1.3z"/></svg>
 </a>
+
+<a class="rt-watermark" href="https://www.instagram.com/rt.designweb/" target="_blank" rel="noopener"><span class="dot" aria-hidden="true"></span>Diseñado por <b>RT Design</b></a>
 
 <div class="overlay" id="overlay"></div>
 <aside class="drawer" id="drawer" aria-label="Tu pedido" aria-hidden="true">
