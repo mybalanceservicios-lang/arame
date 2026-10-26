@@ -22,8 +22,8 @@
   }
   *{box-sizing:border-box}
   [hidden]{display:none!important}
-  html{scroll-behavior:smooth}
-  body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--body);line-height:1.5;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+  html{scroll-behavior:smooth;overflow-x:hidden;overflow-x:clip}
+  body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--body);line-height:1.5;-webkit-font-smoothing:antialiased;overflow-x:hidden;overflow-x:clip}
   a{color:inherit;text-decoration:none}
   button{font:inherit;color:inherit;cursor:pointer;-webkit-tap-highlight-color:transparent}
   h1,h2,h3{margin:0;line-height:1.1;font-weight:800;text-wrap:balance}
@@ -134,9 +134,24 @@
     .world i{margin-top:2px}
   }
 
+  .worlds-label{margin-top:28px;font-size:12px;font-weight:800;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-3)}
+  .worlds-label + .worlds{margin-top:10px}
+  .search-wrap{padding-top:6px;padding-bottom:12px}
+  .search-wrap .search{width:100%;max-width:420px}
+  .sec-tabs{display:flex;align-items:center;gap:8px;min-width:0}
+  .sec-tabs .lbl{font-size:12px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-3);flex-shrink:0}
+  #secTabBtns{display:flex;gap:6px;background:var(--bg);border:1px solid var(--line);border-radius:12px;padding:3px}
+  .sec-tab{border:0;background:none;border-radius:9px;padding:7px 12px;font-weight:800;font-size:13.5px;color:var(--ink-2);white-space:nowrap}
+  .sec-tab.on{background:var(--or);color:#111}
+  .sec-block{padding-top:18px}
+  .sec-block + .sec-block{margin-top:34px;border-top:1px solid var(--line);padding-top:34px}
+  .sec-head{display:flex;align-items:baseline;gap:14px;flex-wrap:wrap}
+  .sec-head h2{font-family:var(--brand);font-weight:900;font-size:clamp(28px,4vw,40px);letter-spacing:-.015em;color:var(--or)}
+  .sec-head p{margin:0;color:var(--ink-2)}
+
   /* categorías y buscador */
   .toolbar{position:sticky;top:64px;z-index:40;background:rgba(15,20,24,.95);backdrop-filter:blur(12px);border-bottom:1px solid var(--line);padding:10px 0}
-  .toolbar .container{display:flex;gap:10px;align-items:center}
+  .toolbar .container{display:flex;gap:14px;align-items:center}
   .chips{display:flex;gap:8px;overflow-x:auto;scrollbar-width:none;flex:1}
   .chips::-webkit-scrollbar{display:none}
   .chip{flex-shrink:0;border:1px solid var(--line);background:var(--card);border-radius:999px;padding:8px 14px;font-weight:700;font-size:13.5px;color:var(--ink-2);white-space:nowrap}
@@ -144,8 +159,11 @@
   .search{display:flex;align-items:center;gap:8px;background:var(--card);border:1px solid var(--line);border-radius:999px;padding:8px 14px;width:240px;flex-shrink:0;color:var(--ink-3)}
   .search input{border:0;background:none;outline:none;font:inherit;font-size:14px;width:100%;color:var(--ink)}
   @media(max-width:700px){
-    .toolbar .container{flex-direction:column;align-items:stretch}
-    .search{width:100%}
+    .toolbar .container{flex-direction:column;align-items:stretch;gap:8px}
+    .sec-tabs .lbl{font-size:11px;letter-spacing:.08em}
+    #secTabBtns{flex:1}
+    .sec-tab{flex:1;padding:7px 6px}
+    .search-wrap .search{max-width:none}
   }
 
   /* productos */
@@ -229,6 +247,10 @@
   footer{padding:40px 0 120px;color:var(--ink-3);font-size:13.5px;border-top:1px solid var(--line);margin-top:50px}
   footer .container{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap}
   footer a{color:var(--ink-2);text-decoration:underline}
+  footer .container{align-items:center}
+  .rt-badge{display:inline-flex;align-items:center;gap:8px;background:#1C1733;border:1px solid #4A3F86;border-radius:999px;padding:8px 16px;font-weight:800;font-size:13px;color:#D8D3F0;letter-spacing:.01em}
+  .rt-badge b{color:#AFA2FF;font-weight:800}
+  .rt-badge .dot{width:6px;height:6px;background:#AFA2FF;border-radius:1px;transform:rotate(45deg);flex-shrink:0}
 
   /* barra inferior con el total */
   .bar{position:fixed;left:50%;bottom:14px;transform:translate(-50%,140%);width:min(560px,calc(100% - 24px));z-index:60;display:flex;align-items:center;gap:12px;background:var(--or);color:#111;border:0;border-radius:16px;padding:12px 12px 12px 18px;box-shadow:0 16px 40px -12px rgba(217,119,46,.55);transition:transform .25s ease}
@@ -332,21 +354,24 @@
       <span class="fact"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg><span id="fHor"></span></span>
     </div>
     <div class="aviso" id="aviso" hidden></div>
-    <nav class="worlds" id="worlds" aria-label="Secciones"></nav>
+    <div class="worlds-label" id="worldsLabel">Categorías:</div>
+    <nav class="worlds" id="worlds" aria-label="Categorías"></nav>
   </div>
 </section>
 
 <div class="catalog">
+<div class="container search-wrap">
+  <label class="search">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+    <input id="search" type="search" placeholder="Buscar en todo el catálogo" aria-label="Buscar producto">
+  </label>
+</div>
 <div class="toolbar" id="toolbar">
   <div class="container">
+    <div class="sec-tabs" id="secTabs"><span class="lbl">Categorías:</span><div id="secTabBtns"></div></div>
     <div class="chips" id="chips"></div>
-    <label class="search">
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
-      <input id="search" type="search" placeholder="Buscar producto" aria-label="Buscar producto">
-    </label>
   </div>
 </div>
-
 <main class="container" id="list"><div class="loading">Cargando productos…</div></main>
 </div>
 
@@ -374,7 +399,7 @@
 <footer>
   <div class="container">
     <span>© <span id="year"></span> Aramé · Cocina armenia · <span id="ftDir"></span></span>
-    <span>Diseñado por <b>RT Design</b></span>
+    <span class="rt-badge"><span class="dot" aria-hidden="true"></span>Diseñado por <b>RT Design</b></span>
   </div>
 </footer>
 
@@ -441,7 +466,7 @@ document.querySelectorAll("[data-wm]").forEach(el => el.innerHTML = WM);
 
 let DATA = null, byId = {}, SECS = [];
 let cart = store.get("arame.cart", {});
-let activeSec = null, activeCat = "Todo", query = "", mode = "retiro";
+let activeSec = null, activeCat = null, query = "", mode = "retiro";
 
 const secOf = p => (SECS.find(s => s.id === p.seccion) || SECS[0]).id;
 
@@ -463,6 +488,7 @@ async function load(){
   let fromHash = location.hash.slice(1);
   activeSec = SECS.some(s => s.id === fromHash) ? fromHash : (SECS[0] && SECS[0].id);
   renderInfo(); renderMesa(); renderWorlds(); renderChips(); renderList(); renderCart();
+  if (fromHash && fromHash === activeSec) setTimeout(() => goTo(document.getElementById("sec-" + activeSec)), 300);
 }
 
 function renderInfo(){
@@ -545,40 +571,82 @@ addEventListener("resize", () => { if (isPhone()) playIntro(); drawMesa(); });
 document.querySelectorAll("[data-go-catalog]").forEach(b => b.onclick = () => window.scrollTo({top: $("#info").offsetTop - 64, behavior: "smooth"}));
 
 function renderWorlds(){
-  if (SECS.length < 2){ $("#worlds").hidden = true; return; }
+  const many = SECS.length > 1;
+  $("#worlds").hidden = $("#worldsLabel").hidden = $("#secTabs").hidden = !many;
+  if (!many) return;
   $("#worlds").innerHTML = SECS.map(s => {
     const n = DATA.productos.filter(p => secOf(p) === s.id).length;
-    return `<button class="world ${s.id === activeSec ? "on" : ""}" data-sec="${esc(s.id)}" aria-pressed="${s.id === activeSec}">
+    return `<button class="world" data-sec="${esc(s.id)}">
       <b>${esc(s.nombre)}</b><span>${esc(s.descripcion || "")}</span><i>${n} ${n === 1 ? "producto" : "productos"}</i></button>`;
   }).join("");
+  $("#secTabBtns").innerHTML = SECS.map(s => `<button class="sec-tab" data-sec="${esc(s.id)}">${esc(s.nombre)}</button>`).join("");
+  markSec();
 }
-$("#worlds").addEventListener("click", e => {
+function markSec(){
+  document.querySelectorAll("[data-sec]").forEach(b => {
+    const on = b.dataset.sec === activeSec;
+    b.classList.toggle("on", on); b.setAttribute("aria-pressed", on);
+  });
+}
+
+// alto de lo que queda fijo arriba (encabezado + barra de categorías)
+const stickyH = () => 64 + $("#toolbar").offsetHeight;
+function goTo(el){
+  if (!el) return;
+  spyLock = performance.now() + 900;
+  window.scrollTo({top: el.getBoundingClientRect().top + scrollY - stickyH() + 1, behavior: "smooth"});
+}
+document.addEventListener("click", e => {
   const b = e.target.closest("[data-sec]"); if (!b) return;
-  activeSec = b.dataset.sec; activeCat = "Todo";
-  try{ history.replaceState(null, "", "#" + activeSec); }catch(_){}
-  renderWorlds(); renderChips(); renderList();
-  window.scrollTo({top: $("#toolbar").offsetTop - 64, behavior: "smooth"});
+  activeSec = b.dataset.sec; activeCat = null; markSec(); renderChips();
+  goTo(document.getElementById("sec-" + activeSec));
 });
 
-function categories(){
-  const prods = DATA.productos.filter(p => query || secOf(p) === activeSec);
-  const used = [...new Set(prods.map(p => p.categoria || "Otros"))];
+function catsOf(secId, prods = DATA.productos){
+  const used = [...new Set(prods.filter(p => secOf(p) === secId).map(p => p.categoria || "Otros"))];
   const ordered = (DATA.categorias || []).filter(c => used.includes(c));
   return [...ordered, ...used.filter(c => !ordered.includes(c))];
 }
+function visibleProds(){
+  const q = norm(query);
+  return DATA.productos.filter(p => !q || norm(p.nombre + " " + (p.descripcion || "") + " " + (p.categoria || "")).includes(q));
+}
 
 function renderChips(){
-  const cats = categories();
-  if (!cats.includes(activeCat)) activeCat = "Todo";
-  $("#chips").innerHTML = (cats.length > 1 ? ["Todo", ...cats] : cats).map(c =>
-    `<button class="chip ${c === activeCat || cats.length === 1 ? "on" : ""}" data-cat="${esc(c)}">${esc(c)}</button>`).join("");
+  const cats = catsOf(activeSec, visibleProds());
+  $("#chips").innerHTML = cats.map(c => `<button class="chip ${c === activeCat ? "on" : ""}" data-cat="${esc(c)}">${esc(c)}</button>`).join("");
 }
 $("#chips").addEventListener("click", e => {
   const b = e.target.closest(".chip"); if (!b) return;
-  activeCat = b.dataset.cat; renderChips(); renderList();
-  window.scrollTo({top: $("#list").offsetTop - 140, behavior: "smooth"});
+  activeCat = b.dataset.cat; markChip();
+  goTo(document.querySelector(`.cat-block[data-sec-id="${CSS.escape(activeSec)}"][data-cat-id="${CSS.escape(activeCat)}"]`));
 });
-$("#search").addEventListener("input", e => { query = e.target.value.trim(); renderChips(); renderList(); });
+function markChip(){
+  const box = $("#chips");
+  box.querySelectorAll(".chip").forEach(c => {
+    const on = c.dataset.cat === activeCat;
+    c.classList.toggle("on", on);
+    if (on) box.scrollTo({left: c.offsetLeft - box.offsetWidth / 2 + c.offsetWidth / 2, behavior: "smooth"});
+  });
+}
+$("#search").addEventListener("input", e => {
+  query = e.target.value.trim(); renderList(); renderChips();
+  if (query) window.scrollTo({top: $("#list").getBoundingClientRect().top + scrollY - stickyH() - 10});
+});
+
+/* al bajar, la categoría marcada cambia sola según lo que se está viendo */
+let spyLock = 0;
+function spy(){
+  if (!DATA || performance.now() < spyLock) return;
+  const line = stickyH() + 12;
+  let sec = null, cat = null;
+  document.querySelectorAll(".sec-block").forEach(b => { if (b.getBoundingClientRect().top <= line || !sec) sec = b.dataset.secId; });
+  document.querySelectorAll(`.cat-block[data-sec-id="${CSS.escape(sec || "")}"]`).forEach(b => { if (b.getBoundingClientRect().top <= line || !cat) cat = b.dataset.catId; });
+  if (sec && sec !== activeSec){ activeSec = sec; activeCat = cat; markSec(); renderChips(); markChip(); }
+  else if (cat !== activeCat){ activeCat = cat; markChip(); }
+}
+addEventListener("scroll", () => requestAnimationFrame(spy), {passive: true});
+addEventListener("scrollend", () => { spyLock = 0; spy(); });
 
 function photo(p){
   return p.foto ? `<img src="${esc(p.foto)}" alt="${esc(p.nombre)}" loading="lazy">` : `<span class="none"><span class="wm">${WM}</span></span>`;
@@ -612,15 +680,17 @@ function cardHTML(p){
 }
 
 function renderList(){
-  const q = norm(query);
-  const match = p => q ? norm(p.nombre + " " + (p.descripcion || "") + " " + (p.categoria || "")).includes(q) : secOf(p) === activeSec;
-  const cats = activeCat === "Todo" ? categories() : [activeCat];
+  const prods = visibleProds();
   let html = "";
-  for (const c of cats){
-    const items = DATA.productos.filter(p => (p.categoria || "Otros") === c && match(p))
-      .sort((a, b) => (a.disponible === false) - (b.disponible === false));
-    if (!items.length) continue;
-    html += `<section class="cat-block"><h2>${esc(c)} <small>${items.length}</small></h2><div class="grid">${items.map(cardHTML).join("")}</div></section>`;
+  for (const sec of SECS){
+    let inner = "";
+    for (const c of catsOf(sec.id, prods)){
+      const items = prods.filter(p => secOf(p) === sec.id && (p.categoria || "Otros") === c)
+        .sort((a, b) => (a.disponible === false) - (b.disponible === false));
+      inner += `<section class="cat-block" data-sec-id="${esc(sec.id)}" data-cat-id="${esc(c)}"><h2>${esc(c)} <small>${items.length}</small></h2><div class="grid">${items.map(cardHTML).join("")}</div></section>`;
+    }
+    if (!inner) continue;
+    html += `<div class="sec-block" id="sec-${esc(sec.id)}" data-sec-id="${esc(sec.id)}">${SECS.length > 1 ? `<div class="sec-head"><h2>${esc(sec.nombre)}</h2>${sec.descripcion ? `<p>${esc(sec.descripcion)}</p>` : ""}</div>` : ""}${inner}</div>`;
   }
   $("#list").innerHTML = html || `<div class="empty">No encontramos “${esc(query)}”.</div>`;
 }
