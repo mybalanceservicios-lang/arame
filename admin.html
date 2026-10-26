@@ -72,6 +72,26 @@
   .group .row2,.group .row3{margin-bottom:0}
   .row3{display:grid;grid-template-columns:1fr 1fr;gap:10px}
   .sub-h{font-family:var(--serif);font-weight:800;font-size:17px;margin:22px 0 10px;color:var(--ink)}
+  .st-sum{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px}
+  .st-sum span{background:var(--bg);border:1px solid var(--line);border-radius:999px;padding:5px 12px;font-size:13px;font-weight:800;color:var(--ink-2)}
+  .st-sum span.r{color:var(--red);border-color:rgba(229,72,77,.5)}
+  .st-sum span.o{color:#FFB4A1}
+  .st-sec{font-family:var(--serif);font-weight:900;font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--or);margin:16px 0 4px}
+  .st-row{display:grid;grid-template-columns:1fr auto;gap:10px;align-items:center;padding:8px 0;border-bottom:1px solid var(--line)}
+  .st-row b{font-size:14.5px;display:block}
+  .st-row small{font-size:12px;color:var(--ink-3)}
+  .st-row.low small{color:#FFB4A1;font-weight:800}
+  .st-row.zero small{color:var(--red);font-weight:800}
+  .st-ctl{display:flex;align-items:center;background:var(--bg);border:1px solid var(--line);border-radius:10px;overflow:hidden}
+  .st-ctl button{width:36px;height:38px;border:0;background:none;font-size:18px;font-weight:800;color:var(--ink)}
+  .st-ctl input{width:58px;height:38px;border:0;background:none;text-align:center;font:inherit;font-weight:800;font-size:16px;color:var(--ink);outline:none;-moz-appearance:textfield}
+  .st-ctl input::-webkit-outer-spin-button,.st-ctl input::-webkit-inner-spin-button{-webkit-appearance:none;margin:0}
+  .st-row.changed .st-ctl{border-color:var(--or)}
+  .v-tab{width:100%;border-collapse:collapse;font-size:14px;margin-top:8px}
+  .v-tab th{text-align:left;color:var(--ink-3);font-size:12px;font-weight:800;padding:6px 4px;border-bottom:1px solid var(--line)}
+  .v-tab td{padding:8px 4px;border-bottom:1px solid var(--line)}
+  .v-tab td.n{text-align:right;font-variant-numeric:tabular-nums;font-weight:800}
+  .v-warn{color:#FFB4A1;font-size:13px;font-weight:700;margin:8px 0 0}
   .g-row{display:grid;grid-template-columns:72px 1fr auto;gap:10px;align-items:center;background:var(--bg);border:1px solid var(--line);border-radius:12px;padding:8px;margin-bottom:8px}
   .g-row img{width:72px;height:90px;object-fit:cover;border-radius:9px;display:block}
   .g-row .fields{display:grid;gap:6px;min-width:0}
@@ -104,6 +124,9 @@
   .sq .in{padding:10px 12px 12px;display:flex;flex-direction:column;gap:2px;flex:1}
   .sq h3{font-size:15px;font-weight:800}
   .sq .meta{font-size:12.5px;color:var(--ink-3)}
+  .sq .stk{font-weight:800;color:var(--ink-2)}
+  .sq .stk.low{color:#FFB4A1}
+  .sq .stk.zero{color:var(--red)}
   .sq .pr{font-weight:800;margin-top:auto;padding-top:6px}
   .sq .edit{margin-top:8px;width:100%;padding:9px;font-size:13.5px}
 
@@ -179,6 +202,8 @@
       <a class="btn ghost" href="./" target="_blank" rel="noopener">Ver tienda ↗</a>
       <button class="btn" id="bPromos">Promociones</button>
       <button class="btn" id="bGal">Galería</button>
+      <button class="btn" id="bStock">Stock</button>
+      <button class="btn" id="bVenta">Descontar pedido</button>
       <button class="btn" id="bNegocio">Datos del negocio</button>
       <button class="btn ghost" id="bPin">Cambiar PIN</button>
       <button class="btn ghost" id="bOut">Salir</button>
@@ -226,6 +251,7 @@
           </select>
         </label>
       </div>
+      <label class="f">Stock (unidades disponibles)<input id="eStock" type="number" inputmode="numeric" min="0" step="1" placeholder="Vacío = sin control de stock"><span class="help">Si llega a 0, en la tienda aparece “Sin stock”. Vacío = no se controla.</span></label>
       <label class="f">Descuento de este producto (%)<input id="eOff" type="number" inputmode="numeric" min="0" max="90" step="1" placeholder="0 = sin descuento"><span class="help" id="eOffHelp"></span></label>
       <label class="switch">Disponible (hay stock)<input type="checkbox" id="eDisp"></label>
       <label class="switch"><span>★ Más pedido<br><small style="font-weight:500;color:var(--ink-3)">Aparece con un cartel dorado y primero en su categoría</small></span><input type="checkbox" id="eTop"></label>
@@ -267,6 +293,42 @@
     <div class="sheet-foot">
       <button class="btn ghost" data-close>Cancelar</button>
       <button class="btn primary" id="nSave">Guardar</button>
+    </div>
+  </div>
+</div>
+
+<!-- stock -->
+<div class="modal" id="mStock" hidden>
+  <div class="sheet">
+    <div class="sheet-head"><h2>Stock</h2><button class="x" data-close aria-label="Cerrar">✕</button></div>
+    <div class="sheet-body">
+      <div id="stSum" class="st-sum"></div>
+      <div class="row2">
+        <input class="search" id="stQ" type="search" placeholder="Buscar producto">
+        <select class="search" id="stF" aria-label="Filtrar"><option value="">Todos</option><option value="low">Poco stock y sin stock</option><option value="none">Sin control de stock</option></select>
+      </div>
+      <div id="stList" style="margin-top:10px"></div>
+      <label class="f" style="margin-top:16px">Avisar “poco stock” desde<input id="stLow" type="number" inputmode="numeric" min="0" step="1"><span class="help">Con esa cantidad o menos, en la tienda aparece “Quedan X” y acá se marca en rojo.</span></label>
+    </div>
+    <div class="sheet-foot">
+      <button class="btn ghost" data-close>Cancelar</button>
+      <button class="btn primary" id="stSave">Guardar stock</button>
+    </div>
+  </div>
+</div>
+
+<!-- descontar pedido -->
+<div class="modal" id="mVenta" hidden>
+  <div class="sheet">
+    <div class="sheet-head"><h2>Descontar pedido</h2><button class="x" data-close aria-label="Cerrar">✕</button></div>
+    <div class="sheet-body">
+      <p class="help" style="margin:0 0 10px;color:var(--ink-3);font-size:13.5px">Cuando confirmes una venta, copiá el mensaje del pedido que llegó por WhatsApp y pegalo acá. Se descuentan solas las cantidades del stock.</p>
+      <label class="f">Mensaje del pedido<textarea id="vTxt" rows="7" placeholder="¡Hola Aramé! Quiero hacer este pedido:&#10;• 2 unidades — Aceite de oliva griego x500ml ($70.000)&#10;…"></textarea></label>
+      <div id="vPrev"></div>
+    </div>
+    <div class="sheet-foot">
+      <button class="btn ghost" data-close>Cancelar</button>
+      <button class="btn primary" id="vSave" disabled>Descontar del stock</button>
     </div>
   </div>
 </div>
@@ -527,7 +589,8 @@ function photoSrc(p){ return p.foto ? rawUrl(p.foto) : ""; }
 function render(){
   const q = norm($("#q").value.trim());
   const prods = DATA.productos.filter(p => !q || norm(p.nombre + " " + (p.descripcion || "") + " " + (p.categoria || "")).includes(q));
-  $("#cnt").textContent = `${DATA.productos.length} productos`;
+  const zero = DATA.productos.filter(p => stockOf(p) === 0).length, low = DATA.productos.filter(p => stockOf(p) > 0 && stockOf(p) <= lowStock()).length;
+  $("#cnt").textContent = `${DATA.productos.length} productos` + (zero ? ` · ${zero} sin stock` : "") + (low ? ` · ${low} con poco stock` : "");
   let html = "";
   for (const sec of currentSecs()){
    const inSec = prods.filter(p => secOf(p) === sec.id);
@@ -539,7 +602,7 @@ function render(){
     html += `<h2 class="cat-title">${esc(c)}</h2><div class="grid">` + items.map(p => {
       const flags = [
         p.destacado ? `<span class="flag" style="background:linear-gradient(135deg,#F4B23E,#D9772E);color:#1A1208">★ Más pedido</span>` : "",
-        p.disponible === false ? `<span class="flag off">Sin stock</span>` : "",
+        p.disponible === false ? `<span class="flag off">Pausado</span>` : stockOf(p) === 0 ? `<span class="flag off">Sin stock</span>` : stockOf(p) !== null && stockOf(p) <= lowStock() ? `<span class="flag" style="color:#FFB4A1">Poco stock</span>` : "",
         !p.foto ? `<span class="flag">Sin foto</span>` : "",
         !(p.precio > 0) ? `<span class="flag">Sin precio</span>` : "",
         p.descuento > 0 ? `<span class="flag" style="background:#E5484D;color:#fff">−${p.descuento}%</span>` : "",
@@ -549,6 +612,7 @@ function render(){
         <div class="in">
           <h3>${esc(p.nombre)}</h3>
           ${p.peso ? `<span class="meta">${esc(p.peso)}</span>` : ""}
+          ${stockOf(p) !== null ? `<span class="meta stk ${stockOf(p) === 0 ? "zero" : stockOf(p) <= lowStock() ? "low" : ""}">Stock: ${stockOf(p)}</span>` : ""}
           <span class="pr">${p.precio > 0 ? money(p.precio) + ` <span class="meta">${UNIT[p.unidad] || ""}</span>` : `<span class="meta">Precio a consultar</span>`}</span>
           <button class="btn edit" data-edit="${esc(p.id)}">Editar</button>
         </div>
@@ -585,6 +649,7 @@ function openEditor(id){
   $("#ePrecio").value = editing.precio > 0 ? editing.precio : "";
   $("#eUnidad").value = editing.unidad || "unidad";
   $("#eDisp").checked = editing.disponible !== false;
+  $("#eStock").value = stockOf(editing) === null ? "" : stockOf(editing);
   $("#eTop").checked = !!editing.destacado;
   $("#eOff").value = editing.descuento > 0 ? editing.descuento : ""; offHelp();
   $("#eDel").hidden = !p;
@@ -630,6 +695,7 @@ $("#eSave").onclick = async () => {
     categoria: $("#eCat").value.trim() || "Otros",
     seccion: $("#eSec").value,
     disponible: $("#eDisp").checked,
+    stock: $("#eStock").value.trim() === "" ? null : Math.max(0, Math.floor(Number($("#eStock").value) || 0)),
     destacado: $("#eTop").checked,
     descuento: clampPct($("#eOff").value),
   };
@@ -719,6 +785,112 @@ function addReview(r = {}){
 }
 $("#rvAdd").onclick = () => addReview({});
 $("#rvList").addEventListener("click", e => { const b = e.target.closest("[data-rvdel]"); if (b) b.closest(".rv-item").remove(); });
+
+/* ---------- stock ---------- */
+const stockOf = p => typeof p.stock === "number" && isFinite(p.stock) ? Math.max(0, Math.floor(p.stock)) : null;
+const lowStock = () => Math.max(0, Number(DATA && DATA.stockAviso) || 5);
+let ST = {};   // id -> valor editado ("" = sin control)
+function stRowClass(v){ if (v === "") return ""; const n = +v; return n === 0 ? "zero" : n <= (Number($("#stLow").value) || 0) ? "low" : ""; }
+function stLabel(v){ if (v === "") return "Sin control de stock"; const n = +v; return n === 0 ? "Sin stock" : n <= (Number($("#stLow").value) || 0) ? `Poco stock (${n})` : `${n} disponibles`; }
+function stDraw(){
+  const q = norm($("#stQ").value.trim()), f = $("#stF").value;
+  let html = "";
+  for (const sec of currentSecs()){
+    const rows = DATA.productos.filter(p => secOf(p) === sec.id).filter(p => {
+      const v = ST[p.id];
+      if (q && !norm(p.nombre).includes(q)) return false;
+      if (f === "low") return v !== "" && +v <= (Number($("#stLow").value) || 0);
+      if (f === "none") return v === "";
+      return true;
+    });
+    if (!rows.length) continue;
+    html += `<div class="st-sec">${esc(sec.nombre)}</div>` + rows.map(p => {
+      const v = ST[p.id], orig = stockOf(p) === null ? "" : String(stockOf(p));
+      return `<div class="st-row ${stRowClass(v)} ${v !== orig ? "changed" : ""}" data-id="${esc(p.id)}">
+        <div><b>${esc(p.nombre)}</b><small>${stLabel(v)}</small></div>
+        <div class="st-ctl"><button data-d="-1" aria-label="Restar uno">−</button><input type="number" inputmode="numeric" min="0" value="${v}" placeholder="—" aria-label="Stock de ${esc(p.nombre)}"><button data-d="1" aria-label="Sumar uno">+</button></div>
+      </div>`;
+    }).join("");
+  }
+  $("#stList").innerHTML = html || `<p style="color:var(--ink-3)">No hay productos que coincidan.</p>`;
+  const vals = Object.values(ST), lim = Number($("#stLow").value) || 0;
+  const zero = vals.filter(v => v !== "" && +v === 0).length, low = vals.filter(v => v !== "" && +v > 0 && +v <= lim).length, none = vals.filter(v => v === "").length;
+  $("#stSum").innerHTML = `<span class="r">${zero} sin stock</span><span class="o">${low} con poco stock</span><span>${none} sin control</span>`;
+}
+$("#bStock").onclick = () => {
+  ST = Object.fromEntries(DATA.productos.map(p => [p.id, stockOf(p) === null ? "" : String(stockOf(p))]));
+  $("#stLow").value = lowStock(); $("#stQ").value = ""; $("#stF").value = "";
+  stDraw(); openModal("#mStock");
+};
+$("#stQ").addEventListener("input", stDraw); $("#stF").addEventListener("change", stDraw); $("#stLow").addEventListener("input", stDraw);
+$("#stList").addEventListener("click", e => {
+  const b = e.target.closest("[data-d]"); if (!b) return;
+  const id = b.closest(".st-row").dataset.id, cur = ST[id] === "" ? 0 : +ST[id];
+  ST[id] = String(Math.max(0, cur + Number(b.dataset.d))); stDraw();
+});
+$("#stList").addEventListener("change", e => {
+  if (!e.target.matches("input")) return;
+  const id = e.target.closest(".st-row").dataset.id, v = e.target.value.trim();
+  ST[id] = v === "" ? "" : String(Math.max(0, Math.floor(Number(v) || 0))); stDraw();
+});
+$("#stSave").onclick = async () => {
+  const changes = DATA.productos.filter(p => ST[p.id] !== (stockOf(p) === null ? "" : String(stockOf(p)))).map(p => [p.id, ST[p.id] === "" ? null : +ST[p.id]]);
+  const lim = Math.max(0, Math.floor(Number($("#stLow").value) || 0));
+  if (!changes.length && lim === lowStock()){ closeModals(); return; }
+  busy(true, "Guardando stock…");
+  try{
+    await saveCatalog(d => {
+      d.stockAviso = lim;
+      const map = Object.fromEntries(changes);
+      (d.productos || []).forEach(p => { if (p.id in map){ if (map[p.id] === null) delete p.stock; else p.stock = map[p.id]; } });
+    }, `Actualizar stock (${changes.length} ${changes.length === 1 ? "producto" : "productos"})`);
+    busy(false); closeModals(); render(); toast("Stock guardado ✓ La tienda se actualiza en 1 o 2 minutos.");
+  }catch(e){ busy(false); toast(errText(e), true); }
+};
+
+/* ---------- descontar un pedido pegado desde WhatsApp ---------- */
+let VENTA = [];
+function parseOrder(txt){
+  const byName = Object.fromEntries(DATA.productos.map(p => [norm(p.nombre.trim()), p]));
+  const items = [], unknown = [];
+  for (const raw of txt.split(/\r?\n/)){
+    const l = raw.replace(/\*/g, "").trim();
+    const m = l.match(/^[•\-·]\s*(\d+)\s+[^—–]*[—–]\s*(.+?)(?:\s+\((?:\$|precio)[^()]*\))?\s*$/i);
+    if (!m) continue;
+    const p = byName[norm(m[2].trim())];
+    if (p) items.push({p, q: +m[1]}); else unknown.push(m[2].trim());
+  }
+  return {items, unknown};
+}
+function ventaDraw(){
+  const {items, unknown} = parseOrder($("#vTxt").value);
+  VENTA = items;
+  if (!items.length && !unknown.length){ $("#vPrev").innerHTML = ""; $("#vSave").disabled = true; return; }
+  const rows = items.map(({p, q}) => {
+    const st = stockOf(p);
+    const after = st === null ? "sin control" : Math.max(0, st - q);
+    return `<tr><td>${esc(p.nombre)}</td><td class="n">${q}</td><td class="n">${st === null ? "—" : st}</td><td class="n" style="color:${st !== null && st - q < 0 ? "var(--red)" : "inherit"}">${after}</td></tr>`;
+  }).join("");
+  const neg = items.filter(({p, q}) => stockOf(p) !== null && stockOf(p) - q < 0);
+  $("#vPrev").innerHTML = (items.length ? `<table class="v-tab"><thead><tr><th>Producto</th><th style="text-align:right">Pide</th><th style="text-align:right">Stock</th><th style="text-align:right">Queda</th></tr></thead><tbody>${rows}</tbody></table>` : "")
+    + (neg.length ? `<p class="v-warn">${neg.map(x => esc(x.p.nombre)).join(", ")}: el pedido supera el stock cargado. Queda en 0.</p>` : "")
+    + (items.some(x => stockOf(x.p) === null) ? `<p class="v-warn" style="color:var(--ink-3)">Los productos “sin control” no se modifican.</p>` : "")
+    + (unknown.length ? `<p class="v-warn">No encontré en el catálogo: ${unknown.map(esc).join(", ")}.</p>` : "");
+  $("#vSave").disabled = !items.some(x => stockOf(x.p) !== null);
+}
+$("#bVenta").onclick = () => { $("#vTxt").value = ""; ventaDraw(); openModal("#mVenta"); setTimeout(() => $("#vTxt").focus(), 50); };
+$("#vTxt").addEventListener("input", ventaDraw);
+$("#vSave").onclick = async () => {
+  const sub = {}; VENTA.forEach(({p, q}) => { if (stockOf(p) !== null) sub[p.id] = (sub[p.id] || 0) + q; });
+  const nombre = ($("#vTxt").value.match(/Nombre:\s*(.+)/) || [])[1];
+  busy(true, "Descontando…");
+  try{
+    await saveCatalog(d => {
+      (d.productos || []).forEach(p => { if (p.id in sub && typeof p.stock === "number") p.stock = Math.max(0, Math.floor(p.stock) - sub[p.id]); });
+    }, `Descontar pedido${nombre ? " de " + nombre.trim() : ""}`);
+    busy(false); closeModals(); render(); toast("Pedido descontado del stock ✓");
+  }catch(e){ busy(false); toast(errText(e), true); }
+};
 
 /* ---------- galería ---------- */
 let GROWS = [];   // {foto, titulo, link, nueva: dataURL}
