@@ -1,0 +1,548 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Arame · Comida casera</title>
+<meta name="description" content="Arame — comida casera hecha todos los días. Pedí online y recibí en tu casa o retirá por el local.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,800&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#F7F1E6; --bg-2:#EFE6D5; --card:#FFFBF4;
+    --ink:#2B1F17; --ink-2:#6B5A4C; --ink-3:#9A8877;
+    --line:#E4D8C4;
+    --terra:#C4532F; --terra-2:#A8411F; --terra-soft:#F6DFD3;
+    --olive:#5E6B36; --olive-soft:#E3E6CC;
+    --mustard:#E0A63A; --mustard-soft:#F8E8C4;
+    --serif:"Fraunces",Georgia,serif;
+    --body:"Manrope",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
+    --r:18px;
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--body);line-height:1.55;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+  a{color:inherit;text-decoration:none}
+  button{font:inherit;color:inherit;cursor:pointer}
+  h1,h2,h3{margin:0;line-height:1.1;font-family:var(--serif);font-weight:800}
+  .container{max-width:1160px;margin:0 auto;padding:0 20px}
+
+  /* nav */
+  header{position:sticky;top:0;z-index:50;background:rgba(247,241,230,.88);backdrop-filter:blur(12px);border-bottom:1px solid var(--line)}
+  .nav{display:flex;align-items:center;gap:18px;height:68px}
+  .logo{display:flex;align-items:center;gap:10px;font-family:var(--serif);font-weight:800;font-size:26px;letter-spacing:-.01em}
+  .logo .mk{width:34px;height:34px;border-radius:50%;background:var(--terra);display:grid;place-items:center;color:#fff;font-size:17px}
+  .nav .links{display:flex;gap:24px;margin-left:auto;font-weight:700;font-size:14px;color:var(--ink-2)}
+  .nav .links a:hover{color:var(--terra)}
+  .cart-btn{display:flex;align-items:center;gap:8px;background:var(--ink);color:#fff;border:0;border-radius:999px;padding:10px 16px;font-weight:700;font-size:14px}
+  .cart-btn .count{background:var(--mustard);color:var(--ink);border-radius:999px;min-width:22px;height:22px;display:grid;place-items:center;font-size:12px;padding:0 6px}
+  .cart-btn.bump{animation:bump .35s ease}
+  @keyframes bump{50%{transform:scale(1.08)}}
+  @media(max-width:720px){.nav .links{display:none}.cart-btn{margin-left:auto}}
+
+  /* hero */
+  .hero{padding:56px 0 40px}
+  .hero-grid{display:grid;grid-template-columns:1.15fr .85fr;gap:40px;align-items:center}
+  .tag{display:inline-flex;align-items:center;gap:8px;background:var(--olive-soft);color:var(--olive);font-weight:800;font-size:12.5px;letter-spacing:.06em;text-transform:uppercase;padding:7px 12px;border-radius:999px}
+  .tag .dot{width:8px;height:8px;border-radius:50%;background:var(--olive)}
+  .tag.closed{background:var(--terra-soft);color:var(--terra-2)}
+  .tag.closed .dot{background:var(--terra)}
+  .hero h1{font-size:clamp(40px,6.4vw,74px);margin:18px 0 16px;letter-spacing:-.025em}
+  .hero h1 em{font-style:italic;color:var(--terra)}
+  .hero p{font-size:18px;color:var(--ink-2);max-width:520px;margin:0 0 26px}
+  .btn{display:inline-flex;align-items:center;gap:8px;border-radius:999px;padding:14px 22px;font-weight:800;font-size:15px;border:0;transition:.15s}
+  .btn-main{background:var(--terra);color:#fff}
+  .btn-main:hover{background:var(--terra-2)}
+  .btn-ghost{background:transparent;border:1.5px solid var(--ink);color:var(--ink)}
+  .btn-ghost:hover{background:var(--ink);color:#fff}
+  .hero-actions{display:flex;gap:12px;flex-wrap:wrap}
+  .hero-facts{display:flex;gap:28px;margin-top:34px;flex-wrap:wrap}
+  .hero-facts div{font-size:13px;color:var(--ink-2)}
+  .hero-facts b{display:block;font-family:var(--serif);font-size:22px;color:var(--ink)}
+  .hero-art{aspect-ratio:1;border-radius:50%;background:var(--mustard-soft);position:relative;display:grid;place-items:center}
+  .hero-art svg{width:78%;height:78%}
+  .sticker{position:absolute;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:10px 14px;font-size:13px;font-weight:700;box-shadow:0 12px 28px -14px rgba(43,31,23,.35)}
+  .sticker small{display:block;font-weight:500;color:var(--ink-2)}
+  .s1{top:8%;left:-4%}.s2{bottom:10%;right:-2%}
+  @media(max-width:860px){.hero-grid{grid-template-columns:1fr}.hero-art{max-width:360px;width:100%;margin:0 auto}.s1{left:0}.s2{right:0}}
+
+  /* menú */
+  section{padding:40px 0}
+  .sec-head{display:flex;align-items:end;justify-content:space-between;gap:16px;flex-wrap:wrap;margin-bottom:22px}
+  .sec-head h2{font-size:clamp(30px,4vw,44px);letter-spacing:-.02em}
+  .sec-head p{margin:6px 0 0;color:var(--ink-2)}
+  .search{display:flex;align-items:center;gap:8px;background:var(--card);border:1px solid var(--line);border-radius:999px;padding:10px 16px;min-width:260px}
+  .search input{border:0;background:none;outline:none;font:inherit;width:100%;color:var(--ink)}
+  @media(max-width:600px){.search{min-width:0;width:100%}}
+  .chips{display:flex;gap:8px;overflow-x:auto;padding-bottom:6px;margin-bottom:22px;scrollbar-width:none}
+  .chips::-webkit-scrollbar{display:none}
+  .chip{flex-shrink:0;border:1.5px solid var(--line);background:var(--card);border-radius:999px;padding:9px 16px;font-weight:700;font-size:14px;color:var(--ink-2);transition:.15s}
+  .chip:hover{border-color:var(--ink-3)}
+  .chip.on{background:var(--ink);border-color:var(--ink);color:#fff}
+
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:18px}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:var(--r);overflow:hidden;display:flex;flex-direction:column;transition:transform .15s,box-shadow .15s}
+  .card:hover{transform:translateY(-3px);box-shadow:0 18px 34px -22px rgba(43,31,23,.45)}
+  .thumb{aspect-ratio:16/10;display:grid;place-items:center;position:relative}
+  .thumb svg{width:44%;height:auto}
+  .badge{position:absolute;top:12px;left:12px;background:var(--card);border-radius:999px;padding:4px 10px;font-size:11.5px;font-weight:800;letter-spacing:.03em}
+  .badge.veg{color:var(--olive)}
+  .badge.hot{color:var(--terra)}
+  .card-body{padding:16px 16px 18px;display:flex;flex-direction:column;gap:6px;flex:1}
+  .card h3{font-size:20px;letter-spacing:-.01em}
+  .card p{margin:0;font-size:14px;color:var(--ink-2);flex:1}
+  .card-foot{display:flex;align-items:center;justify-content:space-between;margin-top:10px}
+  .price{font-family:var(--serif);font-weight:800;font-size:21px}
+  .add{background:var(--terra);color:#fff;border:0;border-radius:999px;padding:9px 15px;font-weight:800;font-size:14px}
+  .add:hover{background:var(--terra-2)}
+  .stepper{display:flex;align-items:center;gap:4px;background:var(--bg-2);border-radius:999px;padding:3px}
+  .stepper button{width:32px;height:32px;border-radius:50%;border:0;background:var(--card);font-weight:800;font-size:17px;line-height:1}
+  .stepper span{min-width:24px;text-align:center;font-weight:800}
+  .empty{padding:40px;text-align:center;color:var(--ink-2);background:var(--card);border:1px dashed var(--line);border-radius:var(--r)}
+
+  /* cómo pedir */
+  .steps{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+  .step{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:24px}
+  .step .n{width:38px;height:38px;border-radius:50%;background:var(--mustard-soft);color:var(--ink);display:grid;place-items:center;font-family:var(--serif);font-weight:800;font-size:18px;margin-bottom:14px}
+  .step h3{font-size:21px;margin-bottom:6px}
+  .step p{margin:0;color:var(--ink-2);font-size:15px}
+  @media(max-width:760px){.steps{grid-template-columns:1fr}}
+
+  /* info */
+  .info{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+  .info-card{background:var(--ink);color:#F7F1E6;border-radius:var(--r);padding:28px}
+  .info-card.light{background:var(--olive-soft);color:var(--ink)}
+  .info-card h3{font-size:26px;margin-bottom:14px}
+  .hours{list-style:none;margin:0;padding:0}
+  .hours li{display:flex;justify-content:space-between;padding:9px 0;border-bottom:1px solid rgba(247,241,230,.15);font-size:15px}
+  .hours li:last-child{border-bottom:0}
+  .hours li.today{color:var(--mustard);font-weight:800}
+  .info-card.light p{margin:0 0 10px;color:var(--ink-2)}
+  .info-card.light b{color:var(--ink)}
+  @media(max-width:760px){.info{grid-template-columns:1fr}}
+
+  footer{padding:36px 0 90px;color:var(--ink-3);font-size:13.5px;border-top:1px solid var(--line);margin-top:30px}
+  footer .container{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}
+
+  /* carrito */
+  .overlay{position:fixed;inset:0;background:rgba(43,31,23,.45);z-index:80;opacity:0;pointer-events:none;transition:opacity .2s}
+  .overlay.open{opacity:1;pointer-events:auto}
+  .drawer{position:fixed;top:0;right:0;bottom:0;height:100dvh;width:min(440px,100%);background:var(--bg);z-index:90;transform:translateX(100%);visibility:hidden;transition:transform .25s ease,visibility 0s .25s;display:flex;flex-direction:column;overflow:hidden}
+  .drawer.open{transform:none;visibility:visible;transition:transform .25s ease;box-shadow:-20px 0 40px -20px rgba(43,31,23,.4)}
+  .drawer-head{display:flex;align-items:center;justify-content:space-between;padding:18px 20px;border-bottom:1px solid var(--line)}
+  .drawer-head h2{font-size:26px}
+  .x{width:38px;height:38px;border-radius:50%;border:1px solid var(--line);background:var(--card);font-size:18px}
+  .drawer-body{flex:1;min-height:0;overflow-y:auto;padding:16px 20px}
+  .line-item{display:flex;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid var(--line)}
+  .line-item .li-name{flex:1;font-weight:700;font-size:15px}
+  .line-item .li-name small{display:block;font-weight:500;color:var(--ink-2)}
+  .line-item .li-total{font-weight:800;min-width:76px;text-align:right}
+  .form{margin-top:18px;display:flex;flex-direction:column;gap:12px}
+  .form h3{font-size:19px;margin-top:6px}
+  .seg{display:grid;grid-template-columns:1fr 1fr;gap:6px;background:var(--bg-2);border-radius:12px;padding:4px}
+  .seg button{border:0;background:none;border-radius:9px;padding:10px;font-weight:800;font-size:14px;color:var(--ink-2)}
+  .seg button.on{background:var(--card);color:var(--ink);box-shadow:0 2px 6px -3px rgba(43,31,23,.3)}
+  .form label{font-size:13px;font-weight:700;color:var(--ink-2);display:flex;flex-direction:column;gap:5px}
+  .form input,.form textarea,.form select{font:inherit;font-size:15px;color:var(--ink);background:var(--card);border:1.5px solid var(--line);border-radius:12px;padding:11px 13px;outline:none}
+  .form input:focus,.form textarea:focus,.form select:focus{border-color:var(--terra)}
+  .form .err{border-color:var(--terra)}
+  .drawer-foot{padding:16px 20px 20px;border-top:1px solid var(--line);background:var(--card)}
+  .sum{display:flex;justify-content:space-between;font-size:14.5px;color:var(--ink-2);padding:3px 0}
+  .sum.total{font-size:19px;color:var(--ink);font-weight:800;padding-top:8px}
+  .hint{font-size:12.5px;color:var(--olive);font-weight:700;margin:4px 0 0}
+  .send{width:100%;justify-content:center;margin-top:12px;background:#1F9D55;color:#fff;font-size:16px;padding:15px}
+  .send:hover{background:#17864A}
+  .send:disabled{background:var(--ink-3);cursor:not-allowed}
+
+  .toast{position:fixed;left:50%;top:82px;transform:translate(-50%,-12px);max-width:calc(100% - 32px);text-align:center;background:var(--ink);color:#fff;padding:11px 18px;border-radius:999px;font-weight:700;font-size:14px;opacity:0;transition:.25s;z-index:100;pointer-events:none}
+  .toast.show{opacity:1;transform:translate(-50%,0)}
+
+  /* barra inferior en móvil */
+  .mbar{display:none}
+  @media(max-width:720px){
+    .mbar{position:fixed;left:12px;right:12px;bottom:12px;z-index:70;display:none;align-items:center;justify-content:space-between;background:var(--terra);color:#fff;border:0;border-radius:16px;padding:14px 18px;font-weight:800;font-size:15px;box-shadow:0 14px 30px -12px rgba(168,65,31,.6)}
+    .mbar.show{display:flex}
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="container nav">
+    <a href="#top" class="logo"><span class="mk">✺</span>Arame</a>
+    <nav class="links">
+      <a href="#menu">Menú</a>
+      <a href="#como-pedir">Cómo pedir</a>
+      <a href="#horarios">Horarios y envíos</a>
+    </nav>
+    <button class="cart-btn" id="cartBtn" aria-label="Abrir pedido">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 7h14l-1.5 11a2 2 0 0 1-2 1.7h-7a2 2 0 0 1-2-1.7z"/><path d="M9 10V6a3 3 0 0 1 6 0v4"/></svg>
+      Mi pedido <span class="count" id="cartCount">0</span>
+    </button>
+  </div>
+</header>
+
+<main id="top">
+  <section class="hero">
+    <div class="container hero-grid">
+      <div>
+        <span class="tag" id="openTag"><span class="dot"></span><span id="openText">Abierto ahora</span></span>
+        <h1>Comida casera, <em>como en casa</em> pero sin cocinar.</h1>
+        <p>Cocinamos todos los días con ingredientes frescos. Elegí tus platos, armá tu pedido y te lo llevamos o lo retirás por el local.</p>
+        <div class="hero-actions">
+          <a href="#menu" class="btn btn-main">Ver el menú →</a>
+          <a href="#como-pedir" class="btn btn-ghost">Cómo pedir</a>
+        </div>
+        <div class="hero-facts">
+          <div><b>Del día</b>Todo se cocina hoy</div>
+          <div><b>30–45 min</b>Tiempo de entrega</div>
+          <div><b id="freeShipFact">Envío gratis</b><span id="freeShipText">en pedidos grandes</span></div>
+        </div>
+      </div>
+      <div class="hero-art" aria-hidden="true">
+        <svg viewBox="0 0 200 200" fill="none">
+          <circle cx="100" cy="100" r="74" fill="#FFFBF4" stroke="#2B1F17" stroke-width="3"/>
+          <circle cx="100" cy="100" r="56" fill="#F6DFD3" stroke="#2B1F17" stroke-width="2"/>
+          <path d="M70 108c6-20 26-30 44-24 12 4 20 14 18 26-2 13-18 20-34 18-18-2-32-8-28-20z" fill="#E0A63A" stroke="#2B1F17" stroke-width="2.5"/>
+          <path d="M80 104c8-2 14 2 20 0M92 116c8-2 14 2 20 0" stroke="#A8411F" stroke-width="2.5" stroke-linecap="round"/>
+          <path d="M120 74c6-8 16-10 22-6-4 8-14 12-22 6z" fill="#5E6B36" stroke="#2B1F17" stroke-width="2"/>
+          <path d="M60 84c2-9 10-14 18-12-2 9-10 14-18 12z" fill="#5E6B36" stroke="#2B1F17" stroke-width="2"/>
+          <circle cx="132" cy="122" r="6" fill="#C4532F" stroke="#2B1F17" stroke-width="2"/>
+          <circle cx="68" cy="124" r="5" fill="#C4532F" stroke="#2B1F17" stroke-width="2"/>
+        </svg>
+        <div class="sticker s1">🔥 Plato del día<small id="dishOfDay">—</small></div>
+        <div class="sticker s2">⭐ 4,9 de 5<small>+300 opiniones</small></div>
+      </div>
+    </div>
+  </section>
+
+  <section id="menu">
+    <div class="container">
+      <div class="sec-head">
+        <div>
+          <h2>Nuestro menú</h2>
+          <p>Tocá “Agregar” y armá tu pedido. Lo confirmás por WhatsApp.</p>
+        </div>
+        <label class="search">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+          <input id="search" type="search" placeholder="Buscar un plato…" aria-label="Buscar un plato">
+        </label>
+      </div>
+      <div class="chips" id="chips" role="tablist"></div>
+      <div class="grid" id="grid"></div>
+    </div>
+  </section>
+
+  <section id="como-pedir">
+    <div class="container">
+      <div class="sec-head"><div><h2>Cómo pedir</h2><p>En tres pasos, sin apps ni registros.</p></div></div>
+      <div class="steps">
+        <div class="step"><div class="n">1</div><h3>Elegí tus platos</h3><p>Agregá lo que quieras al pedido. Podés cambiar cantidades cuando quieras.</p></div>
+        <div class="step"><div class="n">2</div><h3>Completá tus datos</h3><p>Envío a domicilio o retiro por el local, y cómo vas a pagar.</p></div>
+        <div class="step"><div class="n">3</div><h3>Confirmá por WhatsApp</h3><p>Se abre WhatsApp con tu pedido listo. Lo enviás y te confirmamos al toque.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section id="horarios">
+    <div class="container info">
+      <div class="info-card">
+        <h3>Horarios</h3>
+        <ul class="hours" id="hours"></ul>
+      </div>
+      <div class="info-card light">
+        <h3>Envíos y pagos</h3>
+        <p><b>Envío a domicilio:</b> <span id="shipCostText"></span></p>
+        <p><b>Retiro por el local:</b> <span id="addressText"></span>, sin costo.</p>
+        <p><b>Pagás con:</b> efectivo, transferencia o Mercado Pago.</p>
+        <p><b>Pedido mínimo para envío:</b> <span id="minOrderText"></span>.</p>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="container">
+    <span>© <span id="year"></span> Arame · Comida casera</span>
+    <span>Diseñado por <b>RT Design</b></span>
+  </div>
+</footer>
+
+<button class="mbar" id="mbar"><span id="mbarCount">0 productos</span><span id="mbarTotal">Ver pedido →</span></button>
+
+<div class="overlay" id="overlay"></div>
+<aside class="drawer" id="drawer" aria-label="Tu pedido" aria-hidden="true">
+  <div class="drawer-head">
+    <h2>Tu pedido</h2>
+    <button class="x" id="closeCart" aria-label="Cerrar">✕</button>
+  </div>
+  <div class="drawer-body">
+    <div id="lines"></div>
+    <div class="form" id="orderForm">
+      <h3>¿Cómo lo querés?</h3>
+      <div class="seg" id="modeSeg">
+        <button data-mode="envio" class="on">Envío</button>
+        <button data-mode="retiro">Retiro</button>
+      </div>
+      <label>Nombre<input id="fName" autocomplete="name" placeholder="Tu nombre"></label>
+      <label id="addrWrap">Dirección<input id="fAddr" autocomplete="street-address" placeholder="Calle, número, piso/depto"></label>
+      <label>Forma de pago
+        <select id="fPay">
+          <option>Efectivo</option>
+          <option>Transferencia</option>
+          <option>Mercado Pago</option>
+        </select>
+      </label>
+      <label>Aclaraciones (opcional)<textarea id="fNotes" rows="2" placeholder="Sin cebolla, timbre roto, etc."></textarea></label>
+    </div>
+  </div>
+  <div class="drawer-foot">
+    <div class="sum"><span>Subtotal</span><span id="sSub">$0</span></div>
+    <div class="sum"><span>Envío</span><span id="sShip">$0</span></div>
+    <div class="sum total"><span>Total</span><span id="sTotal">$0</span></div>
+    <p class="hint" id="hint"></p>
+    <button class="btn send" id="sendBtn">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2zm5.3 14.2c-.2.6-1.3 1.2-1.8 1.3-.5.1-1 .1-1.7-.1-.4-.1-.9-.3-1.5-.6-2.7-1.2-4.4-3.9-4.6-4.1-.1-.2-1.1-1.4-1.1-2.7s.7-1.9.9-2.2c.2-.3.5-.3.7-.3h.5c.2 0 .4 0 .6.5l.8 2c.1.2.1.4 0 .5l-.3.5-.4.4c-.1.1-.3.3-.1.6.2.3.7 1.2 1.6 2 1.1 1 2 1.3 2.3 1.4.3.1.4.1.6-.1l.8-1c.2-.3.4-.2.6-.1l1.9.9c.3.1.5.2.5.3.1.2.1.7-.1 1.3z"/></svg>
+      Enviar pedido por WhatsApp
+    </button>
+  </div>
+</aside>
+
+<div class="toast" id="toast"></div>
+
+<script>
+/* ============================================================
+   CONFIGURACIÓN — editá estos valores para tu negocio
+   ============================================================ */
+const CONFIG = {
+  whatsapp: "5491100000000",          // número con código de país, sin + ni espacios
+  address: "Av. Siempreviva 742",     // dirección del local para retiro
+  shipCost: 2500,                     // costo de envío
+  freeShipFrom: 30000,                // envío gratis desde este subtotal (0 = nunca)
+  minOrderShip: 10000,                // pedido mínimo para envío
+  // horarios: [día (0=domingo), apertura, cierre] — null = cerrado
+  hours: [null, ["11:30","15:00"], ["11:30","15:00"], ["11:30","15:00"], ["11:30","15:00"], ["11:30","22:30"], ["19:30","23:00"]],
+};
+
+const CATS = [
+  {id:"platos",    name:"Platos",     bg:"#F6DFD3"},
+  {id:"empanadas", name:"Empanadas",  bg:"#F8E8C4"},
+  {id:"tartas",    name:"Tartas",     bg:"#EFE6D5"},
+  {id:"ensaladas", name:"Ensaladas",  bg:"#E3E6CC"},
+  {id:"postres",   name:"Postres",    bg:"#F3D9DE"},
+  {id:"bebidas",   name:"Bebidas",    bg:"#D9E6EA"},
+];
+
+// tag: "veg" vegetariano, "hot" más pedido
+const PRODUCTS = [
+  {id:"p1", cat:"platos", name:"Milanesa napolitana con puré", desc:"Milanesa de nalga, salsa de tomate, jamón y muzzarella. Puré de papas casero.", price:12500, tag:"hot"},
+  {id:"p2", cat:"platos", name:"Pastel de papas", desc:"Carne cortada a cuchillo, huevo y aceitunas, gratinado con puré.", price:11000},
+  {id:"p3", cat:"platos", name:"Pollo al horno con papas", desc:"Cuarto de pollo marinado en limón y romero, papas rústicas.", price:10500},
+  {id:"p4", cat:"platos", name:"Ñoquis con bolognesa", desc:"Ñoquis de papa hechos a mano con salsa bolognesa y queso rallado.", price:9800},
+  {id:"p5", cat:"platos", name:"Guiso de lentejas", desc:"Lentejas, chorizo colorado, panceta y verduras. Ideal para el frío.", price:9500},
+  {id:"p6", cat:"platos", name:"Wok de vegetales y arroz", desc:"Vegetales salteados con salsa de soja, jengibre y arroz yamaní.", price:9200, tag:"veg"},
+  {id:"e1", cat:"empanadas", name:"Empanada de carne cortada a cuchillo", desc:"Al horno. Con huevo, cebolla de verdeo y comino.", price:1800, tag:"hot"},
+  {id:"e2", cat:"empanadas", name:"Empanada de jamón y queso", desc:"Al horno, bien cargada.", price:1700},
+  {id:"e3", cat:"empanadas", name:"Empanada de humita", desc:"Choclo cremoso con salsa blanca y zapallo.", price:1700, tag:"veg"},
+  {id:"e4", cat:"empanadas", name:"Docena de empanadas", desc:"12 empanadas surtidas a elección (aclaralo en el pedido).", price:19000},
+  {id:"t1", cat:"tartas", name:"Tarta de jamón y queso", desc:"Porción grande, masa casera.", price:6500},
+  {id:"t2", cat:"tartas", name:"Tarta de verdura", desc:"Acelga, espinaca, huevo y queso.", price:6200, tag:"veg"},
+  {id:"t3", cat:"tartas", name:"Tarta de calabaza y queso", desc:"Calabaza asada, cebolla caramelizada y muzzarella.", price:6200, tag:"veg"},
+  {id:"s1", cat:"ensaladas", name:"Ensalada César", desc:"Lechuga, pollo grillado, croutons, parmesano y aderezo César.", price:8900},
+  {id:"s2", cat:"ensaladas", name:"Ensalada mediterránea", desc:"Quinoa, tomate, pepino, aceitunas, queso feta y limón.", price:8500, tag:"veg"},
+  {id:"d1", cat:"postres", name:"Flan casero con dulce de leche", desc:"Como el de la abuela.", price:4200, tag:"hot"},
+  {id:"d2", cat:"postres", name:"Chocotorta", desc:"Porción generosa.", price:4800},
+  {id:"d3", cat:"postres", name:"Budín de limón", desc:"Con glaseado. Porción.", price:3200, tag:"veg"},
+  {id:"b1", cat:"bebidas", name:"Agua mineral 500 ml", desc:"Con o sin gas.", price:1500},
+  {id:"b2", cat:"bebidas", name:"Gaseosa 500 ml", desc:"Coca-Cola, Sprite o Fanta.", price:2200},
+  {id:"b3", cat:"bebidas", name:"Limonada casera 500 ml", desc:"Con menta y jengibre.", price:2800, tag:"veg"},
+];
+
+/* íconos por categoría */
+const ICONS = {
+  platos:`<svg viewBox="0 0 100 100" fill="none" stroke="#2B1F17" stroke-width="3"><circle cx="50" cy="52" r="36" fill="#FFFBF4"/><circle cx="50" cy="52" r="24" fill="#E0A63A"/><path d="M38 48c6-2 10 2 16 0M42 58c6-2 10 2 16 0" stroke="#A8411F" stroke-linecap="round"/></svg>`,
+  empanadas:`<svg viewBox="0 0 100 100" fill="none" stroke="#2B1F17" stroke-width="3" stroke-linejoin="round"><path d="M14 64c0-22 16-38 36-38s36 16 36 38z" fill="#E0A63A"/><path d="M14 64c4-4 8 4 12 0s8 4 12 0 8 4 12 0 8 4 12 0 8 4 12 0 8 4 10 0" stroke-linecap="round"/></svg>`,
+  tartas:`<svg viewBox="0 0 100 100" fill="none" stroke="#2B1F17" stroke-width="3" stroke-linejoin="round"><path d="M18 70 50 22l32 48z" fill="#E0A63A"/><path d="M18 70h64v8H18z" fill="#C4532F"/><circle cx="46" cy="52" r="4" fill="#5E6B36"/><circle cx="58" cy="60" r="3" fill="#5E6B36"/></svg>`,
+  ensaladas:`<svg viewBox="0 0 100 100" fill="none" stroke="#2B1F17" stroke-width="3" stroke-linejoin="round"><path d="M34 46c-4-14 8-22 16-16 6-10 22-4 18 10 10 2 10 14 2 16" fill="#5E6B36"/><circle cx="42" cy="44" r="5" fill="#C4532F"/><path d="M16 50h68c0 18-14 30-34 30S16 68 16 50z" fill="#FFFBF4"/></svg>`,
+  postres:`<svg viewBox="0 0 100 100" fill="none" stroke="#2B1F17" stroke-width="3" stroke-linejoin="round"><path d="M28 50c0-14 10-22 22-22s22 8 22 22z" fill="#F3B6C2"/><circle cx="50" cy="24" r="5" fill="#C4532F"/><path d="M26 50h48l-6 30H32z" fill="#E0A63A"/><path d="M40 54l2 22M50 54v22M60 54l-2 22"/></svg>`,
+  bebidas:`<svg viewBox="0 0 100 100" fill="none" stroke="#2B1F17" stroke-width="3" stroke-linejoin="round"><path d="M30 26h40l-6 56H36z" fill="#FFFBF4"/><path d="M33 44h34l-4 38H37z" fill="#E0A63A"/><path d="M56 12l-4 30" stroke-linecap="round"/><circle cx="64" cy="30" r="7" fill="#F8E8C4"/></svg>`,
+};
+
+/* ============================================================ */
+const $ = s => document.querySelector(s);
+const money = n => "$" + Math.round(n).toLocaleString("es-AR");
+const byId = Object.fromEntries(PRODUCTS.map(p => [p.id, p]));
+const store = {
+  get(k, d){ try{ const v = localStorage.getItem(k); return v ? JSON.parse(v) : d; }catch(e){ return d; } },
+  set(k, v){ try{ localStorage.setItem(k, JSON.stringify(v)); }catch(e){} },
+};
+
+let cart = store.get("arame.cart", {});
+for (const id in cart) if (!byId[id] || cart[id] < 1) delete cart[id];
+let activeCat = "todo";
+let query = "";
+let mode = "envio";
+
+/* chips */
+function renderChips(){
+  const all = [{id:"todo", name:"Todo"}, ...CATS];
+  $("#chips").innerHTML = all.map(c =>
+    `<button class="chip ${c.id===activeCat?"on":""}" data-cat="${c.id}" role="tab" aria-selected="${c.id===activeCat}">${c.name}</button>`).join("");
+}
+$("#chips").addEventListener("click", e => {
+  const b = e.target.closest(".chip"); if (!b) return;
+  activeCat = b.dataset.cat; renderChips(); renderGrid();
+});
+$("#search").addEventListener("input", e => { query = e.target.value.trim().toLowerCase(); renderGrid(); });
+
+/* grilla */
+function norm(s){ return s.toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, ""); }
+function renderGrid(){
+  const q = norm(query);
+  const list = PRODUCTS.filter(p =>
+    (activeCat === "todo" || p.cat === activeCat) &&
+    (!q || norm(p.name + " " + p.desc).includes(q)));
+  if (!list.length){ $("#grid").innerHTML = `<div class="empty">No encontramos “${escapeHtml(query)}”. Probá con otra palabra.</div>`; return; }
+  const catBg = Object.fromEntries(CATS.map(c => [c.id, c.bg]));
+  $("#grid").innerHTML = list.map(p => {
+    const q = cart[p.id] || 0;
+    const badge = p.tag === "veg" ? `<span class="badge veg">● Vegetariano</span>`
+                : p.tag === "hot" ? `<span class="badge hot">★ Más pedido</span>` : "";
+    const ctrl = q
+      ? `<div class="stepper"><button data-dec="${p.id}" aria-label="Quitar uno">−</button><span>${q}</span><button data-inc="${p.id}" aria-label="Agregar uno">+</button></div>`
+      : `<button class="add" data-inc="${p.id}">Agregar</button>`;
+    return `<article class="card">
+      <div class="thumb" style="background:${catBg[p.cat]}">${badge}${ICONS[p.cat]}</div>
+      <div class="card-body">
+        <h3>${p.name}</h3><p>${p.desc}</p>
+        <div class="card-foot"><span class="price">${money(p.price)}</span>${ctrl}</div>
+      </div></article>`;
+  }).join("");
+}
+function escapeHtml(s){ return s.replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c])); }
+
+/* carrito */
+function change(id, d){
+  cart[id] = (cart[id] || 0) + d;
+  if (cart[id] <= 0) delete cart[id];
+  store.set("arame.cart", cart);
+  if (d > 0){ toast(`Agregaste ${byId[id].name}`); const b = $("#cartBtn"); b.classList.remove("bump"); void b.offsetWidth; b.classList.add("bump"); }
+  renderGrid(); renderCart();
+}
+document.addEventListener("click", e => {
+  const inc = e.target.closest("[data-inc]"); if (inc) return change(inc.dataset.inc, 1);
+  const dec = e.target.closest("[data-dec]"); if (dec) return change(dec.dataset.dec, -1);
+});
+
+function totals(){
+  const items = Object.entries(cart).map(([id, q]) => ({p: byId[id], q}));
+  const count = items.reduce((a, i) => a + i.q, 0);
+  const sub = items.reduce((a, i) => a + i.p.price * i.q, 0);
+  const free = CONFIG.freeShipFrom > 0 && sub >= CONFIG.freeShipFrom;
+  const ship = mode === "envio" && sub > 0 && !free ? CONFIG.shipCost : 0;
+  return {items, count, sub, ship, free, total: sub + ship};
+}
+
+function renderCart(){
+  const t = totals();
+  $("#cartCount").textContent = t.count;
+  $("#mbar").classList.toggle("show", t.count > 0);
+  $("#mbarCount").textContent = `${t.count} ${t.count === 1 ? "producto" : "productos"} · ${money(t.total)}`;
+  $("#lines").innerHTML = t.items.length
+    ? t.items.map(({p, q}) => `<div class="line-item">
+        <div class="li-name">${p.name}<small>${money(p.price)} c/u</small></div>
+        <div class="stepper"><button data-dec="${p.id}" aria-label="Quitar uno">−</button><span>${q}</span><button data-inc="${p.id}" aria-label="Agregar uno">+</button></div>
+        <div class="li-total">${money(p.price * q)}</div></div>`).join("")
+    : `<div class="empty">Tu pedido está vacío.<br>Agregá algo rico del menú.</div>`;
+  $("#orderForm").style.display = t.items.length ? "" : "none";
+  $("#sSub").textContent = money(t.sub);
+  $("#sShip").textContent = mode === "retiro" ? "Retiro" : t.free ? "Gratis" : money(t.ship);
+  $("#sTotal").textContent = money(t.total);
+
+  let hint = "";
+  if (mode === "envio" && t.sub > 0 && t.sub < CONFIG.minOrderShip)
+    hint = `Te faltan ${money(CONFIG.minOrderShip - t.sub)} para el pedido mínimo de envío.`;
+  else if (mode === "envio" && CONFIG.freeShipFrom > 0 && t.sub > 0 && !t.free)
+    hint = `Sumá ${money(CONFIG.freeShipFrom - t.sub)} más y el envío es gratis.`;
+  else if (mode === "envio" && t.free) hint = "¡Tenés envío gratis!";
+  $("#hint").textContent = hint;
+  $("#sendBtn").disabled = !t.items.length || (mode === "envio" && t.sub < CONFIG.minOrderShip);
+}
+
+function openCart(){ $("#drawer").classList.add("open"); $("#overlay").classList.add("open"); $("#drawer").setAttribute("aria-hidden","false"); }
+function closeCart(){ $("#drawer").classList.remove("open"); $("#overlay").classList.remove("open"); $("#drawer").setAttribute("aria-hidden","true"); }
+$("#cartBtn").onclick = openCart; $("#mbar").onclick = openCart;
+$("#closeCart").onclick = closeCart; $("#overlay").onclick = closeCart;
+document.addEventListener("keydown", e => { if (e.key === "Escape") closeCart(); });
+
+$("#modeSeg").addEventListener("click", e => {
+  const b = e.target.closest("button"); if (!b) return;
+  mode = b.dataset.mode;
+  [...$("#modeSeg").children].forEach(x => x.classList.toggle("on", x === b));
+  $("#addrWrap").style.display = mode === "envio" ? "" : "none";
+  renderCart();
+});
+
+/* datos del cliente guardados para la próxima */
+const saved = store.get("arame.customer", {});
+$("#fName").value = saved.name || ""; $("#fAddr").value = saved.addr || "";
+if (saved.pay) $("#fPay").value = saved.pay;
+
+$("#sendBtn").onclick = () => {
+  const t = totals();
+  const name = $("#fName").value.trim(), addr = $("#fAddr").value.trim();
+  const pay = $("#fPay").value, notes = $("#fNotes").value.trim();
+  let ok = true;
+  [["#fName", name], ["#fAddr", mode === "envio" ? addr : "x"]].forEach(([sel, v]) => {
+    $(sel).classList.toggle("err", !v); if (!v) ok = false;
+  });
+  if (!ok){ toast("Completá tu nombre" + (mode === "envio" ? " y dirección" : "")); return; }
+  store.set("arame.customer", {name, addr, pay});
+
+  const lines = [
+    "Hola Arame! Quiero hacer este pedido:", "",
+    ...t.items.map(({p, q}) => `• ${q} x ${p.name} — ${money(p.price * q)}`), "",
+    `Subtotal: ${money(t.sub)}`,
+    mode === "envio" ? `Envío: ${t.free ? "Gratis" : money(t.ship)}` : "Retiro por el local",
+    `*Total: ${money(t.total)}*`, "",
+    `Nombre: ${name}`,
+    ...(mode === "envio" ? [`Dirección: ${addr}`] : []),
+    `Pago: ${pay}`,
+    ...(notes ? [`Aclaraciones: ${notes}`] : []),
+  ];
+  window.open(`https://wa.me/${CONFIG.whatsapp}?text=${encodeURIComponent(lines.join("\n"))}`, "_blank", "noopener");
+};
+
+function toast(msg){
+  const el = $("#toast"); el.textContent = msg; el.classList.add("show");
+  clearTimeout(toast.t); toast.t = setTimeout(() => el.classList.remove("show"), 1600);
+}
+
+/* horarios, estado abierto/cerrado y textos de config */
+function renderInfo(){
+  const days = ["Domingo","Lunes","Martes","Miércoles","Jueves","Viernes","Sábado"];
+  const now = new Date(), d = now.getDay();
+  const order = [1,2,3,4,5,6,0];
+  $("#hours").innerHTML = order.map(i => {
+    const h = CONFIG.hours[i];
+    return `<li class="${i === d ? "today" : ""}"><span>${days[i]}</span><span>${h ? h[0] + " – " + h[1] : "Cerrado"}</span></li>`;
+  }).join("");
+  const mins = s => { const [a, b] = s.split(":").map(Number); return a * 60 + b; };
+  const h = CONFIG.hours[d], cur = now.getHours() * 60 + now.getMinutes();
+  const open = h && cur >= mins(h[0]) && cur < mins(h[1]);
+  $("#openTag").classList.toggle("closed", !open);
+  $("#openText").textContent = open ? `Abierto ahora · hasta las ${h[1]}` : "Cerrado ahora · podés dejar tu pedido";
+  $("#shipCostText").textContent = `${money(CONFIG.shipCost)}` + (CONFIG.freeShipFrom ? `, gratis desde ${money(CONFIG.freeShipFrom)}` : "") + ".";
+  $("#addressText").textContent = CONFIG.address;
+  $("#minOrderText").textContent = money(CONFIG.minOrderShip);
+  $("#freeShipText").textContent = CONFIG.freeShipFrom ? `desde ${money(CONFIG.freeShipFrom)}` : "";
+  const platos = PRODUCTS.filter(p => p.cat === "platos");
+  $("#dishOfDay").textContent = platos[d % platos.length].name;
+  $("#year").textContent = now.getFullYear();
+}
+
+renderChips(); renderGrid(); renderCart(); renderInfo();
+</script>
+</body>
+</html>
