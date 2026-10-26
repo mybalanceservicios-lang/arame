@@ -10,7 +10,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700;800;900&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <script>
-/* Tipografía de los títulos. Para probar otra: agregar ?fuente=fraunces (o bricolage, unbounded, dmserif) al link */
+/* Tipografía de los títulos: Fraunces. Para probar otra: ?fuente=montserrat, bricolage, unbounded o dmserif */
 (function(){
   var FONTS = {
     fraunces:  ["Fraunces:opsz,wght@9..144,600..900", '"Fraunces",Georgia,serif'],
@@ -18,7 +18,7 @@
     unbounded: ["Unbounded:wght@500..900", '"Unbounded","Arial Black",sans-serif'],
     dmserif:   ["DM+Serif+Display", '"DM Serif Display",Georgia,serif']
   };
-  var DEFAULT = "";
+  var DEFAULT = "fraunces";
   var f = "";
   try { f = new URLSearchParams(location.search).get("fuente") || DEFAULT; } catch (e) { f = DEFAULT; }
   var o = FONTS[f]; if (!o) return;
@@ -44,6 +44,8 @@
   *{box-sizing:border-box}
   [hidden]{display:none!important}
   [data-font="dmserif"] h1,[data-font="dmserif"] h2,[data-font="dmserif"] h3,[data-font="dmserif"] .world b,[data-font="dmserif"] .stat b,[data-font="dmserif"] .rating b{font-weight:400!important;font-synthesis:none;letter-spacing:0!important}
+  /* Fraunces con un poco más de aire entre letras */
+  [data-font="fraunces"] h1,[data-font="fraunces"] h2,[data-font="fraunces"] h3,[data-font="fraunces"] .world b,[data-font="fraunces"] .stat b,[data-font="fraunces"] .rating b{letter-spacing:.015em!important}
   [data-font="unbounded"] h1,[data-font="unbounded"] .sec-head h2,[data-font="unbounded"] .story h2,[data-font="unbounded"] .reviews h2{font-weight:700!important;letter-spacing:-.02em}
   html{scroll-behavior:smooth;overflow-x:hidden;overflow-x:clip}
   body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--body);line-height:1.5;-webkit-font-smoothing:antialiased;overflow-x:hidden;overflow-x:clip}
