@@ -904,7 +904,7 @@ insert into public.panel_admins (email) values ('${e}') on conflict do nothing;`
 
 async function sbLogin(cfg, cred){
   const r = await fetch(`${cfg.url}/auth/v1/token?grant_type=password`, {method: "POST", headers: {apikey: cfg.anon, "Content-Type": "application/json"}, body: JSON.stringify({email: cred.email, password: cred.password})});
-  if (!r.ok) throw Object.assign(new Error("login"), {status: r.status, sbLogin: true});
+  if (!r.ok){ let j = {}; try{ j = await r.json(); }catch(_){} throw Object.assign(new Error("login"), {status: r.status, sbLogin: true, code: j.error_code || j.error || "", detail: j.msg || j.error_description || ""}); }
   const j = await r.json(); SBJWT = j.access_token; SBJWT_EXP = Date.now() + ((j.expires_in || 3600) - 60) * 1000;
 }
 async function sb(path, opts = {}, cfg = sbCfg(), cred = SB){
@@ -1008,6 +1008,11 @@ $("#sbCopy").onclick = async () => {
   catch(_){ $("#sbSql").select(); toast("Seleccioné el código: copialo con Ctrl+C."); }
 };
 $("#sbSave").onclick = async () => {
+  if ($("#sbSave").disabled) return;
+  $("#sbSave").disabled = true;
+  try{ await sbSaveRun(); } finally { $("#sbSave").disabled = false; }
+};
+async function sbSaveRun(){
   const cfg = {url: $("#sbUrl").value.trim().replace(/\/+$/, ""), anon: $("#sbAnon").value.trim()};
   const cred = {email: $("#sbEmail").value.trim(), password: $("#sbPass").value};
   const pin = $("#sbPin").value, m = $("#sbMsg");
@@ -1023,6 +1028,8 @@ $("#sbSave").onclick = async () => {
     try{ await sbLogin(cfg, cred); }
     catch(e){
       if (!e.sbLogin) throw e;
+      if (/not_confirmed/i.test(e.code + " " + e.detail)){ busy(false); return m.textContent = `El usuario ya está creado pero falta confirmar el mail: abrí el correo de Supabase en ${cred.email}, tocá el link y volvé a tocar Conectar.`; }
+      if (/rate|too_many|over_/i.test(e.code)){ busy(false); return m.textContent = "Supabase pide esperar un momento. Probá de nuevo en un minuto."; }
       // el usuario todavía no existe: se crea con esta contraseña
       busy(true, "Creando el usuario de pedidos…");
       const r = await fetch(`${cfg.url}/auth/v1/signup`, {method: "POST", headers: {apikey: cfg.anon, "Content-Type": "application/json"}, body: JSON.stringify({email: cred.email, password: cred.password})});
@@ -1032,6 +1039,8 @@ $("#sbSave").onclick = async () => {
         busy(false);
         return m.textContent = r.ok
           ? `Listo, se creó el usuario. Supabase mandó un mail a ${cred.email}: abrilo, tocá el link de confirmación y después volvé a tocar Conectar.`
+          : /security purposes|rate|too_many|over_/i.test((j.msg || j.message || "") + " " + (j.error_code || ""))
+            ? "Supabase pide esperar unos segundos entre intentos. Esperá un minuto y tocá Conectar una sola vez."
           : /already|registered|exists/i.test(j.msg || j.message || j.error_code || "")
             ? "Ese email ya tiene usuario y la contraseña no coincide. Poné la contraseña que elegiste antes."
             : "No se pudo crear el usuario: " + (j.msg || j.message || r.status);
@@ -1057,7 +1066,7 @@ $("#sbSave").onclick = async () => {
     busy(false); closeModals(); toast("Pedidos conectados ✓ Desde ahora se guardan los pedidos de la tienda.");
     pedCount();
   }catch(e){ busy(false); m.textContent = errText(e); }
-};
+}
 
 /* ---------- stock ---------- */
 const stockOf = p => typeof p.stock === "number" && isFinite(p.stock) ? Math.max(0, Math.floor(p.stock)) : null;
