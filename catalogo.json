@@ -43,7 +43,10 @@
       "categoria": "Entradas - Medzé",
       "seccion": "cocina",
       "foto": "fotos/babaganoush-mediano.jpg",
-      "disponible": true
+      "disponible": true,
+      "stock": null,
+      "destacado": false,
+      "descuento": 0
     },
     {
       "id": "mahamara",
