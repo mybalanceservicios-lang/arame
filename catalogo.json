@@ -445,7 +445,8 @@
     {
       "texto": "El mejor local de comida armenia.",
       "autor": "Marcos Rodríguez Sola",
-      "fuente": "Google"
+      "fuente": "Google",
+      "plato": ""
     },
     {
       "texto": "El hummus está hecho increíble.",
@@ -456,7 +457,8 @@
     {
       "texto": "Te asesoran de lo mejor.",
       "autor": "",
-      "fuente": "Google"
+      "fuente": "Google",
+      "plato": ""
     },
     {
       "texto": "Recomiendo la ensalada tabule, keppe fritas, lajmashum y aceitunas negras griegas.",
@@ -467,12 +469,14 @@
     {
       "texto": "Lo mejor en su tipo en zona norte.",
       "autor": "",
-      "fuente": "Google"
+      "fuente": "Google",
+      "plato": ""
     },
     {
       "texto": "Ideal para pedir take away.",
       "autor": "",
-      "fuente": "Google"
+      "fuente": "Google",
+      "plato": ""
     }
   ],
   "galeria": [
