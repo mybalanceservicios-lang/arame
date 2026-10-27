@@ -72,6 +72,9 @@
   .group .row2,.group .row3{margin-bottom:0}
   .row3{display:grid;grid-template-columns:1fr 1fr;gap:10px}
   .sub-h{font-family:var(--serif);font-weight:800;font-size:17px;margin:22px 0 10px;color:var(--ink)}
+  details.adv{margin:4px 0 14px;border:1px solid var(--line);border-radius:12px;padding:10px 12px}
+  details.adv summary{cursor:pointer;color:var(--ink-3);font-size:13px;font-weight:700}
+  details.adv[open] summary{margin-bottom:12px}
   .ped-badge{background:#111;color:var(--or);border-radius:999px;min-width:20px;height:20px;display:inline-grid;place-items:center;font-size:12px;padding:0 6px;margin-left:4px}
   .sheet.wide{width:min(760px,100%)}
   .seg3{display:grid;grid-template-columns:repeat(3,1fr);gap:4px;background:var(--bg);border:1px solid var(--line);border-radius:12px;padding:4px;margin-bottom:14px}
@@ -343,24 +346,21 @@
   <div class="sheet">
     <div class="sheet-head"><h2>Conectar pedidos</h2><button class="x" data-close aria-label="Cerrar">✕</button></div>
     <div class="sheet-body">
-      <ol class="steps" style="margin-top:0">
-        <li>Creá una cuenta gratis en <a href="https://supabase.com/dashboard" target="_blank" rel="noopener">supabase.com</a> y un proyecto nuevo (nombre: <b>arame</b>, región: <b>South America (São Paulo)</b>).</li>
-        <li>En <b>Authentication → Users → Add user → Create new user</b>, creá el usuario del panel con un email y una contraseña, y tildá <b>Auto Confirm User</b>.</li>
-        <li>Escribí ese email acá abajo, copiá el código que aparece y pegalo en <b>SQL Editor → New query</b>. Tocá <b>Run</b>. (Si la tabla de pedidos ya está creada y ese email ya es del panel, salteá este paso.)</li>
-        <li>En <b>Project Settings → API Keys</b> copiá la clave <b>publishable</b> (empieza con <b>sb_publishable_</b>). La <b>Project URL</b> está en <b>Project Settings → Data API</b>. Pegá las dos acá.</li>
-      </ol>
-      <label class="f">Email del usuario del panel<input id="sbEmail" type="email" autocomplete="off" placeholder="pedidos@…"></label>
-      <label class="f">Código para el SQL Editor<textarea id="sbSql" rows="6" readonly style="font-family:ui-monospace,Menlo,monospace;font-size:12px"></textarea></label>
-      <button class="btn" id="sbCopy" type="button" style="margin:-6px 0 14px">Copiar código</button>
-      <label class="f">Contraseña del usuario del panel<input id="sbPass" type="password" autocomplete="new-password"></label>
-      <label class="f">Project URL<input id="sbUrl" placeholder="https://xxxx.supabase.co"></label>
-      <label class="f">Clave publishable (o anon public)<input id="sbAnon" placeholder="sb_publishable_…"></label>
+      <p style="margin:0 0 14px;color:var(--ink-2)">Elegí una <b>contraseña nueva</b> para la base de pedidos, poné tu <b>PIN</b> y tocá <b>Conectar</b>. El usuario se crea solo.</p>
+      <label class="f">Email<input id="sbEmail" type="email" autocomplete="off" placeholder="pedidos@…"></label>
+      <label class="f">Contraseña nueva para los pedidos<input id="sbPass" type="password" autocomplete="new-password" placeholder="Mínimo 8 caracteres"><span class="help">No hace falta recordarla: queda guardada cifrada con tu PIN.</span></label>
+      <details class="adv"><summary>Datos técnicos (ya vienen completos)</summary>
+        <label class="f">Project URL<input id="sbUrl" placeholder="https://xxxx.supabase.co"></label>
+        <label class="f">Clave publishable<input id="sbAnon" placeholder="sb_publishable_…"></label>
+        <label class="f">Código para el SQL Editor (solo si hay que crear la base de cero)<textarea id="sbSql" rows="5" readonly style="font-family:ui-monospace,Menlo,monospace;font-size:12px"></textarea></label>
+        <button class="btn" id="sbCopy" type="button" style="margin:-6px 0 14px">Copiar código</button>
+      </details>
       <label class="f">Tu PIN (para guardar el acceso cifrado)<input id="sbPin" type="password" inputmode="numeric" maxlength="10" autocomplete="off"></label>
       <div class="msg" id="sbMsg"></div>
     </div>
     <div class="sheet-foot">
       <button class="btn ghost" data-close>Cancelar</button>
-      <button class="btn primary" id="sbSave">Probar y guardar</button>
+      <button class="btn primary" id="sbSave">Conectar</button>
     </div>
   </div>
 </div>
@@ -993,10 +993,11 @@ $("#pedList").addEventListener("click", async e => {
 });
 
 /* configuración de la base de pedidos */
+const SB_DEF = {url: "https://qomtlkxurnncmlvimuvr.supabase.co", anon: "sb_publishable_vG1VNZOw9OADVFOMPO790w_jmTcDk1j", email: "rtdesign.arame@gmail.com"};
 function sbOpen(){
   const c = DATA.pedidos || {};
-  $("#sbUrl").value = c.url || ""; $("#sbAnon").value = c.anon || "";
-  $("#sbEmail").value = (SB && SB.email) || ""; $("#sbPass").value = (SB && SB.password) || ""; $("#sbPin").value = "";
+  $("#sbUrl").value = c.url || SB_DEF.url; $("#sbAnon").value = c.anon || SB_DEF.anon;
+  $("#sbEmail").value = (SB && SB.email) || SB_DEF.email; $("#sbPass").value = (SB && SB.password) || ""; $("#sbPin").value = "";
   $("#sbSql").value = SQL($("#sbEmail").value.trim()); $("#sbMsg").textContent = "";
   closeModals(); openModal("#mSb");
 }
@@ -1013,15 +1014,34 @@ $("#sbSave").onclick = async () => {
   if (!/^https:\/\/[a-z0-9-]+\.supabase\.co$/i.test(cfg.url)) return m.textContent = "La Project URL tiene que ser como https://xxxx.supabase.co";
   if (cfg.anon.length < 30) return m.textContent = "Pegá la clave publishable completa (empieza con sb_publishable_).";
   if (/^sb_secret_/i.test(cfg.anon)) return m.textContent = "Esa es la clave secreta: no la uses acá. Pegá la publishable (sb_publishable_…).";
-  if (!cred.email || !cred.password) return m.textContent = "Completá el email y la contraseña del usuario del panel.";
+  if (!cred.email || !cred.password) return m.textContent = "Completá el email y la contraseña.";
+  if (cred.password.length < 8) return m.textContent = "La contraseña tiene que tener al menos 8 caracteres.";
   try{ await openToken(SEALED, pin); }catch(_){ return m.textContent = "PIN incorrecto."; }
   m.textContent = ""; busy(true, "Probando la conexión…");
   try{
     SBJWT = null;
+    try{ await sbLogin(cfg, cred); }
+    catch(e){
+      if (!e.sbLogin) throw e;
+      // el usuario todavía no existe: se crea con esta contraseña
+      busy(true, "Creando el usuario de pedidos…");
+      const r = await fetch(`${cfg.url}/auth/v1/signup`, {method: "POST", headers: {apikey: cfg.anon, "Content-Type": "application/json"}, body: JSON.stringify({email: cred.email, password: cred.password})});
+      const j = await r.json().catch(() => ({}));
+      if (j.access_token){ SBJWT = j.access_token; SBJWT_EXP = Date.now() + ((j.expires_in || 3600) - 60) * 1000; }
+      else {
+        busy(false);
+        return m.textContent = r.ok
+          ? `Listo, se creó el usuario. Supabase mandó un mail a ${cred.email}: abrilo, tocá el link de confirmación y después volvé a tocar Conectar.`
+          : /already|registered|exists/i.test(j.msg || j.message || j.error_code || "")
+            ? "Ese email ya tiene usuario y la contraseña no coincide. Poné la contraseña que elegiste antes."
+            : "No se pudo crear el usuario: " + (j.msg || j.message || r.status);
+      }
+    }
+    busy(true, "Probando la conexión…");
     await sb("pedidos?select=id&limit=1", {}, cfg, cred);
   }catch(e){
     SBJWT = null; busy(false);
-    return m.textContent = e.sbLogin ? "No pude entrar con ese email y contraseña. Revisá que el usuario esté creado y confirmado."
+    return m.textContent = e.sbLogin ? "Todavía no se puede entrar: si te llegó un mail de Supabase, confirmalo y volvé a tocar Conectar."
       : e.status === 404 ? "Falta la tabla: corré el código en el SQL Editor y probá de nuevo."
       : "No se pudo conectar: " + (e.detail || e.message);
   }
