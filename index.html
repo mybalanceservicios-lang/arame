@@ -1034,6 +1034,7 @@ $("#sendBtn").onclick = () => {
     return;
   }
   store.set("arame.cliente", {name, addr});
+  const code = orderCode(t, name);
   const lines = []; let last = null;
   for (const {p, q} of t.items){
     const s = secOf(p);
@@ -1041,7 +1042,7 @@ $("#sendBtn").onclick = () => {
     lines.push(`• ${q} ${unitName(p.unidad, q)} — ${p.nombre}` + (hasPrice(p) ? ` (${money(priceOf(p) * q)}${discOf(p) ? `, con ${discOf(p)}% off` : ""})` : " (precio a consultar)"));
   }
   const msg = [
-    `¡Hola ${DATA.negocio?.nombre || "Aramé"}! Quiero hacer este pedido:`, "",
+    `¡Hola ${DATA.negocio?.nombre || "Aramé"}! Quiero hacer este pedido${code ? ` (#${code})` : ""}:`, "",
     ...lines, "",
     ...(t.promoOk ? [`Subtotal: ${money(t.sub)}`, `Promo ${t.promo.pct}% OFF: −${money(t.promoOff)}`] : []),
     `*Total: ${money(t.total)}*` + (t.pending ? " + productos a consultar" : ""),
@@ -1053,7 +1054,37 @@ $("#sendBtn").onclick = () => {
   ].join("\n");
   const num = String(DATA.negocio?.whatsapp || "").replace(/\D/g, "");
   window.open(`https://wa.me/${num}?text=${encodeURIComponent(msg)}`, "_blank", "noopener");
+  if (code) saveOrder(code, t, {name, addr, when, notes});
 };
+
+/* ---------- pedidos guardados (si el panel conectó la base de pedidos) ---------- */
+const pedCfg = () => DATA && DATA.pedidos && DATA.pedidos.url && DATA.pedidos.anon ? DATA.pedidos : null;
+let lastOrder = null;
+// mismo pedido mandado dos veces seguidas = mismo código y no se guarda de nuevo
+function orderCode(t, name){
+  if (!pedCfg()) return "";
+  const sig = JSON.stringify([name, mode, t.items.map(i => [i.p.id, i.q])]);
+  if (lastOrder && lastOrder.sig === sig && Date.now() - lastOrder.at < 10 * 60 * 1000) return lastOrder.code;
+  const A = "ABCDEFGHJKMNPQRSTUVWXYZ23456789";
+  let c = ""; const r = crypto.getRandomValues(new Uint8Array(4)); r.forEach(n => c += A[n % A.length]);
+  lastOrder = {sig, code: c, at: Date.now(), saved: false};
+  return c;
+}
+function saveOrder(code, t, f){
+  const cfg = pedCfg(); if (!cfg || !lastOrder || lastOrder.code !== code || lastOrder.saved) return;
+  lastOrder.saved = true;
+  const body = {
+    codigo: code, cliente: f.name.slice(0, 120), modo: mode,
+    direccion: mode === "envio" ? f.addr.slice(0, 300) : null, para: f.when ? f.when.slice(0, 200) : null, notas: f.notes ? f.notes.slice(0, 1000) : null,
+    items: t.items.map(({p, q}) => ({id: p.id, nombre: p.nombre, q, precio: hasPrice(p) ? priceOf(p) : null})),
+    subtotal: t.sub, descuento: t.promoOff, total: t.total,
+  };
+  fetch(`${cfg.url}/rest/v1/pedidos`, {
+    method: "POST", keepalive: true,
+    headers: {apikey: cfg.anon, Authorization: "Bearer " + cfg.anon, "Content-Type": "application/json", Prefer: "return=minimal"},
+    body: JSON.stringify(body),
+  }).then(r => { if (!r.ok) lastOrder.saved = false; }).catch(() => { if (lastOrder) lastOrder.saved = false; });
+}
 
 function openZoom(id){
   const p = byId[id]; if (!p) return;

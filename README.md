@@ -36,3 +36,15 @@ El botón **Consultas** de la tienda (`asistente.js`) responde al instante horar
 - Lo que no sabe responder (ingredientes, alergias, cosas que no están en el catálogo) lo deriva a WhatsApp.
 - En el panel, en **Datos del negocio**, los campos **Envíos** y **Formas de pago** son lo que contesta el asistente cuando le preguntan por eso. Si quedan vacíos, responde que se coordina por WhatsApp.
 - El horario se escribe como hasta ahora (por ejemplo `Lunes a sábado · 11 a 15 h y 17 a 20 h`): con ese formato el asistente sabe decir si el local está abierto en ese momento.
+
+## Pedidos guardados (Supabase, plan gratis)
+
+Cuando la base de pedidos está conectada, cada pedido que un cliente manda por WhatsApp desde la tienda se guarda como **pendiente**, con un código (por ejemplo `#K7P2`) que también aparece en el mensaje de WhatsApp.
+
+En el panel, el botón **Pedidos** muestra los pendientes con un contador. Al tocar **Aprobar (vendido)** se descuenta el stock de los productos que lo tienen cargado; **Rechazar** lo archiva sin tocar el stock.
+
+Para conectarla, en el panel: **Pedidos → Conectar la base de pedidos**. Ahí están los pasos: crear el proyecto gratis en supabase.com, crear el usuario del panel, correr el código SQL que arma el panel y pegar la Project URL y la clave *anon public*.
+
+- Los clientes solo pueden crear pedidos: no pueden ver ni cambiar los de otros.
+- Ver, aprobar y rechazar pedidos solo se puede desde el panel. El email y la contraseña del usuario del panel quedan guardados cifrados con el PIN.
+- En el plan gratis, Supabase pausa el proyecto si pasa una semana sin ningún uso. Si pasa, se reactiva desde supabase.com con un clic, sin perder los datos.

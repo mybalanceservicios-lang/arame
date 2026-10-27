@@ -72,6 +72,24 @@
   .group .row2,.group .row3{margin-bottom:0}
   .row3{display:grid;grid-template-columns:1fr 1fr;gap:10px}
   .sub-h{font-family:var(--serif);font-weight:800;font-size:17px;margin:22px 0 10px;color:var(--ink)}
+  .ped-badge{background:#111;color:var(--or);border-radius:999px;min-width:20px;height:20px;display:inline-grid;place-items:center;font-size:12px;padding:0 6px;margin-left:4px}
+  .sheet.wide{width:min(760px,100%)}
+  .seg3{display:grid;grid-template-columns:repeat(3,1fr);gap:4px;background:var(--bg);border:1px solid var(--line);border-radius:12px;padding:4px;margin-bottom:14px}
+  .seg3 button{border:0;background:none;border-radius:9px;padding:9px;font-weight:800;font-size:14px;color:var(--ink-2)}
+  .seg3 button.on{background:var(--or);color:#111}
+  .ped{background:var(--bg);border:1px solid var(--line);border-radius:14px;padding:14px;margin-bottom:10px}
+  .ped.nostock{border-color:rgba(229,72,77,.5)}
+  .ped-top{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;align-items:baseline}
+  .ped-top b{font-size:16px}
+  .ped-top .code{font-family:ui-monospace,Menlo,monospace;color:var(--or-2);font-weight:800;margin-right:8px}
+  .ped-top time{font-size:12.5px;color:var(--ink-3)}
+  .ped-meta{font-size:13px;color:var(--ink-2);margin:4px 0 8px}
+  .ped ul{margin:0;padding:0;list-style:none;font-size:14px}
+  .ped li{display:flex;justify-content:space-between;gap:10px;padding:3px 0;border-bottom:1px dashed var(--line)}
+  .ped li .w{color:#FFB4A1;font-size:12px;font-weight:800}
+  .ped-tot{display:flex;justify-content:space-between;font-weight:800;margin-top:8px}
+  .ped-acts{display:flex;gap:8px;margin-top:12px;flex-wrap:wrap}
+  .ped-acts .ok{background:var(--green);border-color:var(--green);color:#06210f}
   .st-sum{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px}
   .st-sum span{background:var(--bg);border:1px solid var(--line);border-radius:999px;padding:5px 12px;font-size:13px;font-weight:800;color:var(--ink-2)}
   .st-sum span.r{color:var(--red);border-color:rgba(229,72,77,.5)}
@@ -202,6 +220,7 @@
       <a class="btn ghost" href="./" target="_blank" rel="noopener">Ver tienda ↗</a>
       <button class="btn" id="bPromos">Promociones</button>
       <button class="btn" id="bGal">Galería</button>
+      <button class="btn primary" id="bPed">Pedidos <span class="ped-badge" id="pedBadge" hidden></span></button>
       <button class="btn" id="bStock">Stock</button>
       <button class="btn" id="bVenta">Descontar pedido</button>
       <button class="btn" id="bNegocio">Datos del negocio</button>
@@ -295,6 +314,53 @@
     <div class="sheet-foot">
       <button class="btn ghost" data-close>Cancelar</button>
       <button class="btn primary" id="nSave">Guardar</button>
+    </div>
+  </div>
+</div>
+
+<!-- pedidos -->
+<div class="modal" id="mPed" hidden>
+  <div class="sheet wide">
+    <div class="sheet-head"><h2>Pedidos</h2><button class="x" data-close aria-label="Cerrar">✕</button></div>
+    <div class="sheet-body">
+      <div id="pedOff" hidden>
+        <p style="margin:0 0 12px;color:var(--ink-2)">Todavía no está conectada la base de pedidos. Una vez conectada, cada pedido que manden por WhatsApp desde la tienda queda guardado acá.</p>
+        <button class="btn primary" id="pedSetupGo">Conectar la base de pedidos</button>
+      </div>
+      <div id="pedOn">
+        <div class="seg3" id="pedTabs">
+          <button data-st="pendiente" class="on">Pendientes</button><button data-st="aprobado">Vendidos</button><button data-st="rechazado">Rechazados</button>
+        </div>
+        <div id="pedList"></div>
+        <button class="btn ghost" id="pedSetupEdit" style="margin-top:14px;font-size:13px;border:0;color:var(--ink-3)">Configuración de la base de pedidos</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- conectar Supabase -->
+<div class="modal" id="mSb" hidden>
+  <div class="sheet">
+    <div class="sheet-head"><h2>Conectar pedidos</h2><button class="x" data-close aria-label="Cerrar">✕</button></div>
+    <div class="sheet-body">
+      <ol class="steps" style="margin-top:0">
+        <li>Creá una cuenta gratis en <a href="https://supabase.com/dashboard" target="_blank" rel="noopener">supabase.com</a> y un proyecto nuevo (nombre: <b>arame</b>, región: <b>South America (São Paulo)</b>).</li>
+        <li>En <b>Authentication → Users → Add user → Create new user</b>, creá el usuario del panel con un email y una contraseña, y tildá <b>Auto Confirm User</b>.</li>
+        <li>Escribí ese email acá abajo, copiá el código que aparece y pegalo en <b>SQL Editor → New query</b>. Tocá <b>Run</b>.</li>
+        <li>En <b>Project Settings → API</b> copiá la <b>Project URL</b> y la clave <b>anon public</b> y pegalas acá.</li>
+      </ol>
+      <label class="f">Email del usuario del panel<input id="sbEmail" type="email" autocomplete="off" placeholder="pedidos@…"></label>
+      <label class="f">Código para el SQL Editor<textarea id="sbSql" rows="6" readonly style="font-family:ui-monospace,Menlo,monospace;font-size:12px"></textarea></label>
+      <button class="btn" id="sbCopy" type="button" style="margin:-6px 0 14px">Copiar código</button>
+      <label class="f">Contraseña del usuario del panel<input id="sbPass" type="password" autocomplete="new-password"></label>
+      <label class="f">Project URL<input id="sbUrl" placeholder="https://xxxx.supabase.co"></label>
+      <label class="f">Clave anon public<input id="sbAnon" placeholder="eyJhbGciOi…"></label>
+      <label class="f">Tu PIN (para guardar el acceso cifrado)<input id="sbPin" type="password" inputmode="numeric" maxlength="10" autocomplete="off"></label>
+      <div class="msg" id="sbMsg"></div>
+    </div>
+    <div class="sheet-foot">
+      <button class="btn ghost" data-close>Cancelar</button>
+      <button class="btn primary" id="sbSave">Probar y guardar</button>
     </div>
   </div>
 </div>
@@ -411,6 +477,13 @@ const norm = s => String(s).toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "
 const UNIT = {unidad:"c/u", docena:"la docena", porción:"la porción", kg:"el kg", pote:"el pote", bandeja:"la bandeja"};
 
 let TOKEN = null, BRANCH = null, DATA = null, editing = null, newPhoto = null;
+let SB = null;   // {email, password} del usuario administrador de Supabase (si está configurado)
+// lo que se guarda cifrado con el PIN: solo el token (formato viejo) o {gh, sb}
+const secretsText = () => SB ? JSON.stringify({gh: TOKEN, sb: SB}) : TOKEN;
+function readSecrets(txt){
+  if (txt && txt.trim().startsWith("{")){ try{ const o = JSON.parse(txt); TOKEN = o.gh; SB = o.sb || null; return; }catch(_){} }
+  TOKEN = txt; SB = null;
+}
 
 /* ---------- utilidades ---------- */
 const b64enc = str => { const b = new TextEncoder().encode(str); let s = ""; for (let i = 0; i < b.length; i += 0x8000) s += String.fromCharCode(...b.subarray(i, i + 0x8000)); return btoa(s); };
@@ -497,7 +570,7 @@ async function boot(){
     return;
   }
   let saved = null; try{ saved = sessionStorage.getItem("arame.t"); }catch(_){}
-  if (saved){ TOKEN = saved; if (await enter()) return; TOKEN = null; }
+  if (saved){ readSecrets(saved); if (await enter()) return; TOKEN = null; SB = null; }
   show("#scrPin"); $("#pin").focus();
 }
 
@@ -514,7 +587,7 @@ $("#sGo").onclick = async () => {
     if (!repo.permissions || !repo.permissions.push) throw Object.assign(new Error("perm"), {perm: true});
     BRANCH = repo.default_branch;
     busy(true, "Guardando…");
-    SEALED = await sealToken(token, p1);
+    SEALED = await sealToken(secretsText(), p1);
     const r = await putFile(KEYFILE, b64enc(JSON.stringify(SEALED, null, 2)), "Configurar panel del catálogo", KEYSHA);
     KEYSHA = r.content.sha;
     busy(false);
@@ -534,9 +607,9 @@ $("#pinForm").onsubmit = async e => {
   if (!validPin(pin)){ m.textContent = "El PIN tiene entre 6 y 10 números."; return; }
   $("#pinGo").disabled = true; m.textContent = ""; $("#pinGo").textContent = "Verificando…";
   try{
-    TOKEN = await openToken(SEALED, pin);
+    readSecrets(await openToken(SEALED, pin));
   }catch(_){
-    TOKEN = null; m.textContent = "PIN incorrecto.";
+    TOKEN = null; SB = null; m.textContent = "PIN incorrecto.";
     const el = $("#pin"); el.classList.remove("shake"); void el.offsetWidth; el.classList.add("shake"); el.select();
     $("#pinGo").disabled = false; $("#pinGo").textContent = "Entrar";
     return;
@@ -554,14 +627,14 @@ async function enter(){
     if (e.status === 401){ try{ sessionStorage.removeItem("arame.t"); }catch(_){} return false; }
     toast("No se pudo cargar el catálogo. Recargá la página.", true); return false;
   }
-  try{ sessionStorage.setItem("arame.t", TOKEN); }catch(_){}
-  show("#scrMain"); render();
+  try{ sessionStorage.setItem("arame.t", secretsText()); }catch(_){}
+  show("#scrMain"); render(); pedCount();
   return true;
 }
 
 $("#pinReset").onclick = () => { $("#sMsg").textContent = ""; show("#scrSetup"); };
 
-$("#bOut").onclick = () => { try{ sessionStorage.removeItem("arame.t"); }catch(_){} TOKEN = null; DATA = null; $("#pin").value = ""; show("#scrPin"); };
+$("#bOut").onclick = () => { try{ sessionStorage.removeItem("arame.t"); }catch(_){} TOKEN = null; SB = null; SBJWT = null; DATA = null; $("#pin").value = ""; show("#scrPin"); };
 
 /* ---------- guardar en el catálogo ---------- */
 // Lee la última versión, aplica el cambio y guarda. Si alguien guardó al mismo tiempo, reintenta.
@@ -788,6 +861,173 @@ function addReview(r = {}){
 $("#rvAdd").onclick = () => addReview({});
 $("#rvList").addEventListener("click", e => { const b = e.target.closest("[data-rvdel]"); if (b) b.closest(".rv-item").remove(); });
 
+/* ---------- pedidos (Supabase) ---------- */
+let SBJWT = null, SBJWT_EXP = 0, PED_ST = "pendiente";
+const sbCfg = () => (DATA && DATA.pedidos && DATA.pedidos.url && DATA.pedidos.anon) ? DATA.pedidos : null;
+const SQL = email => `-- Tabla de pedidos de la tienda Aramé
+create table if not exists public.pedidos (
+  id uuid primary key default gen_random_uuid(),
+  codigo text not null check (char_length(codigo) <= 12),
+  creado timestamptz not null default now(),
+  estado text not null default 'pendiente' check (estado in ('pendiente','aprobado','rechazado')),
+  cliente text check (char_length(cliente) <= 120),
+  modo text check (modo in ('retiro','envio')),
+  direccion text check (char_length(direccion) <= 300),
+  para text check (char_length(para) <= 200),
+  notas text check (char_length(notas) <= 1000),
+  items jsonb not null check (jsonb_typeof(items) = 'array' and jsonb_array_length(items) between 1 and 100),
+  subtotal numeric, descuento numeric, total numeric,
+  resuelto timestamptz
+);
+alter table public.pedidos enable row level security;
+-- los clientes de la tienda solo pueden crear pedidos nuevos (no pueden ver ni cambiar nada)
+drop policy if exists "tienda crea pedidos" on public.pedidos;
+create policy "tienda crea pedidos" on public.pedidos for insert to anon
+  with check (estado = 'pendiente' and resuelto is null);
+-- solo el usuario del panel puede verlos, aprobarlos o rechazarlos
+drop policy if exists "panel administra pedidos" on public.pedidos;
+create policy "panel administra pedidos" on public.pedidos for all to authenticated
+  using ((auth.jwt() ->> 'email') = '${String(email || "EMAIL-DEL-PANEL").replace(/'/g, "''")}')
+  with check ((auth.jwt() ->> 'email') = '${String(email || "EMAIL-DEL-PANEL").replace(/'/g, "''")}');
+grant insert on public.pedidos to anon;
+grant select, update, delete on public.pedidos to authenticated;`;
+
+async function sbLogin(cfg, cred){
+  const r = await fetch(`${cfg.url}/auth/v1/token?grant_type=password`, {method: "POST", headers: {apikey: cfg.anon, "Content-Type": "application/json"}, body: JSON.stringify({email: cred.email, password: cred.password})});
+  if (!r.ok) throw Object.assign(new Error("login"), {status: r.status, sbLogin: true});
+  const j = await r.json(); SBJWT = j.access_token; SBJWT_EXP = Date.now() + ((j.expires_in || 3600) - 60) * 1000;
+}
+async function sb(path, opts = {}, cfg = sbCfg(), cred = SB){
+  if (!cfg || !cred) throw Object.assign(new Error("sin config"), {noSb: true});
+  if (!SBJWT || Date.now() > SBJWT_EXP) await sbLogin(cfg, cred);
+  const go = () => fetch(`${cfg.url}/rest/v1/${path}`, {...opts, headers: {apikey: cfg.anon, Authorization: "Bearer " + SBJWT, "Content-Type": "application/json", ...(opts.headers || {})}});
+  let r = await go();
+  if (r.status === 401){ await sbLogin(cfg, cred); r = await go(); }
+  if (!r.ok){ let d = ""; try{ d = (await r.json()).message; }catch(_){} throw Object.assign(new Error("sb " + r.status), {status: r.status, detail: d}); }
+  return r.status === 204 ? null : r.json();
+}
+
+async function pedCount(){
+  if (!sbCfg() || !SB){ $("#pedBadge").hidden = true; return; }
+  try{
+    const rows = await sb("pedidos?select=id&estado=eq.pendiente");
+    $("#pedBadge").hidden = !rows.length; $("#pedBadge").textContent = rows.length;
+  }catch(_){ $("#pedBadge").hidden = true; }
+}
+setInterval(() => { if (DATA && !document.hidden) pedCount(); }, 60000);
+
+const fmtDate = iso => { const d = new Date(iso); return d.toLocaleDateString("es-AR", {day: "2-digit", month: "2-digit"}) + " " + d.toLocaleTimeString("es-AR", {hour: "2-digit", minute: "2-digit"}); };
+async function pedLoad(){
+  const on = !!(sbCfg() && SB);
+  $("#pedOff").hidden = on; $("#pedOn").hidden = !on;
+  if (!on) return;
+  [...$("#pedTabs").children].forEach(b => b.classList.toggle("on", b.dataset.st === PED_ST));
+  $("#pedList").innerHTML = `<p style="color:var(--ink-3)">Cargando…</p>`;
+  try{
+    const rows = await sb(`pedidos?select=*&estado=eq.${PED_ST}&order=creado.${PED_ST === "pendiente" ? "asc" : "desc"}&limit=100`);
+    if (PED_ST === "pendiente"){ $("#pedBadge").hidden = !rows.length; $("#pedBadge").textContent = rows.length; }
+    const byId = Object.fromEntries(DATA.productos.map(p => [p.id, p]));
+    $("#pedList").innerHTML = rows.length ? rows.map(o => {
+      const falta = (o.items || []).filter(it => { const p = byId[it.id]; return p && stockOf(p) !== null && stockOf(p) < it.q; });
+      return `<div class="ped ${PED_ST === "pendiente" && falta.length ? "nostock" : ""}" data-pid="${esc(o.id)}">
+        <div class="ped-top"><b><span class="code">#${esc(o.codigo)}</span>${esc(o.cliente || "Sin nombre")}</b><time>${fmtDate(o.creado)}</time></div>
+        <div class="ped-meta">${o.modo === "envio" ? "Envío a " + esc(o.direccion || "—") : "Retiro en el local"}${o.para ? " · Para: " + esc(o.para) : ""}${o.notas ? "<br>Aclaraciones: " + esc(o.notas) : ""}</div>
+        <ul>${(o.items || []).map(it => { const p = byId[it.id]; const st = p ? stockOf(p) : null;
+          return `<li><span>${esc(it.q)} × ${esc(it.nombre)}${PED_ST === "pendiente" && st !== null && st < it.q ? ` <span class="w">(stock: ${st})</span>` : ""}${!p ? ` <span class="w">(ya no está en el catálogo)</span>` : ""}</span><span>${it.precio ? money(it.precio * it.q) : "a consultar"}</span></li>`; }).join("")}</ul>
+        ${o.descuento > 0 ? `<div class="ped-tot" style="font-weight:600;color:var(--ink-2)"><span>Promo</span><span>−${money(o.descuento)}</span></div>` : ""}
+        <div class="ped-tot"><span>Total</span><span>${money(o.total || 0)}</span></div>
+        ${PED_ST === "pendiente" ? `<div class="ped-acts"><button class="btn ok" data-ok>✓ Aprobar (vendido)</button><button class="btn danger" data-no>Rechazar</button></div>`
+          : PED_ST === "rechazado" ? `<div class="ped-acts"><button class="btn ghost" data-back>Volver a pendiente</button></div>`
+          : `<div class="ped-meta" style="margin:8px 0 0">Vendido el ${o.resuelto ? fmtDate(o.resuelto) : ""} · stock descontado</div>`}
+      </div>`;
+    }).join("") : `<p style="color:var(--ink-3);padding:20px 0;text-align:center">${PED_ST === "pendiente" ? "No hay pedidos pendientes." : "No hay pedidos acá."}</p>`;
+  }catch(e){
+    $("#pedList").innerHTML = `<p class="msg">${e.sbLogin ? "No se pudo entrar a la base de pedidos: revisá el email y la contraseña en la configuración." : e.status === 404 ? "No existe la tabla de pedidos. Corré el código en el SQL Editor de Supabase." : "No se pudieron cargar los pedidos. " + esc(e.detail || "")}</p>`;
+  }
+}
+$("#bPed").onclick = () => { PED_ST = "pendiente"; openModal("#mPed"); pedLoad(); };
+$("#pedTabs").addEventListener("click", e => { const b = e.target.closest("[data-st]"); if (b){ PED_ST = b.dataset.st; pedLoad(); } });
+
+$("#pedList").addEventListener("click", async e => {
+  const card = e.target.closest(".ped"); if (!card) return;
+  const id = card.dataset.pid;
+  if (e.target.closest("[data-no]") || e.target.closest("[data-back]")){
+    const to = e.target.closest("[data-no]") ? "rechazado" : "pendiente";
+    busy(true, "Guardando…");
+    try{ await sb(`pedidos?id=eq.${id}`, {method: "PATCH", body: JSON.stringify({estado: to, resuelto: to === "pendiente" ? null : new Date().toISOString()})}); busy(false); pedLoad(); pedCount(); }
+    catch(err){ busy(false); toast("No se pudo guardar el pedido. " + (err.detail || ""), true); }
+    return;
+  }
+  if (!e.target.closest("[data-ok]")) return;
+  busy(true, "Registrando la venta…");
+  let order = null;
+  try{
+    // primero se marca como vendido (si otra persona ya lo aprobó, no se descuenta dos veces)
+    const rows = await sb(`pedidos?id=eq.${id}&estado=eq.pendiente`, {method: "PATCH", headers: {Prefer: "return=representation"}, body: JSON.stringify({estado: "aprobado", resuelto: new Date().toISOString()})});
+    if (!rows.length){ busy(false); toast("Ese pedido ya estaba procesado.", true); pedLoad(); return; }
+    order = rows[0];
+    const sub = {}; (order.items || []).forEach(it => { sub[it.id] = (sub[it.id] || 0) + Number(it.q || 0); });
+    const tocan = DATA.productos.filter(p => p.id in sub && stockOf(p) !== null);
+    if (tocan.length){
+      await saveCatalog(d => {
+        (d.productos || []).forEach(p => { if (p.id in sub && typeof p.stock === "number") p.stock = Math.max(0, Math.floor(p.stock) - sub[p.id]); });
+      }, `Venta #${order.codigo}${order.cliente ? " de " + order.cliente : ""}`);
+    }
+    busy(false); render(); pedLoad(); pedCount();
+    toast(tocan.length ? `Venta #${order.codigo} registrada ✓ Stock descontado.` : `Venta #${order.codigo} registrada ✓`);
+  }catch(err){
+    // si falló el descuento de stock, el pedido vuelve a pendiente para reintentar
+    if (order){ try{ await sb(`pedidos?id=eq.${id}`, {method: "PATCH", body: JSON.stringify({estado: "pendiente", resuelto: null})}); }catch(_){} }
+    busy(false); toast(err.status && !err.detail ? errText(err) : "No se pudo registrar la venta. " + (err.detail || errText(err)), true); pedLoad();
+  }
+});
+
+/* configuración de la base de pedidos */
+function sbOpen(){
+  const c = DATA.pedidos || {};
+  $("#sbUrl").value = c.url || ""; $("#sbAnon").value = c.anon || "";
+  $("#sbEmail").value = (SB && SB.email) || ""; $("#sbPass").value = (SB && SB.password) || ""; $("#sbPin").value = "";
+  $("#sbSql").value = SQL($("#sbEmail").value.trim()); $("#sbMsg").textContent = "";
+  closeModals(); openModal("#mSb");
+}
+$("#pedSetupGo").onclick = sbOpen; $("#pedSetupEdit").onclick = sbOpen;
+$("#sbEmail").addEventListener("input", () => $("#sbSql").value = SQL($("#sbEmail").value.trim()));
+$("#sbCopy").onclick = async () => {
+  try{ await navigator.clipboard.writeText($("#sbSql").value); toast("Código copiado ✓"); }
+  catch(_){ $("#sbSql").select(); toast("Seleccioné el código: copialo con Ctrl+C."); }
+};
+$("#sbSave").onclick = async () => {
+  const cfg = {url: $("#sbUrl").value.trim().replace(/\/+$/, ""), anon: $("#sbAnon").value.trim()};
+  const cred = {email: $("#sbEmail").value.trim(), password: $("#sbPass").value};
+  const pin = $("#sbPin").value, m = $("#sbMsg");
+  if (!/^https:\/\/[a-z0-9-]+\.supabase\.co$/i.test(cfg.url)) return m.textContent = "La Project URL tiene que ser como https://xxxx.supabase.co";
+  if (cfg.anon.length < 30) return m.textContent = "Pegá la clave anon public completa.";
+  if (!cred.email || !cred.password) return m.textContent = "Completá el email y la contraseña del usuario del panel.";
+  try{ await openToken(SEALED, pin); }catch(_){ return m.textContent = "PIN incorrecto."; }
+  m.textContent = ""; busy(true, "Probando la conexión…");
+  try{
+    SBJWT = null;
+    await sb("pedidos?select=id&limit=1", {}, cfg, cred);
+  }catch(e){
+    SBJWT = null; busy(false);
+    return m.textContent = e.sbLogin ? "No pude entrar con ese email y contraseña. Revisá que el usuario esté creado y confirmado."
+      : e.status === 404 ? "Falta la tabla: corré el código en el SQL Editor y probá de nuevo."
+      : "No se pudo conectar: " + (e.detail || e.message);
+  }
+  try{
+    busy(true, "Guardando…");
+    SB = cred;
+    const sealed = await sealToken(secretsText(), pin);
+    const cur = await getFile(KEYFILE);
+    const r = await putFile(KEYFILE, b64enc(JSON.stringify(sealed, null, 2)), "Conectar base de pedidos", cur.sha);
+    SEALED = sealed; KEYSHA = r.content.sha;
+    await saveCatalog(d => { d.pedidos = cfg; }, "Conectar base de pedidos");
+    try{ sessionStorage.setItem("arame.t", secretsText()); }catch(_){}
+    busy(false); closeModals(); toast("Pedidos conectados ✓ Desde ahora se guardan los pedidos de la tienda.");
+    pedCount();
+  }catch(e){ busy(false); m.textContent = errText(e); }
+};
+
 /* ---------- stock ---------- */
 const stockOf = p => typeof p.stock === "number" && isFinite(p.stock) ? Math.max(0, Math.floor(p.stock)) : null;
 const lowStock = () => Math.max(0, Number(DATA && DATA.stockAviso) || 5);
@@ -997,7 +1237,7 @@ $("#cSave").onclick = async () => {
   if (p1 !== p2){ toast("Los PIN no coinciden.", true); return; }
   busy(true, "Cambiando PIN…");
   try{
-    const sealed = await sealToken(TOKEN, p1);
+    const sealed = await sealToken(secretsText(), p1);
     const cur = await getFile(KEYFILE);
     const r = await putFile(KEYFILE, b64enc(JSON.stringify(sealed, null, 2)), "Cambiar PIN del panel", cur.sha);
     SEALED = sealed; KEYSHA = r.content.sha;
