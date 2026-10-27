@@ -347,14 +347,14 @@
         <li>Creá una cuenta gratis en <a href="https://supabase.com/dashboard" target="_blank" rel="noopener">supabase.com</a> y un proyecto nuevo (nombre: <b>arame</b>, región: <b>South America (São Paulo)</b>).</li>
         <li>En <b>Authentication → Users → Add user → Create new user</b>, creá el usuario del panel con un email y una contraseña, y tildá <b>Auto Confirm User</b>.</li>
         <li>Escribí ese email acá abajo, copiá el código que aparece y pegalo en <b>SQL Editor → New query</b>. Tocá <b>Run</b>.</li>
-        <li>En <b>Project Settings → API</b> copiá la <b>Project URL</b> y la clave <b>anon public</b> y pegalas acá.</li>
+        <li>En <b>Project Settings → API Keys</b> copiá la clave <b>publishable</b> (empieza con <b>sb_publishable_</b>). La <b>Project URL</b> está en <b>Project Settings → Data API</b>. Pegá las dos acá.</li>
       </ol>
       <label class="f">Email del usuario del panel<input id="sbEmail" type="email" autocomplete="off" placeholder="pedidos@…"></label>
       <label class="f">Código para el SQL Editor<textarea id="sbSql" rows="6" readonly style="font-family:ui-monospace,Menlo,monospace;font-size:12px"></textarea></label>
       <button class="btn" id="sbCopy" type="button" style="margin:-6px 0 14px">Copiar código</button>
       <label class="f">Contraseña del usuario del panel<input id="sbPass" type="password" autocomplete="new-password"></label>
       <label class="f">Project URL<input id="sbUrl" placeholder="https://xxxx.supabase.co"></label>
-      <label class="f">Clave anon public<input id="sbAnon" placeholder="eyJhbGciOi…"></label>
+      <label class="f">Clave publishable (o anon public)<input id="sbAnon" placeholder="sb_publishable_…"></label>
       <label class="f">Tu PIN (para guardar el acceso cifrado)<input id="sbPin" type="password" inputmode="numeric" maxlength="10" autocomplete="off"></label>
       <div class="msg" id="sbMsg"></div>
     </div>
@@ -1001,7 +1001,8 @@ $("#sbSave").onclick = async () => {
   const cred = {email: $("#sbEmail").value.trim(), password: $("#sbPass").value};
   const pin = $("#sbPin").value, m = $("#sbMsg");
   if (!/^https:\/\/[a-z0-9-]+\.supabase\.co$/i.test(cfg.url)) return m.textContent = "La Project URL tiene que ser como https://xxxx.supabase.co";
-  if (cfg.anon.length < 30) return m.textContent = "Pegá la clave anon public completa.";
+  if (cfg.anon.length < 30) return m.textContent = "Pegá la clave publishable completa (empieza con sb_publishable_).";
+  if (/^sb_secret_/i.test(cfg.anon)) return m.textContent = "Esa es la clave secreta: no la uses acá. Pegá la publishable (sb_publishable_…).";
   if (!cred.email || !cred.password) return m.textContent = "Completá el email y la contraseña del usuario del panel.";
   try{ await openToken(SEALED, pin); }catch(_){ return m.textContent = "PIN incorrecto."; }
   m.textContent = ""; busy(true, "Probando la conexión…");

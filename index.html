@@ -1081,7 +1081,8 @@ function saveOrder(code, t, f){
   };
   fetch(`${cfg.url}/rest/v1/pedidos`, {
     method: "POST", keepalive: true,
-    headers: {apikey: cfg.anon, Authorization: "Bearer " + cfg.anon, "Content-Type": "application/json", Prefer: "return=minimal"},
+    // solo "apikey": sirve con las claves nuevas (sb_publishable_…) y con las viejas (anon)
+    headers: {apikey: cfg.anon, "Content-Type": "application/json", Prefer: "return=minimal"},
     body: JSON.stringify(body),
   }).then(r => { if (!r.ok) lastOrder.saved = false; }).catch(() => { if (lastOrder) lastOrder.saved = false; });
 }
