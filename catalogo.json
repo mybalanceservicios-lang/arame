@@ -510,5 +510,9 @@
       "titulo": "Mahamara",
       "link": ""
     }
-  ]
+  ],
+  "pedidos": {
+    "url": "https://qomtlkxurnncmlvimuvr.supabase.co",
+    "anon": "sb_publishable_vG1VNZOw9OADVFOMPO790w_jmTcDk1j"
+  }
 }
