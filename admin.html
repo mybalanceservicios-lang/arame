@@ -346,7 +346,7 @@
       <ol class="steps" style="margin-top:0">
         <li>Creá una cuenta gratis en <a href="https://supabase.com/dashboard" target="_blank" rel="noopener">supabase.com</a> y un proyecto nuevo (nombre: <b>arame</b>, región: <b>South America (São Paulo)</b>).</li>
         <li>En <b>Authentication → Users → Add user → Create new user</b>, creá el usuario del panel con un email y una contraseña, y tildá <b>Auto Confirm User</b>.</li>
-        <li>Escribí ese email acá abajo, copiá el código que aparece y pegalo en <b>SQL Editor → New query</b>. Tocá <b>Run</b>.</li>
+        <li>Escribí ese email acá abajo, copiá el código que aparece y pegalo en <b>SQL Editor → New query</b>. Tocá <b>Run</b>. (Si la tabla de pedidos ya está creada y ese email ya es del panel, salteá este paso.)</li>
         <li>En <b>Project Settings → API Keys</b> copiá la clave <b>publishable</b> (empieza con <b>sb_publishable_</b>). La <b>Project URL</b> está en <b>Project Settings → Data API</b>. Pegá las dos acá.</li>
       </ol>
       <label class="f">Email del usuario del panel<input id="sbEmail" type="email" autocomplete="off" placeholder="pedidos@…"></label>
@@ -864,7 +864,7 @@ $("#rvList").addEventListener("click", e => { const b = e.target.closest("[data-
 /* ---------- pedidos (Supabase) ---------- */
 let SBJWT = null, SBJWT_EXP = 0, PED_ST = "pendiente";
 const sbCfg = () => (DATA && DATA.pedidos && DATA.pedidos.url && DATA.pedidos.anon) ? DATA.pedidos : null;
-const SQL = email => `-- Tabla de pedidos de la tienda Aramé
+const SQL = email => { const e = String(email || "EMAIL-DEL-PANEL").trim().toLowerCase().replace(/'/g, "''"); return `-- Tabla de pedidos de la tienda Aramé (se puede correr más de una vez)
 create table if not exists public.pedidos (
   id uuid primary key default gen_random_uuid(),
   codigo text not null check (char_length(codigo) <= 12),
@@ -879,18 +879,28 @@ create table if not exists public.pedidos (
   subtotal numeric, descuento numeric, total numeric,
   resuelto timestamptz
 );
+create index if not exists pedidos_estado_creado on public.pedidos (estado, creado);
+-- emails que pueden usar el panel (no se puede leer desde la web)
+create table if not exists public.panel_admins (email text primary key check (email = lower(email)));
+alter table public.panel_admins enable row level security;
+revoke all on public.panel_admins from anon, authenticated;
+create or replace function public.es_admin_panel() returns boolean language sql stable security definer set search_path = ''
+as $$ select exists (select 1 from public.panel_admins a where a.email = lower(coalesce(auth.jwt() ->> 'email', ''))); $$;
+revoke all on function public.es_admin_panel() from public, anon;
+grant execute on function public.es_admin_panel() to authenticated;
 alter table public.pedidos enable row level security;
--- los clientes de la tienda solo pueden crear pedidos nuevos (no pueden ver ni cambiar nada)
+-- la tienda solo puede crear pedidos nuevos
 drop policy if exists "tienda crea pedidos" on public.pedidos;
-create policy "tienda crea pedidos" on public.pedidos for insert to anon
-  with check (estado = 'pendiente' and resuelto is null);
--- solo el usuario del panel puede verlos, aprobarlos o rechazarlos
+create policy "tienda crea pedidos" on public.pedidos for insert to anon with check (estado = 'pendiente' and resuelto is null);
+-- solo los usuarios del panel pueden ver, aprobar o rechazar
 drop policy if exists "panel administra pedidos" on public.pedidos;
 create policy "panel administra pedidos" on public.pedidos for all to authenticated
-  using ((auth.jwt() ->> 'email') = '${String(email || "EMAIL-DEL-PANEL").replace(/'/g, "''")}')
-  with check ((auth.jwt() ->> 'email') = '${String(email || "EMAIL-DEL-PANEL").replace(/'/g, "''")}');
+  using ((select public.es_admin_panel())) with check ((select public.es_admin_panel()));
+revoke all on public.pedidos from anon, authenticated;
 grant insert on public.pedidos to anon;
-grant select, update, delete on public.pedidos to authenticated;`;
+grant select, insert, update, delete on public.pedidos to authenticated;
+-- email del usuario del panel
+insert into public.panel_admins (email) values ('${e}') on conflict do nothing;`; };
 
 async function sbLogin(cfg, cred){
   const r = await fetch(`${cfg.url}/auth/v1/token?grant_type=password`, {method: "POST", headers: {apikey: cfg.anon, "Content-Type": "application/json"}, body: JSON.stringify({email: cred.email, password: cred.password})});
