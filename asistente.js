@@ -264,7 +264,7 @@
 
   // ---------- interfaz ----------
   const css = `
-  :host{all:initial;font-family:var(--body,"Manrope",-apple-system,"Segoe UI",Roboto,sans-serif);--ac:var(--or,#D9772E);--ac2:var(--or-2,#F0954A);--fondo:var(--bg-2,#131A1F);--caja:var(--card,#172028);--tx:var(--ink,#F3EDE4);--tx2:var(--ink-2,#AFA79C);--ln:var(--line,#26313A)}
+  :host{all:initial;font-family:var(--body,"Manrope",-apple-system,"Segoe UI",Roboto,sans-serif);--ac:var(--or,#FE6002);--ac2:var(--or-2,#FF7A26);--fondo:var(--bg-2,#0A0A0A);--caja:var(--card,#141414);--tx:var(--ink,#F3EDE4);--tx2:var(--ink-2,#AFA79C);--ln:var(--line,#2A2A2A)}
   *{box-sizing:border-box}
   .abrir{position:fixed;right:max(16px,env(safe-area-inset-right,0px));bottom:calc(88px + env(safe-area-inset-bottom,0px));z-index:65;display:flex;align-items:center;gap:8px;border:1px solid var(--ln);background:var(--caja);color:var(--tx);border-radius:999px;padding:12px 18px 12px 14px;font:inherit;font-size:15px;font-weight:700;cursor:pointer;box-shadow:0 12px 28px -8px rgba(0,0,0,.6);transition:transform .25s ease,bottom .25s ease}
   .abrir:hover{border-color:var(--ac)}
@@ -380,7 +380,7 @@
     if (typeof window.goTo === "function") window.goTo(card);
     else card.scrollIntoView({ behavior: "smooth", block: "center" });
     card.animate(
-      [{ boxShadow: "0 0 0 0 rgba(217,119,46,0)" }, { boxShadow: "0 0 0 4px rgba(217,119,46,.9)" }, { boxShadow: "0 0 0 0 rgba(217,119,46,0)" }],
+      [{ boxShadow: "0 0 0 0 rgba(254,96,2,0)" }, { boxShadow: "0 0 0 4px rgba(254,96,2,.9)" }, { boxShadow: "0 0 0 0 rgba(254,96,2,0)" }],
       { duration: 1400, iterations: 2, delay: 400 },
     );
   }

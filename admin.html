@@ -5,15 +5,15 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Aramé · Panel</title>
 <meta name="robots" content="noindex, nofollow">
-<meta name="theme-color" content="#0F1418">
+<meta name="theme-color" content="#000000">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;800;900&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
   :root{
-    --bg:#0F1418; --bg-2:#131A1F; --card:#172028; --card-2:#1E2830;
-    --ink:#F3EDE4; --ink-2:#AFA79C; --ink-3:#77716A; --line:#26313A;
-    --or:#D9772E; --or-2:#F0954A; --or-soft:rgba(217,119,46,.14);
+    --bg:#000000; --bg-2:#0A0A0A; --card:#141414; --card-2:#1C1C1C;
+    --ink:#F3EDE4; --ink-2:#AFA79C; --ink-3:#77716A; --line:#2A2A2A;
+    --or:#FE6002; --or-2:#FF7A26; --or-soft:rgba(254,96,2,.14);
     --red:#E5484D; --green:#3DBE6B;
     --serif:"Montserrat","Arial Black",sans-serif;
     --body:"Manrope",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
@@ -36,6 +36,9 @@
   .gate{min-height:100dvh;display:grid;place-items:center;padding:24px 16px}
   .gate-card{width:min(420px,100%);background:var(--card);border:1px solid var(--line);border-radius:20px;padding:28px 22px;text-align:center}
   .gate-card.wide{width:min(560px,100%);text-align:left}
+  .brand-logo{height:1em;width:auto;aspect-ratio:1470/285;display:block}
+  .gate .brand-logo{margin:0 auto}
+  .gate-card.wide .brand-logo{margin:0}
   .brand{font-family:var(--serif);font-weight:800;letter-spacing:.04em;font-size:30px;color:var(--or)}
   .brand small{display:block;font-family:var(--body);font-size:13px;color:var(--ink-3);font-weight:700;letter-spacing:.1em;text-transform:uppercase;margin-top:4px}
   .pin{font:inherit;font-size:30px;font-weight:800;letter-spacing:.4em;text-align:center;width:100%;background:var(--bg);border:1px solid var(--line);border-radius:14px;padding:14px;color:var(--ink);outline:none;margin:22px 0 12px}
@@ -59,7 +62,8 @@
   /* panel */
   header{position:sticky;top:0;z-index:30;background:rgba(13,13,13,.92);backdrop-filter:blur(12px);border-bottom:1px solid var(--line)}
   .top{display:flex;align-items:center;gap:10px;min-height:64px;flex-wrap:wrap;padding:8px 0}
-  .top .brand{font-size:26px;margin-right:auto}
+  .top .brand{font-size:26px;margin-right:auto;display:flex;align-items:center;gap:10px}
+  .top .brand small{margin:0}
   .top .brand small{display:inline;margin-left:8px;font-size:11px}
   .bar2{display:flex;gap:10px;align-items:center;margin:18px 0 6px;flex-wrap:wrap}
   .search{flex:1;min-width:200px;font:inherit;font-size:15px;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:11px 14px;color:var(--ink);outline:none}
@@ -138,7 +142,7 @@
   .sq{background:var(--card);border:1px solid var(--line);border-radius:16px;overflow:hidden;display:flex;flex-direction:column;text-align:left;padding:0}
   .sq .ph{aspect-ratio:1;background:var(--card-2);position:relative;overflow:hidden}
   .sq .ph img{width:100%;height:100%;object-fit:cover;display:block}
-  .sq .ph .none{position:absolute;inset:0;display:grid;place-items:center;font-family:var(--serif);font-weight:800;font-size:22px;color:rgba(217,119,46,.4)}
+  .sq .ph .none{position:absolute;inset:0;display:grid;place-items:center;font-family:var(--serif);font-weight:800;font-size:22px;color:rgba(254,96,2,.4)}
   .flags{position:absolute;left:8px;top:8px;display:flex;flex-direction:column;gap:4px;align-items:flex-start}
   .flag{background:rgba(0,0,0,.75);border-radius:999px;padding:2px 8px;font-size:11px;font-weight:800;color:var(--or-2)}
   .flag.off{color:var(--red)}
@@ -162,7 +166,7 @@
   .sheet-foot{padding:14px 18px calc(14px + env(safe-area-inset-bottom));border-top:1px solid var(--line);display:flex;gap:10px;background:var(--card)}
   .sheet-foot .primary{flex:1;padding:14px}
   .photo-edit{display:flex;gap:14px;align-items:center;margin-bottom:16px}
-  .photo-edit .ph{width:120px;height:120px;border-radius:14px;overflow:hidden;background:var(--card-2);flex-shrink:0;display:grid;place-items:center;font-family:var(--serif);font-weight:800;font-size:18px;color:rgba(217,119,46,.4)}
+  .photo-edit .ph{width:120px;height:120px;border-radius:14px;overflow:hidden;background:var(--card-2);flex-shrink:0;display:grid;place-items:center;font-family:var(--serif);font-weight:800;font-size:18px;color:rgba(254,96,2,.4)}
   .photo-edit .ph img{width:100%;height:100%;object-fit:cover}
   .photo-edit .acts{display:flex;flex-direction:column;gap:8px}
   .switch{display:flex;align-items:center;justify-content:space-between;gap:12px;background:var(--bg);border:1px solid var(--line);border-radius:12px;padding:12px 14px;margin-bottom:14px;font-weight:700;font-size:14.5px}
@@ -185,7 +189,7 @@
 <!-- configuración inicial (una sola vez) -->
 <div class="gate" id="scrSetup" hidden>
   <div class="gate-card wide">
-    <div class="brand">Aramé<small>Configuración inicial del panel</small></div>
+    <div class="brand"><img class="brand-logo" src="logo-arame-720.png" alt="Aramé" width="720" height="139"><small>Configuración inicial del panel</small></div>
     <p style="color:var(--ink-2);margin:16px 0 0">Esto se hace <b>una sola vez</b>. Le da permiso al panel para guardar cambios en la web. Después solo se entra con el PIN.</p>
     <ol class="steps">
       <li>Desde una computadora, con la sesión de GitHub abierta en la cuenta dueña de <b id="repoName"></b>, tocá este link: <a href="https://github.com/settings/tokens/new?scopes=public_repo&amp;description=Panel%20Aram%C3%A9" target="_blank" rel="noopener"><b>crear el token del panel</b></a>. Ya viene con el nombre y el permiso cargados.</li>
@@ -207,7 +211,7 @@
 <!-- PIN -->
 <div class="gate" id="scrPin" hidden>
   <form class="gate-card" id="pinForm">
-    <div class="brand">Aramé<small>Panel del catálogo</small></div>
+    <div class="brand"><img class="brand-logo" src="logo-arame-720.png" alt="Aramé" width="720" height="139"><small>Panel del catálogo</small></div>
     <input class="pin" id="pin" type="password" inputmode="numeric" autocomplete="current-password" maxlength="10" placeholder="••••••" aria-label="PIN" autofocus>
     <button class="btn primary" id="pinGo">Entrar</button>
     <div class="msg" id="pinMsg"></div>
@@ -219,7 +223,7 @@
 <div id="scrMain" hidden>
   <header>
     <div class="container top">
-      <div class="brand">Aramé<small>Panel</small></div>
+      <div class="brand"><img class="brand-logo" src="logo-arame-720.png" alt="Aramé" width="720" height="139"><small>Panel</small></div>
       <a class="btn ghost" href="./" target="_blank" rel="noopener">Ver tienda ↗</a>
       <button class="btn" id="bPromos">Promociones</button>
       <button class="btn" id="bGal">Galería</button>
@@ -676,7 +680,7 @@ function render(){
     if (!items.length) continue;
     html += `<h2 class="cat-title">${esc(c)}</h2><div class="grid">` + items.map(p => {
       const flags = [
-        p.destacado ? `<span class="flag" style="background:linear-gradient(135deg,#F4B23E,#D9772E);color:#1A1208">★ Más pedido</span>` : "",
+        p.destacado ? `<span class="flag" style="background:linear-gradient(135deg,#F4B23E,#FE6002);color:#1A1208">★ Más pedido</span>` : "",
         p.disponible === false ? `<span class="flag off">Pausado</span>` : stockOf(p) === 0 ? `<span class="flag off">Sin stock</span>` : stockOf(p) !== null && stockOf(p) <= lowStock() ? `<span class="flag" style="color:#FFB4A1">Poco stock</span>` : "",
         !p.foto ? `<span class="flag">Sin foto</span>` : "",
         !(p.precio > 0) ? `<span class="flag">Sin precio</span>` : "",
