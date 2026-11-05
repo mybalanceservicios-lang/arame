@@ -97,6 +97,14 @@
   .ped-tot{display:flex;justify-content:space-between;font-weight:800;margin-top:8px}
   .ped-acts{display:flex;gap:8px;margin-top:12px;flex-wrap:wrap}
   .ped-acts .ok{background:var(--green);border-color:var(--green);color:#06210f}
+  .ms-row{display:grid;grid-template-columns:auto 52px 1fr auto;gap:10px;align-items:center;padding:7px 0;border-bottom:1px solid var(--line)}
+  .ms-row img,.ms-row .np{width:52px;height:52px;border-radius:50%;object-fit:cover;background:var(--card-2);display:block}
+  .ms-row input[type=checkbox]{width:22px;height:22px;accent-color:var(--or)}
+  .ms-row b{font-size:14.5px;display:block}
+  .ms-row small{font-size:12px;color:var(--ink-3)}
+  .ms-row .ord{display:flex;gap:4px}
+  .ms-row .ord button{width:32px;height:30px;border-radius:8px;border:1px solid var(--line);background:none;color:var(--ink-2)}
+  .ms-row.on{background:linear-gradient(90deg,rgba(254,96,2,.10),transparent)}
   .st-sum{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px}
   .st-sum span{background:var(--bg);border:1px solid var(--line);border-radius:999px;padding:5px 12px;font-size:13px;font-weight:800;color:var(--ink-2)}
   .st-sum span.r{color:var(--red);border-color:rgba(229,72,77,.5)}
@@ -228,6 +236,7 @@
       <button class="btn" id="bPromos">Promociones</button>
       <button class="btn" id="bGal">Galería</button>
       <button class="btn primary" id="bPed">Pedidos <span class="ped-badge" id="pedBadge" hidden></span></button>
+      <button class="btn" id="bMesa">Mesa de portada</button>
       <button class="btn" id="bStock">Stock</button>
       <button class="btn" id="bVenta">Descontar pedido</button>
       <button class="btn" id="bNegocio">Datos del negocio</button>
@@ -280,6 +289,7 @@
       <label class="f">Stock (unidades disponibles)<input id="eStock" type="number" inputmode="numeric" min="0" step="1" placeholder="Vacío = sin control de stock"><span class="help">Si llega a 0, en la tienda aparece “Sin stock”. Vacío = no se controla.</span></label>
       <label class="f">Descuento de este producto (%)<input id="eOff" type="number" inputmode="numeric" min="0" max="90" step="1" placeholder="0 = sin descuento"><span class="help" id="eOffHelp"></span></label>
       <label class="switch">Disponible (hay stock)<input type="checkbox" id="eDisp"></label>
+      <label class="switch"><span>Mostrar en la mesa de la portada<br><small style="font-weight:500;color:var(--ink-3)">Hasta 8 platos. Ideal: los que más se venden o más dejan.</small></span><input type="checkbox" id="eMesa"></label>
       <label class="switch"><span>★ Más pedido<br><small style="font-weight:500;color:var(--ink-3)">Aparece con un cartel dorado y primero en su categoría</small></span><input type="checkbox" id="eTop"></label>
       <button class="btn danger" id="eDel" style="width:100%">Eliminar producto</button>
     </div>
@@ -365,6 +375,24 @@
     <div class="sheet-foot">
       <button class="btn ghost" data-close>Cancelar</button>
       <button class="btn primary" id="sbSave">Conectar</button>
+    </div>
+  </div>
+</div>
+
+<!-- mesa de la portada -->
+<div class="modal" id="mMesa" hidden>
+  <div class="sheet">
+    <div class="sheet-head"><h2>Mesa de la portada</h2><button class="x" data-close aria-label="Cerrar">✕</button></div>
+    <div class="sheet-body">
+      <p class="help" style="margin:0 0 6px;color:var(--ink-2);font-size:14px">Elegí hasta <b>8 platos</b> para la mesa de la portada, en el orden en que querés que aparezcan. Conviene poner los que más se venden o más rentabilidad tienen, y que tengan foto.</p>
+      <p class="help" style="margin:0 0 12px;color:var(--ink-3);font-size:13px">Si no elegís ninguno, la mesa se arma sola con los platos principales.</p>
+      <div class="st-sum" id="mSum"></div>
+      <input class="search" id="mQ" type="search" placeholder="Buscar producto" style="width:100%;margin-bottom:8px">
+      <div id="mList"></div>
+    </div>
+    <div class="sheet-foot">
+      <button class="btn ghost" data-close>Cancelar</button>
+      <button class="btn primary" id="mSave">Guardar mesa</button>
     </div>
   </div>
 </div>
@@ -680,6 +708,7 @@ function render(){
     if (!items.length) continue;
     html += `<h2 class="cat-title">${esc(c)}</h2><div class="grid">` + items.map(p => {
       const flags = [
+        p.mesa ? `<span class="flag" style="background:#3E3127;color:#F8EED6">◉ En la mesa</span>` : "",
         p.destacado ? `<span class="flag" style="background:linear-gradient(135deg,#F4B23E,#FE6002);color:#1A1208">★ Más pedido</span>` : "",
         p.disponible === false ? `<span class="flag off">Pausado</span>` : stockOf(p) === 0 ? `<span class="flag off">Sin stock</span>` : stockOf(p) !== null && stockOf(p) <= lowStock() ? `<span class="flag" style="color:#FFB4A1">Poco stock</span>` : "",
         !p.foto ? `<span class="flag">Sin foto</span>` : "",
@@ -730,6 +759,7 @@ function openEditor(id){
   $("#eDisp").checked = editing.disponible !== false;
   $("#eStock").value = stockOf(editing) === null ? "" : stockOf(editing);
   $("#eTop").checked = !!editing.destacado;
+  $("#eMesa").checked = !!editing.mesa;
   $("#eOff").value = editing.descuento > 0 ? editing.descuento : ""; offHelp();
   $("#eDel").hidden = !p;
   $("#eFile").value = "";
@@ -776,6 +806,7 @@ $("#eSave").onclick = async () => {
     disponible: $("#eDisp").checked,
     stock: $("#eStock").value.trim() === "" ? null : Math.max(0, Math.floor(Number($("#eStock").value) || 0)),
     destacado: $("#eTop").checked,
+    mesa: $("#eMesa").checked,
     descuento: clampPct($("#eOff").value),
   };
   const isNew = !editing.id;
@@ -1071,6 +1102,52 @@ async function sbSaveRun(){
     pedCount();
   }catch(e){ busy(false); m.textContent = errText(e); }
 }
+
+/* ---------- mesa de la portada ---------- */
+let MESA = [];   // ids elegidos, en orden
+function mDraw(){
+  const q = norm($("#mQ").value.trim());
+  const chosen = MESA.map(id => DATA.productos.find(p => p.id === id)).filter(Boolean);
+  const rest = DATA.productos.filter(p => !MESA.includes(p.id) && (!q || norm(p.nombre + " " + (p.categoria || "")).includes(q)));
+  const row = (p, i) => `<div class="ms-row ${i >= 0 ? "on" : ""}" data-id="${esc(p.id)}">
+    <input type="checkbox" ${i >= 0 ? "checked" : ""} aria-label="Mostrar ${esc(p.nombre)} en la mesa">
+    ${p.foto ? `<img src="${esc(rawUrl(p.foto))}" alt="" loading="lazy">` : `<span class="np"></span>`}
+    <div><b>${i >= 0 ? (i + 1) + ". " : ""}${esc(p.nombre)}</b><small>${esc(p.categoria || "")}${p.foto ? "" : " · sin foto"}</small></div>
+    ${i >= 0 ? `<div class="ord"><button data-mv="-1" ${i === 0 ? "disabled" : ""} aria-label="Subir">↑</button><button data-mv="1" ${i === MESA.length - 1 ? "disabled" : ""} aria-label="Bajar">↓</button></div>` : "<span></span>"}
+  </div>`;
+  $("#mList").innerHTML = (chosen.length ? `<div class="st-sec">En la mesa</div>` + chosen.map((p, i) => row(p, i)).join("") : "")
+    + `<div class="st-sec">Agregar a la mesa</div>` + (rest.length ? rest.map(p => row(p, -1)).join("") : `<p style="color:var(--ink-3)">No hay productos que coincidan.</p>`);
+  $("#mSum").innerHTML = `<span class="${MESA.length > 8 ? "r" : ""}">${MESA.length} de 8 elegidos</span>`;
+}
+$("#bMesa").onclick = () => {
+  MESA = DATA.productos.filter(p => p.mesa).sort((a, b) => (a.mesaOrden ?? 99) - (b.mesaOrden ?? 99)).map(p => p.id);
+  $("#mQ").value = ""; mDraw(); openModal("#mMesa");
+};
+$("#mQ").addEventListener("input", mDraw);
+$("#mList").addEventListener("click", e => {
+  const r = e.target.closest(".ms-row"); if (!r) return;
+  const id = r.dataset.id, mv = e.target.closest("[data-mv]");
+  if (mv){ const i = MESA.indexOf(id), j = i + Number(mv.dataset.mv); [MESA[i], MESA[j]] = [MESA[j], MESA[i]]; return mDraw(); }
+  if (e.target.matches("input[type=checkbox]")){
+    if (e.target.checked){
+      if (MESA.length >= 8){ e.target.checked = false; return toast("La mesa tiene lugar para 8 platos. Sacá uno para sumar otro.", true); }
+      MESA.push(id);
+    } else MESA = MESA.filter(x => x !== id);
+    mDraw();
+  }
+});
+$("#mSave").onclick = async () => {
+  busy(true, "Guardando…");
+  try{
+    await saveCatalog(d => {
+      (d.productos || []).forEach(p => {
+        const i = MESA.indexOf(p.id);
+        if (i >= 0){ p.mesa = true; p.mesaOrden = i; } else { delete p.mesa; delete p.mesaOrden; }
+      });
+    }, "Actualizar la mesa de la portada");
+    busy(false); closeModals(); render(); toast("Mesa guardada ✓ La tienda se actualiza en 1 o 2 minutos.");
+  }catch(e){ busy(false); toast(errText(e), true); }
+};
 
 /* ---------- stock ---------- */
 const stockOf = p => typeof p.stock === "number" && isFinite(p.stock) ? Math.max(0, Math.floor(p.stock)) : null;

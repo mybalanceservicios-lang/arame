@@ -674,7 +674,10 @@ function renderMesa(){
   // primero los platos principales, después los más pedidos y el resto de la cocina (con foto antes)
   const cocina = DATA.productos.filter(p => secOf(p) === (SECS[0] && SECS[0].id) && !isOff(p));
   const rank = p => (/principal/i.test(p.categoria || "") ? 0 : p.destacado ? 1 : 2) * 2 + (p.foto ? 0 : 1);
-  const pick = cocina.map((p, i) => [p, i]).sort((a, b) => rank(a[0]) - rank(b[0]) || a[1] - b[1]).map(x => x[0]).slice(0, 8);
+  // si en el panel eligieron platos para la mesa, van esos y en ese orden
+  const elegidos = DATA.productos.filter(p => p.mesa && !isOff(p)).sort((a, b) => (a.mesaOrden ?? 99) - (b.mesaOrden ?? 99));
+  const pick = elegidos.length ? elegidos.slice(0, 8)
+    : cocina.map((p, i) => [p, i]).sort((a, b) => rank(a[0]) - rank(b[0]) || a[1] - b[1]).map(x => x[0]).slice(0, 8);
   $("#plates").innerHTML = pick.map((p, i) => `<div class="plate"><button class="pz" data-zoom="${esc(p.id)}" aria-label="Ver ${esc(p.nombre)}">${p.foto
     ? `<img src="${esc(p.foto)}" alt="">`
     : `<span class="dish" style="background:radial-gradient(circle at 40% 35%, color-mix(in srgb, ${PLATE_COLORS[i % 8]} 70%, white), ${PLATE_COLORS[i % 8]} 70%)"></span>`}</button>${hasPrice(p) ? `<button class="padd" data-padd="${esc(p.id)}" aria-label="Agregar ${esc(p.nombre)} al pedido">+</button>` : ""}<span class="lbl">${esc(p.nombre)}</span></div>`).join("");
