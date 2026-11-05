@@ -60,7 +60,7 @@
   .wm img{height:1em;width:auto;aspect-ratio:1470/285;display:block}
 
   /* encabezado */
-  header{position:sticky;top:0;z-index:50;background:rgba(0,0,0,.92);backdrop-filter:blur(12px);border-bottom:1px solid var(--line)}
+  header{position:sticky;top:0;z-index:50;background:rgba(0,0,0,.96);border-bottom:1px solid var(--line)}
   .nav{display:flex;align-items:center;gap:14px;height:64px}
   .logo{display:flex;flex-direction:column;align-items:center;gap:5px}
   .logo .wm{font-size:26px}
@@ -183,7 +183,7 @@
   .sec-head p{margin:0;color:var(--ink-2)}
 
   /* categorías y buscador */
-  .toolbar{position:sticky;top:64px;z-index:40;background:rgba(0,0,0,.95);backdrop-filter:blur(12px);border-bottom:1px solid var(--line);padding:10px 0}
+  .toolbar{position:sticky;top:64px;z-index:40;background:rgba(0,0,0,.97);border-bottom:1px solid var(--line);padding:10px 0}
   .toolbar .container{display:flex;gap:14px;align-items:center}
   .chips{display:flex;gap:8px;overflow-x:auto;scrollbar-width:none;flex:1}
   .chips::-webkit-scrollbar{display:none}
@@ -302,6 +302,8 @@
 
   .story{margin-top:60px;padding:56px 0;border-top:1px solid var(--line);background:linear-gradient(180deg,rgba(10,10,10,.75),rgba(0,0,0,0))}
   #bgfx{position:fixed;inset:0;width:100%;height:100%;z-index:-1;pointer-events:none}
+  /* brillo naranja fijo detrás de todo (antes se dibujaba en cada cuadro) */
+  .bgglow{position:fixed;inset:0;z-index:-2;pointer-events:none;background:radial-gradient(60% 55% at 80% 25%,rgba(254,96,2,.12),transparent 70%)}
   .story .container{display:grid;grid-template-columns:1.2fr .8fr;gap:30px 50px;align-items:center}
   .story h2{font-family:var(--display);font-weight:900;font-size:clamp(30px,4.6vw,48px);letter-spacing:-.015em;margin:10px 0 14px}
   .story p{color:var(--ink-2);font-size:17px;margin:0;max-width:56ch;white-space:pre-line}
@@ -407,6 +409,7 @@
 </head>
 <body>
 
+<div class="bgglow" aria-hidden="true"></div>
 <canvas id="bgfx" aria-hidden="true"></canvas>
 
 <header>
@@ -682,7 +685,7 @@ function renderMesa(){
     ? `<img src="${esc(p.foto)}" alt="">`
     : `<span class="dish" style="background:radial-gradient(circle at 40% 35%, color-mix(in srgb, ${PLATE_COLORS[i % 8]} 70%, white), ${PLATE_COLORS[i % 8]} 70%)"></span>`}</button>${hasPrice(p) ? `<button class="padd" data-padd="${esc(p.id)}" aria-label="Agregar ${esc(p.nombre)} al pedido">+</button>` : ""}<span class="lbl">${esc(p.nombre)}</span></div>`).join("");
   plates = [...$("#plates").children];
-  fitWordmark(); drawMesa(); playIntro();
+  fitWordmark(); GEO = null; drawMesa(); playIntro();
   if (document.fonts && document.fonts.ready) document.fonts.ready.then(fitWordmark);
   const wmImg = $("#mesaWm img"); if (wmImg && !wmImg.complete) wmImg.addEventListener("load", fitWordmark, {once: true});
 }
@@ -699,6 +702,11 @@ function playIntro(){
   requestAnimationFrame(step);
 }
 // radio final de la ronda de platos
+let GEO = null;   // medidas de la mesa, se recalculan solo al cambiar el tamaño de la pantalla
+function measureMesa(){
+  const mesa = $("#mesa"), stage = mesa.querySelector(".stage");
+  GEO = {total: mesa.offsetHeight - stage.offsetHeight, R: ring(), top: mesa.getBoundingClientRect().top + scrollY};
+}
 function ring(){
   const stage = $("#mesa .stage"), W = stage.offsetWidth, H = stage.offsetHeight;
   const T = $("#mesa .m-table").offsetWidth;
@@ -717,10 +725,11 @@ function fitWordmark(){
 }
 function drawMesa(){
   const mesa = $("#mesa"), stage = mesa.querySelector(".stage");
-  const total = mesa.offsetHeight - stage.offsetHeight;
-  const p = REDUCE ? 1 : isPhone() ? introP * .75 : clamp(-mesa.getBoundingClientRect().top / Math.max(1, total));
+  if (!GEO) measureMesa();
+  const total = GEO.total;
+  const p = REDUCE ? 1 : isPhone() ? introP * .75 : clamp((scrollY - GEO.top) / Math.max(1, total));
   const t = easeOut(clamp(p / .7));
-  const R = ring(), spin = (1 - t) * 220;
+  const R = GEO.R;
   // la mesa arranca limpia, solo con el logo: cada plato aparece en su lugar, uno detrás de otro, girando hacia su posición
   plates.forEach((el, i) => {
     const e = easeOut(clamp((t - (i / plates.length) * .45) / .55));
@@ -735,9 +744,16 @@ function drawMesa(){
   mesa.style.setProperty("--o2", o2);
   mesa.style.setProperty("--pe", o2 > .5 ? "auto" : "none");
   mesa.querySelector(".table").style.transform = `scale(${.88 + .12 * t})`;
+  mesaDone = t >= 1;
 }
-addEventListener("scroll", () => { if (!isPhone()) requestAnimationFrame(drawMesa); }, {passive: true});
-addEventListener("resize", () => { if (isPhone()) playIntro(); fitWordmark(); drawMesa(); });
+let mesaQueued = false;
+addEventListener("scroll", () => {
+  if (isPhone() || mesaQueued || !GEO || scrollY > GEO.top + GEO.total + 200 && mesaDone) return;
+  mesaQueued = true;
+  requestAnimationFrame(() => { mesaQueued = false; drawMesa(); });
+}, {passive: true});
+let mesaDone = false;
+addEventListener("resize", () => { GEO = null; if (isPhone()) playIntro(); fitWordmark(); measureMesa(); mesaDone = false; drawMesa(); });
 // "+" de los platos de la mesa: suma uno al pedido sin abrir nada
 document.addEventListener("click", e => {
   const b = e.target.closest("[data-padd]"); if (!b) return;
@@ -1162,27 +1178,23 @@ addEventListener("resize", rvArrows);
   const c = $("#bgfx"), x = c.getContext("2d");
   let w = 0, h = 0, last = 0;
   const t0 = performance.now(), GAP = 86;
+  // se dibuja a media resolución: son líneas suaves de fondo y así cuesta 4 veces menos
+  const SCALE = .5;
   function size(){
-    const dpr = Math.min(devicePixelRatio || 1, 1.5);
     w = innerWidth; h = innerHeight;
-    c.width = w * dpr; c.height = h * dpr; x.setTransform(dpr, 0, 0, dpr, 0, 0);
+    c.width = Math.ceil(w * SCALE); c.height = Math.ceil(h * SCALE); x.setTransform(SCALE, 0, 0, SCALE, 0, 0);
   }
   function draw(now){
     const t = REDUCE ? 0 : (now - t0) / 1000;
     x.clearRect(0, 0, w, h);
-    // brillo que se desplaza lento
-    const gx = w * (.78 + .12 * Math.sin(t * .06)), gy = h * (.3 + .15 * Math.cos(t * .05));
-    const g = x.createRadialGradient(gx, gy, 0, gx, gy, Math.max(w, h) * .6);
-    g.addColorStop(0, "rgba(254,96,2,.13)"); g.addColorStop(1, "rgba(254,96,2,0)");
-    x.fillStyle = g; x.fillRect(0, 0, w, h);
     // ondas: acompañan el scroll un poco más lento que la página
     const shift = scrollY * .12, k0 = Math.floor(shift / GAP), off = shift % GAP;
-    x.lineWidth = 1.4;
+    x.lineWidth = 2.4;
     for (let j = -1; j <= Math.ceil(h / GAP) + 1; j++){
       const k = k0 + j, y0 = j * GAP - off;
       x.strokeStyle = `rgba(254,96,2,${(.12 + .07 * Math.sin(k * 1.3)).toFixed(3)})`;
       x.beginPath();
-      for (let px = -20; px <= w + 20; px += 14){
+      for (let px = -20; px <= w + 20; px += 24){
         const y = y0 + 22 * Math.sin(px * .0055 + k * .55 + t * .22) + 9 * Math.sin(px * .014 - t * .17 + k);
         px === -20 ? x.moveTo(px, y) : x.lineTo(px, y);
       }
@@ -1190,7 +1202,7 @@ addEventListener("resize", rvArrows);
     }
   }
   function loop(now){
-    if (!document.hidden && now - last > 40){ last = now; draw(now); }
+    if (!document.hidden && now - last > 66){ last = now; draw(now); }
     requestAnimationFrame(loop);
   }
   size(); draw(performance.now());
