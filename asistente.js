@@ -24,7 +24,7 @@
     lahmacun: "lehmeyun", lajmayun: "lehmeyun", lehmejun: "lehmeyun", lehmeyun: "lehmeyun", lahmajun: "lehmeyun", lehmayun: "lehmeyun",
     fatai: "fatay", fatayer: "fatay",
     borek: "boreg", boreks: "boreg", boregs: "boreg",
-    narguile: "shisha", narguiles: "shisha", hookah: "shisha", shishas: "shisha", cachimba: "shisha",
+    shisha: "narguile", shishas: "narguile", narguiles: "narguile", narguile: "narguile", hookah: "narguile", cachimba: "narguile",
     postre: "dulces", postres: "dulces", dulce: "dulces",
     entrada: "entradas", picada: "entradas", picadas: "entradas", medze: "entradas", meze: "entradas",
     ensalada: "ensaladas",

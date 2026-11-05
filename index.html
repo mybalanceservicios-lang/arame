@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Aramé · Cocina armenia</title>
-<meta name="description" content="Aramé, cocina armenia take away en Martínez. Comida casera, almacén importado y shishas. Armá tu pedido online y envialo por WhatsApp.">
+<meta name="description" content="Aramé, cocina armenia take away en Martínez. Comida casera, almacén importado y narguiles. Armá tu pedido online y envialo por WhatsApp.">
 <meta name="theme-color" content="#000000">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -79,8 +79,13 @@
   #plates .plate{pointer-events:auto}
   .m-table .center,.m-table .table{grid-area:1/1}
   .m-text{display:none}
-  .table{position:absolute;width:min(90vmin,740px);aspect-ratio:1;border-radius:50%;background:repeating-radial-gradient(circle at 50% 50%,#2A2119 0 3px,#2E241B 3px 7px);box-shadow:inset 0 0 0 10px #3A2C20,inset 0 0 120px rgba(0,0,0,.6),0 40px 80px -30px rgba(0,0,0,.8)}
-  .plate{position:absolute;left:50%;top:50%;width:var(--ps);height:var(--ps);margin:calc(var(--ps) / -2) 0 0 calc(var(--ps) / -2);border-radius:50%;background:#EDE6DA;box-shadow:0 14px 26px -10px rgba(0,0,0,.7);will-change:transform;border:0;padding:0;cursor:pointer}
+  .table{position:absolute;width:min(90vmin,740px);aspect-ratio:1;border-radius:50%;background:radial-gradient(circle at 50% 45%,#F8EED6 0 52%,#F1E1BC 53% 60%,#EAD5A6 61% 100%);box-shadow:inset 0 0 0 9px #E2C68F,inset 0 0 0 11px rgba(150,100,30,.25),inset 0 -20px 60px rgba(120,80,20,.18),0 40px 80px -30px rgba(0,0,0,.9)}
+  .plate{position:absolute;left:50%;top:50%;width:var(--ps);height:var(--ps);margin:calc(var(--ps) / -2) 0 0 calc(var(--ps) / -2);border-radius:50%;background:#FBF6EA;box-shadow:0 14px 26px -10px rgba(0,0,0,.7),0 0 0 1px rgba(150,100,30,.18);will-change:transform}
+  .plate .pz{position:absolute;inset:0;border:0;padding:0;background:none;border-radius:50%;cursor:pointer}
+  .padd{position:absolute;right:-2px;top:-2px;width:34px;height:34px;border-radius:50%;border:2px solid #000;background:var(--or);color:#111;font-size:22px;font-weight:900;line-height:1;display:grid;place-items:center;box-shadow:0 6px 14px -4px rgba(0,0,0,.6);opacity:var(--lbl,0);pointer-events:var(--pe,none);transition:transform .15s}
+  .padd:hover{transform:scale(1.1)}
+  .padd:active{transform:scale(.92)}
+  @media(max-width:699px){.padd{width:30px;height:30px;font-size:20px;right:-4px;top:-4px}}
   .plate img,.plate .dish{position:absolute;inset:8%;width:84%;height:84%;border-radius:50%;object-fit:cover;display:block}
   .plate .lbl{position:absolute;left:50%;top:104%;transform:translateX(-50%);white-space:nowrap;max-width:min(140px,30vw);overflow:hidden;text-overflow:ellipsis;font-weight:800;font-size:12px;color:var(--ink);background:rgba(0,0,0,.85);padding:3px 9px;border-radius:999px;opacity:var(--lbl,0);pointer-events:none}
   .mesa .center{position:relative;z-index:2;text-align:center;pointer-events:none;display:flex;flex-direction:column;align-items:center}
@@ -388,6 +393,11 @@
   .zoom-card img{width:100%;display:block;max-height:60vh;object-fit:cover}
   .zoom-card .body{padding:18px}
   .zoom-card .desc{-webkit-line-clamp:unset;font-size:15px}
+  .zoom-card{position:relative}
+  .zx{position:absolute;top:12px;right:12px;width:40px;height:40px;border-radius:50%;border:1px solid var(--line);background:rgba(0,0,0,.6);color:#fff;font-size:17px}
+  .zbuy{display:flex;gap:10px;align-items:center;margin-top:14px}
+  .zbuy .stepper{max-width:150px;flex:0 0 auto}
+  .zbuy .zadd{margin-top:0;flex:1;background:var(--or);color:#111}
 
   .toast{position:fixed;left:50%;top:76px;transform:translate(-50%,-10px);background:#fff;color:#111;padding:10px 16px;border-radius:999px;font-weight:700;font-size:14px;opacity:0;transition:.2s;z-index:100;pointer-events:none;max-width:calc(100% - 32px);text-align:center}
   .toast.show{opacity:1;transform:translate(-50%,0)}
@@ -661,12 +671,13 @@ function renderInfo(){
 const PLATE_COLORS = ["#C98A3E", "#7A4B2A", "#6F8F3A", "#5C6B2E", "#B5542A", "#A8803C", "#8A5A2E", "#9AA455"];
 let plates = [];
 function renderMesa(){
+  // primero los platos principales, después los más pedidos y el resto de la cocina (con foto antes)
   const cocina = DATA.productos.filter(p => secOf(p) === (SECS[0] && SECS[0].id) && !isOff(p));
-  const withPhoto = cocina.filter(p => p.foto), rest = cocina.filter(p => !p.foto);
-  const pick = [...withPhoto, ...rest].slice(0, 8);
-  $("#plates").innerHTML = pick.map((p, i) => `<button class="plate" data-zoom="${esc(p.id)}" aria-label="${esc(p.nombre)}">${p.foto
+  const rank = p => (/principal/i.test(p.categoria || "") ? 0 : p.destacado ? 1 : 2) * 2 + (p.foto ? 0 : 1);
+  const pick = cocina.map((p, i) => [p, i]).sort((a, b) => rank(a[0]) - rank(b[0]) || a[1] - b[1]).map(x => x[0]).slice(0, 8);
+  $("#plates").innerHTML = pick.map((p, i) => `<div class="plate"><button class="pz" data-zoom="${esc(p.id)}" aria-label="Ver ${esc(p.nombre)}">${p.foto
     ? `<img src="${esc(p.foto)}" alt="">`
-    : `<span class="dish" style="background:radial-gradient(circle at 40% 35%, color-mix(in srgb, ${PLATE_COLORS[i % 8]} 70%, white), ${PLATE_COLORS[i % 8]} 70%)"></span>`}<span class="lbl">${esc(p.nombre)}</span></button>`).join("");
+    : `<span class="dish" style="background:radial-gradient(circle at 40% 35%, color-mix(in srgb, ${PLATE_COLORS[i % 8]} 70%, white), ${PLATE_COLORS[i % 8]} 70%)"></span>`}</button>${hasPrice(p) ? `<button class="padd" data-padd="${esc(p.id)}" aria-label="Agregar ${esc(p.nombre)} al pedido">+</button>` : ""}<span class="lbl">${esc(p.nombre)}</span></div>`).join("");
   plates = [...$("#plates").children];
   fitWordmark(); drawMesa(); playIntro();
   if (document.fonts && document.fonts.ready) document.fonts.ready.then(fitWordmark);
@@ -722,6 +733,13 @@ function drawMesa(){
 }
 addEventListener("scroll", () => { if (!isPhone()) requestAnimationFrame(drawMesa); }, {passive: true});
 addEventListener("resize", () => { if (isPhone()) playIntro(); fitWordmark(); drawMesa(); });
+// "+" de los platos de la mesa: suma uno al pedido sin abrir nada
+document.addEventListener("click", e => {
+  const b = e.target.closest("[data-padd]"); if (!b) return;
+  const id = b.dataset.padd; if (!byId[id] || isOff(byId[id])) return;
+  setQty(id, (cart[id] || 0) + 1);
+  if (cart[id]) toast(`Agregaste ${byId[id].nombre} · ${cart[id]} en tu pedido`);
+});
 document.querySelectorAll("[data-go-catalog]").forEach(b => b.onclick = () => window.scrollTo({top: $("#info").offsetTop - 64, behavior: "smooth"}));
 
 function renderWorlds(){
@@ -1096,12 +1114,28 @@ function openZoom(id){
       ${p.peso ? `<span class="peso">${esc(p.peso)}</span>` : ""}
       <p class="desc">${esc(p.descripcion || "")}</p>
       <div class="price-row">${hasPrice(p) ? `<span class="price">${money(priceOf(p))}</span>${discOf(p) ? `<s class="old">${money(p.precio)}</s>` : ""}<span class="per">${UNIT[p.unidad] || ""}</span>` : `<span class="price na">Precio a consultar</span>`}</div>
-      <button class="send" style="background:var(--or);color:#111" data-close-zoom>Volver</button>
-    </div>`;
+      ${isOff(p) ? `<div class="off-tag" style="margin-top:14px">Sin stock por ahora</div>` : `
+      <div class="zbuy">
+        <div class="stepper"><button data-zq="-1" aria-label="Uno menos">−</button><input type="number" inputmode="numeric" min="1" id="zQty" value="${cart[p.id] || 1}" aria-label="Cantidad"><button data-zq="1" aria-label="Uno más">+</button></div>
+        <button class="send zadd" data-zadd="${esc(p.id)}">${cart[p.id] ? "Actualizar pedido" : "Agregar al pedido"}</button>
+      </div>`}
+    </div>
+    <button class="zx" data-close-zoom aria-label="Cerrar">✕</button>`;
   $("#zoom").classList.add("open");
 }
 function closeZoom(){ $("#zoom").classList.remove("open"); }
-$("#zoom").addEventListener("click", e => { if (e.target.id === "zoom" || e.target.closest("[data-close-zoom]")) closeZoom(); });
+$("#zoom").addEventListener("click", e => {
+  if (e.target.id === "zoom" || e.target.closest("[data-close-zoom]")) return closeZoom();
+  const st = e.target.closest("[data-zq]");
+  if (st){ const i = $("#zQty"); i.value = Math.max(1, (Number(i.value) || 1) + Number(st.dataset.zq)); return; }
+  const add = e.target.closest("[data-zadd]");
+  if (add){
+    const id = add.dataset.zadd, n = Math.max(1, Math.floor(Number($("#zQty").value) || 1));
+    setQty(id, n);
+    closeZoom();
+    if (cart[id]) toast(`${cart[id]} × ${byId[id].nombre} en tu pedido`);
+  }
+});
 
 function toast(m){
   const el = $("#toast"); el.textContent = m; el.classList.add("show");

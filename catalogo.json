@@ -16,7 +16,7 @@
     "Dulces",
     "Almacén",
     "Aceites de oliva",
-    "Shishas"
+    "Narguiles"
   ],
   "productos": [
     {
@@ -398,12 +398,12 @@
     },
     {
       "id": "shisha-turca",
-      "nombre": "Shisha turca",
+      "nombre": "Narguile",
       "descripcion": "Producto de ejemplo: cargá acá el modelo real, medidas y qué incluye.",
       "peso": "",
       "precio": null,
       "unidad": "unidad",
-      "categoria": "Shishas",
+      "categoria": "Narguiles",
       "seccion": "shishas",
       "foto": "",
       "disponible": true
@@ -422,8 +422,8 @@
     },
     {
       "id": "shishas",
-      "nombre": "Shishas",
-      "descripcion": "Shishas y accesorios traídos de Turquía."
+      "nombre": "Narguiles",
+      "descripcion": "Narguiles y accesorios."
     }
   ],
   "historia": {
