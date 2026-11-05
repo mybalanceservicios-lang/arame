@@ -720,13 +720,15 @@ function drawMesa(){
   const total = mesa.offsetHeight - stage.offsetHeight;
   const p = REDUCE ? 1 : isPhone() ? introP * .75 : clamp(-mesa.getBoundingClientRect().top / Math.max(1, total));
   const t = easeOut(clamp(p / .7));
-  const k = .06 + .94 * t, R = ring();
-  const Rx = R.Rx * k, Ry = R.Ry * k;
-  const spin = (1 - t) * 220;
+  const R = ring(), spin = (1 - t) * 220;
+  // la mesa arranca limpia, solo con el logo: cada plato aparece en su lugar, uno detrás de otro, girando hacia su posición
   plates.forEach((el, i) => {
-    const a = ((i + .5) / plates.length) * Math.PI * 2 + spin * Math.PI / 180 - Math.PI / 2;
-    el.style.transform = `translate(${Math.cos(a) * Rx}px, ${Math.sin(a) * Ry}px) scale(${.55 + .45 * t}) rotate(${spin * .6}deg)`;
-    el.style.zIndex = t > .5 ? 1 : 3;
+    const e = easeOut(clamp((t - (i / plates.length) * .45) / .55));
+    const a = ((i + .5) / plates.length) * Math.PI * 2 - Math.PI / 2 - (1 - e) * Math.PI / 3;
+    const r = .72 + .28 * e;
+    el.style.transform = `translate(${Math.cos(a) * R.Rx * r}px, ${Math.sin(a) * R.Ry * r}px) scale(${.35 + .65 * e}) rotate(${(1 - e) * -90}deg)`;
+    el.style.opacity = e.toFixed(3);
+    el.style.zIndex = 1;
   });
   const o2 = clamp((p - .45) / .3);
   mesa.style.setProperty("--lbl", clamp((p - .4) / .25));
