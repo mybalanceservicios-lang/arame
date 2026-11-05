@@ -62,7 +62,9 @@
       "categoria": "Entradas - Medzé",
       "seccion": "cocina",
       "foto": "fotos/mahamara.jpg",
-      "disponible": true
+      "disponible": true,
+      "mesa": true,
+      "mesaOrden": 6
     },
     {
       "id": "tabule",
@@ -238,9 +240,7 @@
       "categoria": "Dulces",
       "seccion": "cocina",
       "foto": "fotos/backlava.jpg",
-      "disponible": true,
-      "mesa": true,
-      "mesaOrden": 6
+      "disponible": true
     },
     {
       "id": "gurebie",
