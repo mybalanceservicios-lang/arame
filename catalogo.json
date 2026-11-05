@@ -31,7 +31,9 @@
       "foto": "fotos/hummus-mediano.jpg",
       "disponible": true,
       "destacado": true,
-      "descuento": 0
+      "descuento": 0,
+      "mesa": true,
+      "mesaOrden": 0
     },
     {
       "id": "babaganoush-mediano",
@@ -46,7 +48,9 @@
       "disponible": true,
       "stock": null,
       "destacado": false,
-      "descuento": 0
+      "descuento": 0,
+      "mesa": true,
+      "mesaOrden": 1
     },
     {
       "id": "mahamara",
@@ -70,7 +74,9 @@
       "categoria": "Ensaladas",
       "seccion": "cocina",
       "foto": "fotos/tabule.jpg",
-      "disponible": true
+      "disponible": true,
+      "mesa": true,
+      "mesaOrden": 5
     },
     {
       "id": "ensalada-belen",
@@ -106,7 +112,9 @@
       "categoria": "Con Masa Filo",
       "seccion": "cocina",
       "foto": "fotos/pasha-boreg-x2.jpg",
-      "disponible": true
+      "disponible": true,
+      "mesa": true,
+      "mesaOrden": 2
     },
     {
       "id": "pasha-boreg-x4",
@@ -130,7 +138,9 @@
       "categoria": "Con Masa Filo",
       "seccion": "cocina",
       "foto": "fotos/pasha-mix-x2.jpg",
-      "disponible": true
+      "disponible": true,
+      "mesa": true,
+      "mesaOrden": 4
     },
     {
       "id": "fatay-x6",
@@ -142,7 +152,9 @@
       "categoria": "Platos Principales",
       "seccion": "cocina",
       "foto": "fotos/fatay-x6.jpg",
-      "disponible": true
+      "disponible": true,
+      "mesa": true,
+      "mesaOrden": 3
     },
     {
       "id": "lehmeyun-x6",
@@ -226,7 +238,9 @@
       "categoria": "Dulces",
       "seccion": "cocina",
       "foto": "fotos/backlava.jpg",
-      "disponible": true
+      "disponible": true,
+      "mesa": true,
+      "mesaOrden": 6
     },
     {
       "id": "gurebie",
