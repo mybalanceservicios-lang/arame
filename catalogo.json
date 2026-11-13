@@ -162,7 +162,10 @@
       "foto": "fotos/fatay-x6.jpg",
       "disponible": true,
       "mesa": true,
-      "mesaOrden": 3
+      "mesaOrden": 3,
+      "stock": null,
+      "destacado": true,
+      "descuento": 0
     },
     {
       "id": "lehmeyun-x6",
