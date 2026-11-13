@@ -81,7 +81,10 @@
       "foto": "fotos/tabule.jpg",
       "disponible": true,
       "mesa": true,
-      "mesaOrden": 5
+      "mesaOrden": 5,
+      "stock": null,
+      "destacado": true,
+      "descuento": 0
     },
     {
       "id": "ensalada-belen",
