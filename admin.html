@@ -309,6 +309,7 @@
       <label class="f">WhatsApp que recibe los pedidos<input id="nWa" inputmode="tel" placeholder="5491164578338"><span class="help">Con código de país y sin espacios. Ej: 5491164578338</span></label>
       <label class="f">Dirección<input id="nDir"></label>
       <label class="f">Horario<input id="nHor"></label>
+      <label class="f">Link a las reseñas de Google<input id="nGrv" placeholder="https://www.google.com/search?…"><span class="help">Lo usa el botón “Ver todas las reseñas en Google” y el “4,7 en Google”. Se copia desde Google tocando las reseñas de Aramé.</span></label>
       <label class="f">Instagram (usuario)<input id="nIg" placeholder="aramecocina"><span class="help">Se usa en la galería de fotos de la tienda.</span></label>
       <label class="f">Envíos (opcional)<input id="nEnv" placeholder="Ej: Envíos en San Isidro y Vicente López. Costo según zona."><span class="help">Lo usa el asistente de consultas de la tienda cuando preguntan por envíos.</span></label>
       <label class="f">Formas de pago (opcional)<input id="nPago" placeholder="Ej: Efectivo, transferencia y Mercado Pago."><span class="help">Lo usa el asistente de consultas cuando preguntan cómo pagar.</span></label>
@@ -851,7 +852,7 @@ $("#eDel").onclick = async () => {
 $("#bNegocio").onclick = () => {
   const n = DATA.negocio || {};
   $("#nWa").value = n.whatsapp || ""; $("#nDir").value = n.direccion || "";
-  $("#nHor").value = n.horario || ""; $("#nAviso").value = n.aviso || ""; $("#nIg").value = n.instagram || ""; $("#nEnv").value = n.envios || ""; $("#nPago").value = n.pagos || "";
+  $("#nHor").value = n.horario || ""; $("#nAviso").value = n.aviso || ""; $("#nIg").value = n.instagram || ""; $("#nGrv").value = n.resenasGoogle || ""; $("#nEnv").value = n.envios || ""; $("#nPago").value = n.pagos || "";
   $("#nCats").value = categories().join("\n");
   $("#nSecs").innerHTML = currentSecs().map(x => `<div class="group" data-secid="${esc(x.id)}"><div class="row3">
     <label class="f" style="margin:0">Nombre<input data-k="nombre" value="${esc(x.nombre)}"></label>
@@ -877,7 +878,7 @@ $("#nSave").onclick = async () => {
   busy(true, "Guardando…");
   try{
     await saveCatalog(d => {
-      d.negocio = {...(d.negocio || {}), whatsapp: wa, direccion: $("#nDir").value.trim(), horario: $("#nHor").value.trim(), aviso: $("#nAviso").value.trim(), instagram: $("#nIg").value.trim().replace(/^@/, ""), envios: $("#nEnv").value.trim(), pagos: $("#nPago").value.trim()};
+      d.negocio = {...(d.negocio || {}), whatsapp: wa, direccion: $("#nDir").value.trim(), horario: $("#nHor").value.trim(), aviso: $("#nAviso").value.trim(), instagram: $("#nIg").value.trim().replace(/^@/, ""), resenasGoogle: $("#nGrv").value.trim(), envios: $("#nEnv").value.trim(), pagos: $("#nPago").value.trim()};
       d.categorias = [...new Set(cats)];
       d.secciones = secs; d.historia = historia; d.resenas = resenas;
     }, "Actualizar datos del negocio");
