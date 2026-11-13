@@ -15,8 +15,7 @@
     "Acompañamientos",
     "Dulces",
     "Almacén",
-    "Aceites de oliva",
-    "Narguiles"
+    "Aceites de oliva"
   ],
   "productos": [
     {
@@ -409,18 +408,6 @@
       "seccion": "almacen",
       "foto": "fotos/aceite-oliva-griego-500ml.jpg",
       "disponible": true
-    },
-    {
-      "id": "shisha-turca",
-      "nombre": "Narguile",
-      "descripcion": "Producto de ejemplo: cargá acá el modelo real, medidas y qué incluye.",
-      "peso": "",
-      "precio": null,
-      "unidad": "unidad",
-      "categoria": "Narguiles",
-      "seccion": "shishas",
-      "foto": "",
-      "disponible": true
     }
   ],
   "secciones": [
@@ -433,11 +420,6 @@
       "id": "almacen",
       "nombre": "Almacén",
       "descripcion": "Aceites de oliva importados y productos de almacén."
-    },
-    {
-      "id": "shishas",
-      "nombre": "Narguiles",
-      "descripcion": "Narguiles y accesorios."
     }
   ],
   "historia": {
@@ -525,6 +507,56 @@
     {
       "foto": "fotos/mahamara.jpg",
       "titulo": "Mahamara",
+      "link": ""
+    },
+    {
+      "foto": "fotos/fatay-x6.jpg",
+      "titulo": "Fatay",
+      "link": ""
+    },
+    {
+      "foto": "fotos/ensalada-belen.jpg",
+      "titulo": "Ensalada Belén",
+      "link": ""
+    },
+    {
+      "foto": "fotos/deditos-de-novia.jpg",
+      "titulo": "Deditos de novia",
+      "link": ""
+    },
+    {
+      "foto": "fotos/pilaf.jpg",
+      "titulo": "Pilaf",
+      "link": ""
+    },
+    {
+      "foto": "fotos/lehmeyun-verduras-x6.jpg",
+      "titulo": "Lehmeyún de verduras",
+      "link": ""
+    },
+    {
+      "foto": "fotos/muyetere.jpg",
+      "titulo": "Muyetere",
+      "link": ""
+    },
+    {
+      "foto": "fotos/pasha-mix-x2.jpg",
+      "titulo": "Pasha Mix",
+      "link": ""
+    },
+    {
+      "foto": "fotos/ensalada-griega.jpg",
+      "titulo": "Ensalada griega",
+      "link": ""
+    },
+    {
+      "foto": "fotos/gurebie.jpg",
+      "titulo": "Gurebie",
+      "link": ""
+    },
+    {
+      "foto": "fotos/babaganoush-mediano.jpg",
+      "titulo": "Babaganoush",
       "link": ""
     }
   ],
