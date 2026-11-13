@@ -119,7 +119,10 @@
       "foto": "fotos/pasha-boreg-x2.jpg",
       "disponible": true,
       "mesa": true,
-      "mesaOrden": 2
+      "mesaOrden": 2,
+      "stock": null,
+      "destacado": true,
+      "descuento": 0
     },
     {
       "id": "pasha-boreg-x4",
