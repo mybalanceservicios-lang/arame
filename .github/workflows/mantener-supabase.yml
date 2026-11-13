@@ -1,0 +1,21 @@
+# Supabase (plan gratis) pausa el proyecto si pasa una semana sin uso.
+# Esta tarea le hace una consulta mínima cada 3 días para que la base de pedidos nunca se pause.
+name: Mantener activa la base de pedidos
+
+on:
+  schedule:
+    - cron: "17 13 */3 * *"
+  workflow_dispatch:
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Consulta mínima a Supabase
+        run: |
+          code=$(curl -s -o /dev/null -w "%{http_code}" -X POST \
+            "https://qomtlkxurnncmlvimuvr.supabase.co/rest/v1/rpc/ping" \
+            -H "apikey: sb_publishable_vG1VNZOw9OADVFOMPO790w_jmTcDk1j" \
+            -H "Content-Type: application/json" -d '{}')
+          echo "Respuesta: $code"
+          test "$code" = "200"
