@@ -61,6 +61,11 @@
 
   /* encabezado */
   header{position:sticky;top:0;z-index:50;background:rgba(0,0,0,.96);border-bottom:1px solid var(--line)}
+  /* bandera de Armenia: franja fina arriba de todo y franja del pie */
+  :root{--flag:linear-gradient(90deg,#D90012 0 33.3%,#0033A0 33.3% 66.6%,#F2A800 66.6% 100%)}
+  header::before{content:"";position:absolute;left:0;right:0;top:0;height:4px;background:var(--flag)}
+  .foot-flag{height:6px;background:var(--flag);margin-bottom:34px}
+  .foot-line{display:block;width:100%;color:var(--ink);font-weight:800;font-size:15px;margin-bottom:6px}
   .nav{display:flex;align-items:center;gap:14px;height:64px}
   .logo{display:flex;flex-direction:column;align-items:center;gap:5px}
   .logo .wm{font-size:26px}
@@ -345,7 +350,7 @@
   .rv .who{margin-top:auto;display:flex;align-items:center;gap:10px;font-size:13.5px;color:var(--ink-2)}
   .rv .av{width:32px;height:32px;border-radius:50%;background:var(--or-soft);color:var(--or-2);display:grid;place-items:center;font-weight:800}
 
-  footer{padding:40px 0 120px;color:var(--ink-3);font-size:13.5px;border-top:1px solid var(--line);margin-top:50px}
+  footer{padding:0 0 120px;color:var(--ink-3);font-size:13.5px;margin-top:50px}
   footer .container{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap}
   footer a{color:var(--ink-2);text-decoration:underline}
   footer .container{align-items:center}
@@ -527,7 +532,9 @@
 </section>
 
 <footer>
+  <div class="foot-flag" aria-hidden="true"></div>
   <div class="container">
+    <b class="foot-line">Recetas de familia armenia, en Martínez.</b>
     <span>© <span id="year"></span> Aramé · Cocina armenia · <span id="ftDir"></span></span>
   </div>
 </footer>
