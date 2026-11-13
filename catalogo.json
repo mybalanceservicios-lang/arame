@@ -5,7 +5,9 @@
     "direccion": "Rawson 2021, Martínez",
     "horario": "Lunes a sábado · 11 a 15 h y 17 a 20 h",
     "aviso": "",
-    "instagram": "aramecocina"
+    "instagram": "aramecocina",
+    "envios": "",
+    "pagos": ""
   },
   "categorias": [
     "Entradas - Medzé",
@@ -15,7 +17,8 @@
     "Acompañamientos",
     "Dulces",
     "Almacén",
-    "Aceites de oliva"
+    "Aceites de oliva",
+    "Narguiles"
   ],
   "productos": [
     {
@@ -420,11 +423,16 @@
       "id": "almacen",
       "nombre": "Almacén",
       "descripcion": "Aceites de oliva importados y productos de almacén."
+    },
+    {
+      "id": "shishas",
+      "nombre": "Narguiles",
+      "descripcion": "Narguiles y accesorios."
     }
   ],
   "historia": {
     "titulo": "Cocina armenia de familia",
-    "texto": "Aramé es cocina armenia casera, atendida por sus dueños, frente a la estación de Martínez. Preparamos medzé para compartir, masas, platos y dulces con recetas de familia, y sumamos un almacén con productos importados.",
+    "texto": "Aramé es cocina armenia casera, atendida por sus dueños, frente a la estación de Martínez. Preparamos entradas para compartir, masas, platos y dulces con recetas de familia, y sumamos un almacén con productos importados.",
     "datos": [
       {
         "valor": "4,7 ★",
