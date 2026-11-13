@@ -1113,6 +1113,7 @@ $("#sendBtn").onclick = () => {
   const num = String(DATA.negocio?.whatsapp || "").replace(/\D/g, "");
   window.open(`https://wa.me/${num}?text=${encodeURIComponent(msg)}`, "_blank", "noopener");
   if (code) saveOrder(code, t, {name, addr, when, notes});
+  mailOrder(code, t, {name, addr, when, notes});
 };
 
 /* ---------- pedidos guardados (si el panel conectó la base de pedidos) ---------- */
@@ -1128,6 +1129,34 @@ function orderCode(t, name){
   lastOrder = {sig, code: c, at: Date.now(), saved: false};
   return c;
 }
+/* ---------- aviso por mail al local (FormSubmit: sin cuentas ni claves) ---------- */
+let lastMail = "";
+function mailOrder(code, t, f){
+  const to = String((DATA.negocio || {}).avisoMail || "").trim();
+  if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(to) && !/^[a-f0-9]{32}$/i.test(to)) return;
+  // el mismo pedido mandado dos veces seguidas no genera dos mails
+  const sig = JSON.stringify([f.name, mode, t.items.map(i => [i.p.id, i.q])]);
+  if (sig === lastMail) return;
+  lastMail = sig;
+  const productos = t.items.map(({p, q}) => `${q} × ${p.nombre}` + (hasPrice(p) ? ` (${money(priceOf(p) * q)})` : " (a consultar)")).join("\n");
+  const body = {
+    _subject: `Nuevo pedido${code ? " #" + code : ""} · ${f.name} · ${money(t.total)}`,
+    _template: "table", _captcha: "false",
+    "Pedido": code ? "#" + code : "(sin código)",
+    "Cliente": f.name,
+    "Entrega": mode === "envio" ? "Envío a: " + f.addr : "Retiro en el local",
+    "Para": f.when || "—",
+    "Aclaraciones": f.notes || "—",
+    "Productos": productos,
+    "Total": money(t.total) + (t.promoOk ? ` (con ${t.promo.pct}% OFF)` : "") + (t.pending ? " + productos a consultar" : ""),
+  };
+  fetch(`https://formsubmit.co/ajax/${encodeURIComponent(to)}`, {
+    method: "POST", keepalive: true,
+    headers: {"Content-Type": "application/json", Accept: "application/json"},
+    body: JSON.stringify(body),
+  }).catch(() => { lastMail = ""; });
+}
+
 function saveOrder(code, t, f){
   const cfg = pedCfg(); if (!cfg || !lastOrder || lastOrder.code !== code || lastOrder.saved) return;
   lastOrder.saved = true;
