@@ -70,6 +70,11 @@
   .cart-btn.bump{animation:bump .3s ease}
   @keyframes bump{50%{transform:scale(1.08)}}
 
+  /* "ARMENIA" con los colores de la bandera (el azul, más claro para que se lea sobre negro) */
+  .arm b{font-weight:inherit}
+  .arm .a1{color:#F2A800}
+  .arm .a2{color:#3F7BFF}
+  .arm .a3{color:#E8202E}
   /* portada: la mesa armenia. El tramo de scroll es corto para que los platos se abran rápido */
   .mesa{height:150vh;height:150svh;position:relative}
   .mesa .stage{position:sticky;top:64px;height:calc(100vh - 64px);height:calc(100svh - 64px);overflow:hidden;display:grid;place-items:center;background:radial-gradient(70% 60% at 50% 50%,#141414,var(--bg) 75%)}
@@ -79,7 +84,7 @@
   #plates .plate{pointer-events:auto}
   .m-table .center,.m-table .table{grid-area:1/1}
   .m-text{display:none}
-  .table{position:absolute;width:min(90vmin,740px);aspect-ratio:1;border-radius:50%;background:linear-gradient(180deg,#D90012 0 33.3%,#0033A0 33.3% 66.6%,#F2A800 66.6% 100%);box-shadow:inset 0 0 0 9px rgba(0,0,0,.18),inset 0 -20px 60px rgba(0,0,0,.18),0 40px 80px -30px rgba(0,0,0,.9)}
+  .table{position:absolute;width:min(90vmin,740px);aspect-ratio:1;border-radius:50%;background:radial-gradient(closest-side circle at 50% 50%,#4A3B2E 0 74%,#3E3127 75% 86%,#33281F 87% 100%);box-shadow:inset 0 0 0 9px #33281F,inset 0 0 0 11px rgba(0,0,0,.18),inset 0 -20px 60px rgba(0,0,0,.18),0 40px 80px -30px rgba(0,0,0,.9)}
   .plate{position:absolute;left:50%;top:50%;width:var(--ps);height:var(--ps);margin:calc(var(--ps) / -2) 0 0 calc(var(--ps) / -2);border-radius:50%;background:#FBF6EA;box-shadow:0 14px 26px -10px rgba(0,0,0,.7),0 0 0 1px rgba(150,100,30,.18);will-change:transform}
   .plate .pz{position:absolute;inset:0;border:0;padding:0;background:none;border-radius:50%;cursor:pointer}
   .padd{position:absolute;right:-2px;top:-2px;width:34px;height:34px;border-radius:50%;border:2px solid var(--or);background:#111;color:var(--or);font-size:22px;font-weight:900;line-height:1;display:grid;place-items:center;box-shadow:0 6px 14px -4px rgba(0,0,0,.6);opacity:var(--lbl,0);pointer-events:var(--pe,none);transition:transform .15s}
@@ -414,7 +419,7 @@
 
 <header>
   <div class="container nav">
-    <a href="#" class="logo" aria-label="Aramé, Cocina Armenia"><span class="wm" data-wm></span><small>COCINA ARMENIA</small></a>
+    <a href="#" class="logo" aria-label="Aramé, Cocina Armenia"><span class="wm" data-wm></span><small>COCINA <span class="arm"><b class="a1">AR</b><b class="a2">MEN</b><b class="a3">IA</b></span></small></a>
     <button class="cart-btn" id="cartBtn" aria-label="Ver mi pedido">
       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 7h14l-1.5 11a2 2 0 0 1-2 1.7h-7a2 2 0 0 1-2-1.7z"/><path d="M9 10V6a3 3 0 0 1 6 0v4"/></svg>
       Mi pedido <span class="count" id="cartCount">0</span>
@@ -425,8 +430,8 @@
 <section class="mesa" id="mesa" aria-label="Aramé, cocina armenia">
   <div class="stage">
     <div class="m-text">
-      <span class="kicker">Cocina armenia · Take away</span>
-      <h1>Cocina armenia casera, <em>lista para llevar</em></h1>
+      <span class="kicker">Cocina <span class="arm"><b class="a1">ar</b><b class="a2">men</b><b class="a3">ia</b></span> · Take away</span>
+      <h1>Cocina <span class="arm"><b class="a1">ar</b><b class="a2">men</b><b class="a3">ia</b></span> casera, <em>lista para llevar</em></h1>
       <p>Medzé, masas, platos y dulces armenios, y un almacén con productos importados. Armá tu pedido acá y te lo preparamos.</p>
       <div class="promo-banner" id="mPromo" hidden><b>PROMO</b><span></span></div>
       <div class="facts" id="mFacts"></div>
@@ -439,7 +444,7 @@
       <div class="table" aria-hidden="true"></div>
       <div id="plates"></div>
       <div class="center">
-        <span class="wm" id="mesaWm"><img src="logo-arame-blanco.png" alt="Aramé" width="1470" height="285" decoding="async"></span>
+        <span class="wm" id="mesaWm"><img src="logo-arame.png" alt="Aramé" width="1470" height="285" decoding="async"></span>
       </div>
     </div>
     <div class="hint" aria-hidden="true"><i></i>Deslizá para servir la mesa</div>
@@ -448,7 +453,7 @@
 
 <section class="hero" id="info">
   <div class="container">
-    <span class="kicker">Cocina armenia · Take away</span>
+    <span class="kicker">Cocina <span class="arm"><b class="a1">ar</b><b class="a2">men</b><b class="a3">ia</b></span> · Take away</span>
     <h1>Armá tu pedido <em>en un minuto</em></h1>
     <p>Elegí los productos y las cantidades, y mandanos el pedido por WhatsApp. Te respondemos para confirmar y coordinar el pago.</p>
     <div class="facts">
