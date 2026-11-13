@@ -1151,7 +1151,7 @@ function mailOrder(code, t, f){
     "Total": money(t.total) + (t.promoOk ? ` (con ${t.promo.pct}% OFF)` : "") + (t.pending ? " + productos a consultar" : ""),
   };
   fetch(`https://formsubmit.co/ajax/${encodeURIComponent(to)}`, {
-    method: "POST", keepalive: true,
+    method: "POST",
     headers: {"Content-Type": "application/json", Accept: "application/json"},
     body: JSON.stringify(body),
   }).catch(() => { lastMail = ""; });

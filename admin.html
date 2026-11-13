@@ -310,6 +310,7 @@
       <label class="f">Dirección<input id="nDir"></label>
       <label class="f">Horario<input id="nHor"></label>
       <label class="f">Mail que recibe un aviso por cada pedido<input id="nMail" type="email" placeholder="aramecocina@gmail.com"><span class="help">La primera vez llega un mail de FormSubmit para confirmar: hay que tocar “Activate Form”. Dejalo vacío para no recibir avisos.</span></label>
+      <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin:-6px 0 14px"><button class="btn" type="button" id="nMailTest">Probar aviso por mail</button><span id="nMailRes" style="font-size:13px;font-weight:700;color:var(--ink-2)"></span></div>
       <label class="f">Link a las reseñas de Google<input id="nGrv" placeholder="https://www.google.com/search?…"><span class="help">Lo usa el botón “Ver todas las reseñas en Google” y el “4,7 en Google”. Se copia desde Google tocando las reseñas de Aramé.</span></label>
       <label class="f">Instagram (usuario)<input id="nIg" placeholder="aramecocina"><span class="help">Se usa en la galería de fotos de la tienda.</span></label>
       <label class="f">Envíos (opcional)<input id="nEnv" placeholder="Ej: Envíos en San Isidro y Vicente López. Costo según zona."><span class="help">Lo usa el asistente de consultas de la tienda cuando preguntan por envíos.</span></label>
@@ -1302,6 +1303,25 @@ $("#gSave").onclick = async () => {
     busy(false); closeModals(); toast("Galería guardada ✓ La tienda se actualiza en 1 o 2 minutos.");
   }catch(e){ busy(false); toast(errText(e), true); }
   finally{ $("#gSave").disabled = false; }
+};
+
+/* ---------- probar el aviso por mail ---------- */
+$("#nMailTest").onclick = async () => {
+  const to = $("#nMail").value.trim(), out = $("#nMailRes");
+  if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(to)) { out.style.color = "var(--red)"; out.textContent = "Escribí un mail válido."; return; }
+  $("#nMailTest").disabled = true; out.style.color = "var(--ink-2)"; out.textContent = "Enviando…";
+  try{
+    const r = await fetch(`https://formsubmit.co/ajax/${encodeURIComponent(to)}`, {
+      method: "POST", headers: {"Content-Type": "application/json", Accept: "application/json"},
+      body: JSON.stringify({_subject: "Prueba de aviso de pedidos · Aramé", _template: "table", _captcha: "false", Mensaje: "Si te llegó este mail, los avisos de pedidos funcionan."}),
+    });
+    const j = await r.json().catch(() => ({}));
+    const msg = String(j.message || "");
+    if (String(j.success) === "true"){ out.style.color = "var(--green)"; out.textContent = `Enviado ✓ Revisá ${to}.`; }
+    else if (/activat/i.test(msg)){ out.style.color = "var(--or-2)"; out.textContent = `Falta activarlo: llegó (o va a llegar) un mail de FormSubmit a ${to} con el botón “Activate Form”. Mirá también en Spam y Promociones.`; }
+    else { out.style.color = "var(--red)"; out.textContent = "FormSubmit respondió: " + (msg || ("error " + r.status)); }
+  }catch(e){ out.style.color = "var(--red)"; out.textContent = "No se pudo conectar con FormSubmit. Revisá la conexión o probá desde otro navegador."; }
+  finally{ $("#nMailTest").disabled = false; }
 };
 
 /* ---------- promociones ---------- */
