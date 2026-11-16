@@ -34,9 +34,7 @@
       "foto": "fotos/hummus-mediano.jpg",
       "disponible": true,
       "destacado": true,
-      "descuento": 0,
-      "mesa": true,
-      "mesaOrden": 0
+      "descuento": 0
     },
     {
       "id": "babaganoush-mediano",
@@ -51,9 +49,7 @@
       "disponible": true,
       "stock": null,
       "destacado": false,
-      "descuento": 0,
-      "mesa": true,
-      "mesaOrden": 1
+      "descuento": 0
     },
     {
       "id": "mahamara",
@@ -65,9 +61,7 @@
       "categoria": "Entradas - Medzé",
       "seccion": "cocina",
       "foto": "fotos/mahamara.jpg",
-      "disponible": true,
-      "mesa": true,
-      "mesaOrden": 6
+      "disponible": true
     },
     {
       "id": "tabule",
@@ -80,8 +74,6 @@
       "seccion": "cocina",
       "foto": "fotos/tabule.jpg",
       "disponible": true,
-      "mesa": true,
-      "mesaOrden": 5,
       "stock": null,
       "destacado": true,
       "descuento": 0
@@ -121,8 +113,6 @@
       "seccion": "cocina",
       "foto": "fotos/pasha-boreg-x2.jpg",
       "disponible": true,
-      "mesa": true,
-      "mesaOrden": 2,
       "stock": null,
       "destacado": true,
       "descuento": 0
@@ -149,9 +139,7 @@
       "categoria": "Con Masa Filo",
       "seccion": "cocina",
       "foto": "fotos/pasha-mix-x2.jpg",
-      "disponible": true,
-      "mesa": true,
-      "mesaOrden": 4
+      "disponible": true
     },
     {
       "id": "fatay-x6",
@@ -164,8 +152,6 @@
       "seccion": "cocina",
       "foto": "fotos/fatay-x6.jpg",
       "disponible": true,
-      "mesa": true,
-      "mesaOrden": 3,
       "stock": null,
       "destacado": true,
       "descuento": 0
