@@ -18,7 +18,7 @@ Lista para repasar cuando se compre el dominio y se publique la web con la direc
 - [ ] Poner el link de la web en la bio de Instagram (@aramecocina) y en el estado o perfil de empresa de WhatsApp.
 
 ## 4. Otros pendientes
-- [ ] **Aviso por mail de pedidos:** activar FormSubmit desde el mail que llegó a aramecocina@gmail.com (botón "Activate Form") y confirmar con "Probar aviso por mail" en el panel. Si no aparece, usar Resend (ya armado en Supabase).
+- [x] **Aviso por mail de pedidos:** activar FormSubmit desde el mail que llegó a aramecocina@gmail.com (botón "Activate Form") y confirmar con "Probar aviso por mail" en el panel. Si no aparece, usar Resend (ya armado en Supabase).
 - [ ] Rechazar en el panel los pedidos de prueba (#8M25, #D639 y los que se hagan para probar).
 - [ ] Cargar los productos nuevos del almacén (fotos que pasaron; faltan precios y descripción corta).
 - [ ] Subir fotos de Instagram a la galería (Panel → Galería).
