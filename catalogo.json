@@ -34,7 +34,9 @@
       "foto": "fotos/hummus-mediano.jpg",
       "disponible": true,
       "destacado": true,
-      "descuento": 0
+      "descuento": 0,
+      "mesa": true,
+      "mesaOrden": 0
     },
     {
       "id": "babaganoush-mediano",
