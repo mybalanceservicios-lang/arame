@@ -51,7 +51,9 @@
       "disponible": true,
       "stock": null,
       "destacado": false,
-      "descuento": 0
+      "descuento": 0,
+      "mesa": true,
+      "mesaOrden": 1
     },
     {
       "id": "mahamara",
@@ -63,7 +65,9 @@
       "categoria": "Entradas - Medzé",
       "seccion": "cocina",
       "foto": "fotos/mahamara.jpg",
-      "disponible": true
+      "disponible": true,
+      "mesa": true,
+      "mesaOrden": 2
     },
     {
       "id": "tabule",
@@ -78,7 +82,9 @@
       "disponible": true,
       "stock": null,
       "destacado": true,
-      "descuento": 0
+      "descuento": 0,
+      "mesa": true,
+      "mesaOrden": 3
     },
     {
       "id": "ensalada-belen",
