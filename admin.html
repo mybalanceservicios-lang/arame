@@ -96,6 +96,8 @@
   .ped li .w{color:#FFB4A1;font-size:12px;font-weight:800}
   .ped-tot{display:flex;justify-content:space-between;font-weight:800;margin-top:8px}
   .ped-acts{display:flex;gap:8px;margin-top:12px;flex-wrap:wrap}
+  .ped-acts .ped-del{margin-left:auto;border:0;color:var(--ink-3);font-size:13px}
+  .ped-acts .ped-del:hover{color:var(--red)}
   .ped-acts .ok{background:var(--green);border-color:var(--green);color:#06210f}
   .ms-row{display:grid;grid-template-columns:auto 52px 1fr auto;gap:10px;align-items:center;padding:7px 0;border-bottom:1px solid var(--line)}
   .ms-row img,.ms-row .np{width:52px;height:52px;border-radius:50%;object-fit:cover;background:var(--card-2);display:block}
@@ -105,6 +107,28 @@
   .ms-row .ord{display:flex;gap:4px}
   .ms-row .ord button{width:32px;height:30px;border-radius:8px;border:1px solid var(--line);background:none;color:var(--ink-2)}
   .ms-row.on{background:linear-gradient(90deg,rgba(254,96,2,.10),transparent)}
+  .seg5{display:grid;grid-template-columns:repeat(5,1fr);gap:4px;background:var(--bg);border:1px solid var(--line);border-radius:12px;padding:4px;margin-bottom:16px}
+  .seg5 button{border:0;background:none;border-radius:9px;padding:9px 4px;font-weight:800;font-size:13.5px;color:var(--ink-2)}
+  .seg5 button.on{background:var(--or);color:#111}
+  .kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:18px}
+  @media(max-width:560px){.kpis{grid-template-columns:1fr 1fr}}
+  .kpi{background:var(--bg);border:1px solid var(--line);border-radius:14px;padding:12px}
+  .kpi span{display:block;font-size:12px;color:var(--ink-3);font-weight:700}
+  .kpi b{display:block;font-size:22px;font-weight:800;margin-top:2px;font-variant-numeric:tabular-nums}
+  .kpi small{color:var(--ink-3);font-size:12px}
+  .ana-h{font-weight:800;font-size:15px;margin:6px 0 10px}
+  .chart{position:relative;display:flex;align-items:flex-end;gap:2px;height:150px;padding-top:8px;border-bottom:1px solid var(--line);margin-bottom:6px;background:repeating-linear-gradient(to top,transparent 0 37px,rgba(255,255,255,.05) 37px 38px)}
+  .chart .b{flex:1;min-width:3px;height:100%;display:flex;align-items:flex-end;position:relative;cursor:default}
+  .chart .b i{display:block;width:100%;background:var(--or);border-radius:4px 4px 0 0;min-height:0}
+  .chart .b:hover i{background:var(--or-2)}
+  .chart .b .tip{position:absolute;bottom:calc(100% + 4px);left:50%;transform:translateX(-50%);background:#fff;color:#111;font-size:12px;font-weight:700;border-radius:8px;padding:5px 8px;white-space:nowrap;pointer-events:none;opacity:0;transition:opacity .1s;z-index:2}
+  .chart .b:hover .tip,.chart .b:focus .tip{opacity:1}
+  .chart-x{display:flex;justify-content:space-between;font-size:11.5px;color:var(--ink-3);margin-bottom:18px}
+  .top-row{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(0,2fr) auto;gap:10px;align-items:center;padding:6px 0;font-size:13.5px;border-bottom:1px solid var(--line)}
+  .top-row .bar{height:10px;background:var(--line);border-radius:5px;overflow:hidden}
+  .top-row .bar i{display:block;height:100%;background:var(--or);border-radius:0 4px 4px 0}
+  .top-row b{font-variant-numeric:tabular-nums;text-align:right;white-space:nowrap}
+  .top-row .nm{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
   .st-sum{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px}
   .st-sum span{background:var(--bg);border:1px solid var(--line);border-radius:999px;padding:5px 12px;font-size:13px;font-weight:800;color:var(--ink-2)}
   .st-sum span.r{color:var(--red);border-color:rgba(229,72,77,.5)}
@@ -140,6 +164,12 @@
   .pl-row input{font:inherit;font-size:16px;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:9px 10px;width:100%;text-align:right;outline:none}
   .pl-row input:focus{border-color:var(--or)}
   .pl-row.on input{border-color:#E5484D}
+  .tramo{display:grid;grid-template-columns:auto 90px auto 1fr auto;gap:8px;align-items:center;margin-bottom:8px;font-size:13.5px;color:var(--ink-2)}
+  .tramo input{font:inherit;font-size:15px;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:8px 10px;outline:none;width:100%}
+  .tramo button{width:34px;height:34px;border-radius:9px;border:1px solid var(--line);background:none;color:var(--ink-3)}
+  .dias{display:flex;flex-wrap:wrap;gap:6px;margin-top:4px}
+  .dias label{display:inline-flex;align-items:center;gap:6px;background:var(--bg);border:1px solid var(--line);border-radius:999px;padding:6px 12px;font-weight:700;color:var(--ink)}
+  .dias input{accent-color:var(--or);width:16px;height:16px}
   .rv-item{display:grid;grid-template-columns:1fr auto;gap:8px;align-items:start;background:var(--bg);border:1px solid var(--line);border-radius:12px;padding:10px;margin-bottom:8px}
   .rv-item textarea,.rv-item input{font:inherit;font-size:15px;color:var(--ink);background:var(--card);border:1px solid var(--line);border-radius:10px;padding:9px 11px;outline:none;width:100%}
   .rv-item .fields{display:grid;gap:6px;min-width:0}
@@ -237,7 +267,8 @@
       <button class="btn" id="bGal">Galería</button>
       <button class="btn primary" id="bPed">Pedidos <span class="ped-badge" id="pedBadge" hidden></span></button>
       <button class="btn" id="bMesa">Mesa de portada</button>
-      <button class="btn" id="bStock">Stock</button>
+      <button class="btn" id="bAna">Análisis</button>
+      <button id="bStock" hidden></button>
       <button class="btn" id="bVenta">Descontar pedido</button>
       <button class="btn" id="bNegocio">Datos del negocio</button>
       <button class="btn ghost" id="bPin">Cambiar PIN</button>
@@ -316,6 +347,20 @@
       <label class="f">Envíos (opcional)<input id="nEnv" placeholder="Ej: Envíos en San Isidro y Vicente López. Costo según zona."><span class="help">Lo usa el asistente de consultas de la tienda cuando preguntan por envíos.</span></label>
       <label class="f">Formas de pago (opcional)<input id="nPago" placeholder="Ej: Efectivo, transferencia y Mercado Pago."><span class="help">Lo usa el asistente de consultas cuando preguntan cómo pagar.</span></label>
       <label class="f">Aviso destacado (opcional)<input id="nAviso" placeholder="Ej: Este sábado cerramos por feriado"><span class="help">Aparece arriba de todo en la tienda. Dejalo vacío para no mostrar nada.</span></label>
+      <h3 class="sub-h">Envíos</h3>
+      <label class="f">Pedido mínimo para envío ($)<input id="nMin" type="number" inputmode="numeric" min="0" step="1000" placeholder="Ej: 50000"><span class="help">Si el pedido no llega a este monto, en la tienda no se puede elegir envío. Vacío = sin mínimo.</span></label>
+      <label class="f" style="margin-bottom:6px">Costo según la distancia al local<span class="help">La tienda calcula la distancia con la dirección del cliente. Si un tramo no tiene precio, dice “envío a confirmar”.</span></label>
+      <div id="nTramos"></div>
+      <button class="btn" type="button" id="nTramoAdd" style="margin-bottom:12px">+ Agregar tramo</button>
+      <label class="f">Distancia máxima de envío (km)<input id="nMaxKm" type="number" inputmode="decimal" min="0" step="0.5" placeholder="Vacío = sin límite"></label>
+
+      <h3 class="sub-h">Horario para tomar pedidos</h3>
+      <div class="row2">
+        <label class="f">Desde<input id="nAgDesde" type="time" step="1800"></label>
+        <label class="f">Hasta<input id="nAgHasta" type="time" step="1800"></label>
+      </div>
+      <div class="f" style="margin-bottom:14px">Días<div class="dias" id="nAgDias"></div><span class="help">En el calendario de la tienda solo se pueden elegir estos días y horarios.</span></div>
+
       <label class="f">Orden de las categorías<textarea id="nCats" rows="5"></textarea><span class="help">Una por renglón, en el orden en que querés que aparezcan.</span></label>
 
       <h3 class="sub-h">Secciones de la tienda</h3>
@@ -396,6 +441,23 @@
     <div class="sheet-foot">
       <button class="btn ghost" data-close>Cancelar</button>
       <button class="btn primary" id="mSave">Guardar mesa</button>
+    </div>
+  </div>
+</div>
+
+<!-- análisis de ventas -->
+<div class="modal" id="mAna" hidden>
+  <div class="sheet wide">
+    <div class="sheet-head"><h2>Análisis de ventas</h2><button class="x" data-close aria-label="Cerrar">✕</button></div>
+    <div class="sheet-body">
+      <div class="seg5" id="anaPer">
+        <button data-p="hoy">Hoy</button><button data-p="7">7 días</button><button data-p="30" class="on">30 días</button><button data-p="mes">Este mes</button><button data-p="todo">Todo</button>
+      </div>
+      <div id="anaBody"><p style="color:var(--ink-3)">Cargando…</p></div>
+    </div>
+    <div class="sheet-foot">
+      <button class="btn ghost" data-close>Cerrar</button>
+      <button class="btn primary" id="anaXls">⬇ Descargar Excel de pedidos</button>
     </div>
   </div>
 </div>
@@ -856,6 +918,11 @@ $("#bNegocio").onclick = () => {
   $("#nWa").value = n.whatsapp || ""; $("#nDir").value = n.direccion || "";
   $("#nHor").value = n.horario || ""; $("#nAviso").value = n.aviso || ""; $("#nIg").value = n.instagram || ""; $("#nGrv").value = n.resenasGoogle || ""; $("#nMail").value = n.avisoMail || ""; $("#nEnv").value = n.envios || ""; $("#nPago").value = n.pagos || "";
   $("#nCats").value = categories().join("\n");
+  const env = DATA.envio || {}, ag = Object.assign({desde: "11:00", hasta: "20:00", dias: [1, 2, 3, 4, 5, 6]}, DATA.agenda || {});
+  $("#nMin").value = env.minimo || ""; $("#nMaxKm").value = env.maxKm || "";
+  $("#nTramos").innerHTML = ""; (env.tramos && env.tramos.length ? env.tramos : [{km: 3}, {km: 6}, {km: 10}]).forEach(addTramo);
+  $("#nAgDesde").value = ag.desde; $("#nAgHasta").value = ag.hasta;
+  $("#nAgDias").innerHTML = ["Dom", "Lun", "Mar", "Mié", "Jue", "Vie", "Sáb"].map((n, i) => `<label><input type="checkbox" value="${i}" ${ag.dias.includes(i) ? "checked" : ""}>${n}</label>`).join("");
   $("#nSecs").innerHTML = currentSecs().map(x => `<div class="group" data-secid="${esc(x.id)}"><div class="row3">
     <label class="f" style="margin:0">Nombre<input data-k="nombre" value="${esc(x.nombre)}"></label>
     <label class="f" style="margin:0">Descripción corta<input data-k="descripcion" value="${esc(x.descripcion || "")}"></label></div></div>`).join("");
@@ -882,6 +949,10 @@ $("#nSave").onclick = async () => {
     await saveCatalog(d => {
       d.negocio = {...(d.negocio || {}), whatsapp: wa, direccion: $("#nDir").value.trim(), horario: $("#nHor").value.trim(), aviso: $("#nAviso").value.trim(), instagram: $("#nIg").value.trim().replace(/^@/, ""), resenasGoogle: $("#nGrv").value.trim(), avisoMail: $("#nMail").value.trim(), envios: $("#nEnv").value.trim(), pagos: $("#nPago").value.trim()};
       d.categorias = [...new Set(cats)];
+      d.envio = {...(d.envio || {}), minimo: Math.max(0, Math.round(Number($("#nMin").value) || 0)), maxKm: Number($("#nMaxKm").value) > 0 ? Number($("#nMaxKm").value) : null,
+        tramos: [...document.querySelectorAll("#nTramos .tramo")].map(t => ({km: Number(t.querySelector("[data-k=km]").value) || 0, precio: Number(t.querySelector("[data-k=precio]").value) > 0 ? Math.round(Number(t.querySelector("[data-k=precio]").value)) : null})).filter(t => t.km > 0).sort((a, b) => a.km - b.km)};
+      d.agenda = {...(d.agenda || {}), desde: $("#nAgDesde").value || "11:00", hasta: $("#nAgHasta").value || "20:00",
+        dias: [...document.querySelectorAll("#nAgDias input:checked")].map(i => Number(i.value))};
       d.secciones = secs; d.historia = historia; d.resenas = resenas;
     }, "Actualizar datos del negocio");
     busy(false); closeModals(); render(); toast("Guardado ✓ La tienda se actualiza en 1 o 2 minutos.");
@@ -979,14 +1050,14 @@ async function pedLoad(){
       const falta = (o.items || []).filter(it => { const p = byId[it.id]; return p && stockOf(p) !== null && stockOf(p) < it.q; });
       return `<div class="ped ${PED_ST === "pendiente" && falta.length ? "nostock" : ""}" data-pid="${esc(o.id)}">
         <div class="ped-top"><b><span class="code">#${esc(o.codigo)}</span>${esc(o.cliente || "Sin nombre")}</b><time>${fmtDate(o.creado)}</time></div>
-        <div class="ped-meta">${o.modo === "envio" ? "Envío a " + esc(o.direccion || "—") : "Retiro en el local"}${o.para ? " · Para: " + esc(o.para) : ""}${o.notas ? "<br>Aclaraciones: " + esc(o.notas) : ""}</div>
+        <div class="ped-meta">${o.modo === "envio" ? "Envío a " + esc(o.direccion || "—") + (o.km ? ` (≈${String(o.km).replace(".", ",")} km)` : "") + ` · envío ${o.envio ? money(o.envio) : "a confirmar"}` : "Retiro en el local"}${o.para ? " · Para: " + esc(o.para) : ""}${o.notas ? "<br>Aclaraciones: " + esc(o.notas) : ""}</div>
         <ul>${(o.items || []).map(it => { const p = byId[it.id]; const st = p ? stockOf(p) : null;
           return `<li><span>${esc(it.q)} × ${esc(it.nombre)}${PED_ST === "pendiente" && st !== null && st < it.q ? ` <span class="w">(stock: ${st})</span>` : ""}${!p ? ` <span class="w">(ya no está en el catálogo)</span>` : ""}</span><span>${it.precio ? money(it.precio * it.q) : "a consultar"}</span></li>`; }).join("")}</ul>
         ${o.descuento > 0 ? `<div class="ped-tot" style="font-weight:600;color:var(--ink-2)"><span>Promo</span><span>−${money(o.descuento)}</span></div>` : ""}
         <div class="ped-tot"><span>Total</span><span>${money(o.total || 0)}</span></div>
-        ${PED_ST === "pendiente" ? `<div class="ped-acts"><button class="btn ok" data-ok>✓ Aprobar (vendido)</button><button class="btn danger" data-no>Rechazar</button></div>`
-          : PED_ST === "rechazado" ? `<div class="ped-acts"><button class="btn ghost" data-back>Volver a pendiente</button></div>`
-          : `<div class="ped-meta" style="margin:8px 0 0">Vendido el ${o.resuelto ? fmtDate(o.resuelto) : ""} · stock descontado</div>`}
+        ${PED_ST === "pendiente" ? `<div class="ped-acts"><button class="btn ok" data-ok>✓ Aprobar (vendido)</button><button class="btn danger" data-no>Rechazar</button><button class="btn ghost ped-del" data-del>Borrar</button></div>`
+          : PED_ST === "rechazado" ? `<div class="ped-acts"><button class="btn ghost" data-back>Volver a pendiente</button><button class="btn ghost ped-del" data-del>Borrar</button></div>`
+          : `<div class="ped-acts" style="align-items:center"><span class="ped-meta" style="margin:0">Vendido el ${o.resuelto ? fmtDate(o.resuelto) : ""}</span><button class="btn ghost ped-del" data-del>Borrar</button></div>`}
       </div>`;
     }).join("") : `<p style="color:var(--ink-3);padding:20px 0;text-align:center">${PED_ST === "pendiente" ? "No hay pedidos pendientes." : "No hay pedidos acá."}</p>`;
   }catch(e){
@@ -999,6 +1070,14 @@ $("#pedTabs").addEventListener("click", e => { const b = e.target.closest("[data
 $("#pedList").addEventListener("click", async e => {
   const card = e.target.closest(".ped"); if (!card) return;
   const id = card.dataset.pid;
+  if (e.target.closest("[data-del]")){
+    const code = card.querySelector(".code")?.textContent || "";
+    if (!confirm(`¿Borrar el pedido ${code}? Se borra para siempre y no cambia el stock.`)) return;
+    busy(true, "Borrando…");
+    try{ await sb(`pedidos?id=eq.${id}`, {method: "DELETE"}); busy(false); toast(`Pedido ${code} borrado.`); pedLoad(); pedCount(); }
+    catch(err){ busy(false); toast("No se pudo borrar el pedido. " + (err.detail || ""), true); }
+    return;
+  }
   if (e.target.closest("[data-no]") || e.target.closest("[data-back]")){
     const to = e.target.closest("[data-no]") ? "rechazado" : "pendiente";
     busy(true, "Guardando…");
@@ -1304,6 +1383,117 @@ $("#gSave").onclick = async () => {
   }catch(e){ busy(false); toast(errText(e), true); }
   finally{ $("#gSave").disabled = false; }
 };
+
+/* ---------- análisis de ventas y Excel ---------- */
+let ANA_ROWS = null, ANA_P = "30";
+function anaRange(p){
+  const now = new Date(), d0 = new Date(now); d0.setHours(0, 0, 0, 0);
+  if (p === "hoy") return d0;
+  if (p === "7"){ d0.setDate(d0.getDate() - 6); return d0; }
+  if (p === "30"){ d0.setDate(d0.getDate() - 29); return d0; }
+  if (p === "mes") return new Date(now.getFullYear(), now.getMonth(), 1);
+  return null;
+}
+const dkey = d => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+function anaRows(){
+  const from = anaRange(ANA_P);
+  return (ANA_ROWS || []).filter(o => !from || new Date(o.creado) >= from);
+}
+function anaDraw(){
+  [...$("#anaPer").children].forEach(b => b.classList.toggle("on", b.dataset.p === ANA_P));
+  const rows = anaRows(), ok = rows.filter(o => o.estado === "aprobado");
+  const ventas = ok.reduce((a, o) => a + Number(o.total || 0), 0);
+  const pend = rows.filter(o => o.estado === "pendiente").length, rech = rows.filter(o => o.estado === "rechazado").length;
+  // ventas por día (o por mes si es "Todo")
+  const porMes = ANA_P === "todo", buckets = new Map();
+  const from = anaRange(ANA_P) || (ok.length ? new Date(Math.min(...ok.map(o => +new Date(o.creado)))) : new Date());
+  if (porMes){
+    const d = new Date(from.getFullYear(), from.getMonth(), 1), end = new Date();
+    while (d <= end){ buckets.set(`${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`, 0); d.setMonth(d.getMonth() + 1); }
+  } else {
+    const d = new Date(from); d.setHours(0, 0, 0, 0); const end = new Date();
+    while (d <= end){ buckets.set(dkey(d), 0); d.setDate(d.getDate() + 1); }
+  }
+  ok.forEach(o => { const d = new Date(o.creado); const k = porMes ? dkey(d).slice(0, 7) : dkey(d); if (buckets.has(k)) buckets.set(k, buckets.get(k) + Number(o.total || 0)); });
+  const vals = [...buckets.entries()], max = Math.max(1, ...vals.map(v => v[1]));
+  const lbl = k => porMes ? new Date(k + "-15").toLocaleDateString("es-AR", {month: "short", year: "2-digit"}) : k.slice(8, 10) + "/" + k.slice(5, 7);
+  // productos más vendidos
+  const prods = new Map();
+  ok.forEach(o => (o.items || []).forEach(it => { const p = prods.get(it.nombre) || {q: 0, $: 0}; p.q += Number(it.q || 0); p.$ += Number(it.precio || 0) * Number(it.q || 0); prods.set(it.nombre, p); }));
+  const top = [...prods.entries()].sort((a, b) => b[1].q - a[1].q).slice(0, 10), maxQ = Math.max(1, ...top.map(t => t[1].q));
+  const envios = ok.filter(o => o.modo === "envio").length;
+  $("#anaBody").innerHTML = `
+    <div class="kpis">
+      <div class="kpi"><span>Vendido</span><b>${money(ventas)}</b><small>pedidos aprobados</small></div>
+      <div class="kpi"><span>Pedidos vendidos</span><b>${ok.length}</b><small>${envios} con envío · ${ok.length - envios} retiro</small></div>
+      <div class="kpi"><span>Ticket promedio</span><b>${ok.length ? money(ventas / ok.length) : "—"}</b><small>por pedido</small></div>
+      <div class="kpi"><span>Sin concretar</span><b>${pend + rech}</b><small>${pend} pendientes · ${rech} rechazados</small></div>
+    </div>
+    <div class="ana-h">Ventas por ${porMes ? "mes" : "día"}</div>
+    ${ok.length ? `<div class="chart" role="img" aria-label="Ventas por ${porMes ? "mes" : "día"}">${vals.map(([k, v]) => `<div class="b" tabindex="0"><i style="height:${(v / max * 100).toFixed(1)}%"></i><span class="tip">${lbl(k)} · ${money(v)}</span></div>`).join("")}</div>
+      <div class="chart-x"><span>${lbl(vals[0][0])}</span><span>${lbl(vals[vals.length - 1][0])}</span></div>` : `<p style="color:var(--ink-3);margin:0 0 18px">Todavía no hay pedidos aprobados en este período.</p>`}
+    <div class="ana-h">Productos más vendidos</div>
+    ${top.length ? top.map(([n, v]) => `<div class="top-row"><span class="nm" title="${esc(n)}">${esc(n)}</span><span class="bar"><i style="width:${(v.q / maxQ * 100).toFixed(1)}%"></i></span><b>${v.q} u. · ${money(v.$)}</b></div>`).join("") : `<p style="color:var(--ink-3)">Sin datos todavía.</p>`}`;
+}
+async function anaLoad(){
+  $("#anaBody").innerHTML = `<p style="color:var(--ink-3)">Cargando…</p>`;
+  if (!sbCfg() || !SB){ $("#anaBody").innerHTML = `<p style="color:var(--ink-3)">Para ver el análisis hay que conectar la base de pedidos (botón Pedidos).</p>`; return; }
+  try{ ANA_ROWS = await sb("pedidos?select=*&order=creado.desc&limit=5000"); anaDraw(); }
+  catch(e){ $("#anaBody").innerHTML = `<p class="msg">No se pudieron cargar los pedidos. ${esc(e.detail || "")}</p>`; }
+}
+$("#bAna").onclick = () => { openModal("#mAna"); anaLoad(); };
+$("#anaPer").addEventListener("click", e => { const b = e.target.closest("[data-p]"); if (b){ ANA_P = b.dataset.p; if (ANA_ROWS) anaDraw(); } });
+function loadXlsx(){
+  return window.XLSX ? Promise.resolve() : new Promise((res, rej) => {
+    const sc = document.createElement("script");
+    sc.src = "https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js";
+    sc.onload = res; sc.onerror = () => rej(new Error("No se pudo cargar el generador de Excel"));
+    document.head.appendChild(sc);
+  });
+}
+$("#anaXls").onclick = async () => {
+  if (!ANA_ROWS){ toast("Primero esperá a que carguen los pedidos.", true); return; }
+  const rows = anaRows();
+  if (!rows.length){ toast("No hay pedidos en este período.", true); return; }
+  busy(true, "Armando el Excel…");
+  try{
+    await loadXlsx();
+    const EST = {pendiente: "Pendiente", aprobado: "Vendido", rechazado: "Rechazado"};
+    const f = iso => iso ? new Date(iso) : null;
+    const pedidos = rows.map(o => ({
+      "Código": "#" + o.codigo, "Fecha del pedido": f(o.creado), "Estado": EST[o.estado] || o.estado, "Cliente": o.cliente || "",
+      "Entrega": o.modo === "envio" ? "Envío" : "Retiro", "Dirección": o.direccion || "", "Km": o.km ?? "",
+      "Para (día)": o.entrega_fecha || "", "Para (hora)": o.entrega_hora || "", "Para (texto)": o.para || "",
+      "Productos": (o.items || []).map(it => `${it.q} × ${it.nombre}`).join(" | "),
+      "Subtotal": Number(o.subtotal || 0), "Descuento": Number(o.descuento || 0), "Envío": o.envio == null ? "" : Number(o.envio), "Total": Number(o.total || 0),
+      "Aclaraciones": o.notas || "", "Resuelto": f(o.resuelto),
+    }));
+    const detalle = [];
+    rows.forEach(o => (o.items || []).forEach(it => detalle.push({
+      "Código": "#" + o.codigo, "Fecha": f(o.creado), "Estado": EST[o.estado] || o.estado, "Producto": it.nombre,
+      "Cantidad": Number(it.q || 0), "Precio unitario": it.precio == null ? "" : Number(it.precio), "Importe": it.precio == null ? "" : Number(it.precio) * Number(it.q || 0),
+    })));
+    const wb = XLSX.utils.book_new();
+    const ws1 = XLSX.utils.json_to_sheet(pedidos, {cellDates: true}), ws2 = XLSX.utils.json_to_sheet(detalle, {cellDates: true});
+    ws1["!cols"] = [8, 18, 11, 18, 9, 28, 6, 11, 9, 24, 50, 11, 10, 9, 11, 30, 18].map(w => ({wch: w}));
+    ws2["!cols"] = [8, 18, 11, 32, 9, 14, 11].map(w => ({wch: w}));
+    XLSX.utils.book_append_sheet(wb, ws1, "Pedidos"); XLSX.utils.book_append_sheet(wb, ws2, "Detalle por producto");
+    const nombre = `Pedidos Aramé ${new Date().toLocaleDateString("es-AR").replace(/\//g, "-")}.xlsx`;
+    const blob = new Blob([XLSX.write(wb, {bookType: "xlsx", type: "array", cellDates: true})], {type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"});
+    const link = document.createElement("a"); link.href = URL.createObjectURL(blob); link.download = nombre;
+    document.body.appendChild(link); link.click(); setTimeout(() => { URL.revokeObjectURL(link.href); link.remove(); }, 1000);
+    busy(false); toast("Excel descargado ✓");
+  }catch(e){ busy(false); toast(e.message || "No se pudo armar el Excel.", true); }
+};
+
+/* ---------- tramos de envío ---------- */
+function addTramo(t = {}){
+  const el = document.createElement("div"); el.className = "tramo";
+  el.innerHTML = `<span>Hasta</span><input data-k="km" type="number" inputmode="decimal" min="0" step="0.5" value="${t.km || ""}" aria-label="Kilómetros"><span>km →</span><input data-k="precio" type="number" inputmode="numeric" min="0" step="100" placeholder="$ a confirmar" value="${t.precio || ""}" aria-label="Precio"><button type="button" aria-label="Quitar tramo" data-tdel>✕</button>`;
+  $("#nTramos").appendChild(el);
+}
+$("#nTramoAdd").onclick = () => addTramo({});
+$("#nTramos").addEventListener("click", e => { const b = e.target.closest("[data-tdel]"); if (b) b.closest(".tramo").remove(); });
 
 /* ---------- probar el aviso por mail ---------- */
 $("#nMailTest").onclick = async () => {

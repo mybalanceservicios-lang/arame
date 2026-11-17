@@ -401,6 +401,15 @@
   .sum{display:flex;justify-content:space-between;align-items:baseline;font-size:20px;font-weight:800}
   .sub-row{display:flex;justify-content:space-between;font-size:14.5px;color:var(--ink-2);padding-bottom:4px}
   .sub-row.promo{color:#FF7B7F;font-weight:800}
+  .when{display:grid;grid-template-columns:1.3fr 1fr;gap:8px}
+  .when input,.when select{font:inherit;font-size:16px;color:var(--ink);background:var(--card);border:1px solid var(--line);border-radius:12px;padding:11px 12px;outline:none;width:100%;color-scheme:dark}
+  .when input:focus,.when select:focus{border-color:var(--or)}
+  .when-hint{font-weight:600;color:var(--ink-3);font-size:12.5px}
+  .when-hint.err{color:#FF7B7F}
+  .ship{background:var(--bg);border:1px solid var(--line);border-radius:12px;padding:10px 12px;font-size:13.5px;color:var(--ink-2);display:flex;flex-wrap:wrap;gap:4px 12px;align-items:center}
+  .ship b{color:var(--ink)}
+  .ship a{color:var(--or-2);font-weight:700;text-decoration:underline}
+  .ship.err{border-color:rgba(229,72,77,.5);color:#FF7B7F}
   .promo-hint{margin:6px 0 0;font-size:13px;font-weight:700;color:var(--or-2)}
   .note{font-size:12.5px;color:var(--ink-3);margin:6px 0 0}
   .send{width:100%;display:flex;align-items:center;justify-content:center;gap:9px;margin-top:12px;background:var(--wa);color:#fff;border:0;border-radius:14px;padding:15px;font-weight:800;font-size:16px}
@@ -565,15 +574,21 @@
         <button data-mode="envio">Envío</button>
       </div>
       <label>Nombre<input id="fName" autocomplete="name" placeholder="Tu nombre"></label>
-      <label id="addrWrap" hidden>Dirección<input id="fAddr" autocomplete="street-address" placeholder="Calle, número, localidad"></label>
-      <label>¿Para cuándo? (opcional)<input id="fWhen" placeholder="Ej: sábado al mediodía"></label>
+      <label id="addrWrap" hidden>Dirección<input id="fAddr" autocomplete="street-address" placeholder="Calle y número, localidad (ej: Alvear 500, Martínez)"></label>
+      <div class="ship" id="ship" hidden></div>
+      <label>¿Para cuándo?
+        <span class="when"><input type="date" id="fDate" aria-label="Día"><select id="fTime" aria-label="Horario"></select></span>
+        <small class="when-hint" id="whenHint"></small>
+      </label>
       <label>Aclaraciones (opcional)<textarea id="fNotes" rows="2" placeholder="Algo que tengamos que saber"></textarea></label>
     </div>
   </div>
   <div class="d-foot">
     <div class="sub-row" id="sSubRow" hidden><span>Subtotal</span><span id="sSub"></span></div>
     <div class="sub-row promo" id="sPromoRow" hidden><span id="sPromoLbl"></span><span id="sPromo"></span></div>
+    <div class="sub-row" id="sShipRow" hidden><span id="sShipLbl">Envío</span><span id="sShip"></span></div>
     <div class="sum"><span>Total</span><span id="sTotal">$0</span></div>
+    <p class="promo-hint" id="sMinHint" hidden></p>
     <p class="promo-hint" id="sPromoHint" hidden></p>
     <p class="note" id="sNote"></p>
     <button class="send" id="sendBtn">
@@ -989,7 +1004,12 @@ function totals(){
   r.promo = pr;
   r.promoOk = !!pr && r.sub > 0 && r.sub >= pr.min;
   r.promoOff = r.promoOk ? Math.round(r.sub * pr.pct / 100) : 0;
-  r.total = r.sub - r.promoOff;
+  r.productos = r.sub - r.promoOff;
+  const env = DATA.envio || {};
+  r.minEnvio = mode === "envio" ? Math.max(0, Number(env.minimo) || 0) : 0;
+  r.faltaMin = r.minEnvio && r.productos < r.minEnvio ? r.minEnvio - r.productos : 0;
+  r.envio = mode === "envio" && SHIP.costo > 0 ? SHIP.costo : 0;
+  r.total = r.productos + r.envio;
   return r;
 }
 const secName = id => (SECS.find(s => s.id === id) || {}).nombre || "";
@@ -1029,7 +1049,13 @@ function renderCart(){
   $("#barCount").textContent = `${t.items.length} ${t.items.length === 1 ? "producto" : "productos"} · ${t.units} u.`;
   $("#barTotal").innerHTML = money(t.total) + (t.pending ? ` <small style="font-size:12px;opacity:.75">+ a consultar</small>` : "");
   $("#sTotal").textContent = money(t.total);
-  $("#sSubRow").hidden = $("#sPromoRow").hidden = !t.promoOk;
+  $("#sSubRow").hidden = !t.promoOk && mode !== "envio";
+  $("#sPromoRow").hidden = !t.promoOk;
+  $("#sSub").textContent = money(t.promoOk ? t.sub : t.productos);
+  $("#sShipRow").hidden = mode !== "envio";
+  if (mode === "envio") $("#sShip").textContent = SHIP.costo > 0 ? money(SHIP.costo) : SHIP.km ? "a confirmar" : "—";
+  $("#sMinHint").hidden = !t.faltaMin;
+  if (t.faltaMin) $("#sMinHint").textContent = `El envío es para pedidos desde ${money(t.minEnvio)}. Te faltan ${money(t.faltaMin)}, o elegí retiro en el local.`;
   if (t.promoOk){
     $("#sSub").textContent = money(t.sub);
     $("#sPromoLbl").textContent = `Promo ${t.promo.pct}% OFF`;
@@ -1041,7 +1067,7 @@ function renderCart(){
   $("#sNote").textContent = t.pending
     ? `${t.pending} ${t.pending === 1 ? "producto tiene" : "productos tienen"} precio a consultar. El total final te lo confirmamos por WhatsApp.`
     : "El pago lo coordinamos por WhatsApp.";
-  $("#sendBtn").disabled = !t.items.length;
+  $("#sendBtn").disabled = !t.items.length || !!t.faltaMin;
   if ($("#drawer").classList.contains("open")){
     const f = document.activeElement;
     if (!(f && f.matches("#lines [data-qty]"))) refreshLines();
@@ -1054,6 +1080,7 @@ function renderCart(){
 }
 
 function openCart(){
+  initWhen();
   refreshLines();
   $("#drawer").classList.add("open"); $("#overlay").classList.add("open");
   $("#drawer").setAttribute("aria-hidden", "false"); $("#bar").classList.remove("show");
@@ -1081,7 +1108,9 @@ $("#seg").addEventListener("click", e => {
   const b = e.target.closest("button"); if (!b) return;
   mode = b.dataset.mode;
   [...$("#seg").children].forEach(x => x.classList.toggle("on", x === b));
-  $("#addrWrap").hidden = mode !== "envio";
+  $("#addrWrap").hidden = $("#ship").hidden = mode !== "envio";
+  if (mode === "envio" && $("#fAddr").value.trim()) calcShip();
+  renderCart();
 });
 
 const saved = store.get("arame.cliente", {});
@@ -1090,7 +1119,11 @@ $("#fName").value = saved.name || ""; $("#fAddr").value = saved.addr || "";
 $("#sendBtn").onclick = () => {
   const t = totals(); if (!t.items.length) return;
   const name = $("#fName").value.trim(), addr = $("#fAddr").value.trim();
-  const when = $("#fWhen").value.trim(), notes = $("#fNotes").value.trim();
+  const notes = $("#fNotes").value.trim();
+  const ag = whenCheck();
+  if (!ag.ok){ toast(ag.msg); $("#fDate").focus(); return; }
+  const when = ag.texto;
+  if (t.faltaMin){ toast(`El envío es para pedidos desde ${money(t.minEnvio)}`); return; }
   $("#fName").classList.toggle("err", !name);
   $("#fAddr").classList.toggle("err", mode === "envio" && !addr);
   if (!name || (mode === "envio" && !addr)){
@@ -1110,18 +1143,122 @@ $("#sendBtn").onclick = () => {
     `¡Hola ${DATA.negocio?.nombre || "Aramé"}! Quiero hacer este pedido${code ? ` (#${code})` : ""}:`, "",
     ...lines, "",
     ...(t.promoOk ? [`Subtotal: ${money(t.sub)}`, `Promo ${t.promo.pct}% OFF: −${money(t.promoOff)}`] : []),
-    `*Total: ${money(t.total)}*` + (t.pending ? " + productos a consultar" : ""),
+    `*Total: ${money(t.total)}*` + (t.envio ? " (con envío)" : mode === "envio" ? " + envío a confirmar" : "") + (t.pending ? " + productos a consultar" : ""),
     "",
     `Nombre: ${name}`,
-    mode === "envio" ? `Envío a: ${addr}` : "Retiro en el local",
-    ...(when ? [`Para: ${when}`] : []),
+    mode === "envio" ? `Envío a: ${addr}` + (SHIP.km ? ` (≈${fmtKm(SHIP.km)} del local)` : "") : "Retiro en el local",
+    ...(mode === "envio" ? [`Costo de envío: ${SHIP.costo > 0 ? money(SHIP.costo) : "a confirmar"}`] : []),
+    `Para: ${when}`,
     ...(notes ? [`Aclaraciones: ${notes}`] : []),
   ].join("\n");
   const num = String(DATA.negocio?.whatsapp || "").replace(/\D/g, "");
   window.open(`https://wa.me/${num}?text=${encodeURIComponent(msg)}`, "_blank", "noopener");
-  if (code) saveOrder(code, t, {name, addr, when, notes});
+  if (code) saveOrder(code, t, {name, addr, when, notes, fecha: ag.fecha, hora: ag.hora});
   mailOrder(code, t, {name, addr, when, notes});
 };
+
+/* ---------- calculador de envío: distancia desde el local (OpenStreetMap) ---------- */
+const SHIP = {km: 0, costo: 0, estado: ""};
+const fmtKm = km => km.toLocaleString("es-AR", {maximumFractionDigits: 1}) + " km";
+async function geocode(q){
+  const url = "https://nominatim.openstreetmap.org/search?format=jsonv2&limit=1&countrycodes=ar&accept-language=es"
+    + "&viewbox=-58.85,-34.30,-58.30,-34.75&q=" + encodeURIComponent(q);
+  const r = await fetch(url, {headers: {Accept: "application/json"}});
+  if (!r.ok) throw new Error("geo " + r.status);
+  const j = await r.json();
+  return j[0] ? {lat: +j[0].lat, lng: +j[0].lon} : null;
+}
+async function localPos(){
+  const env = DATA.envio || {};
+  if (env.local && isFinite(env.local.lat) && isFinite(env.local.lng)) return env.local;
+  const key = "arame.local:" + (DATA.negocio || {}).direccion;
+  const c = store.get(key, null); if (c) return c;
+  const pos = await geocode(`${(DATA.negocio || {}).direccion}, Buenos Aires, Argentina`);
+  if (pos) store.set(key, pos);
+  return pos;
+}
+function distKm(a, b){
+  const R = 6371, rad = x => x * Math.PI / 180;
+  const dLat = rad(b.lat - a.lat), dLng = rad(b.lng - a.lng);
+  const h = Math.sin(dLat / 2) ** 2 + Math.cos(rad(a.lat)) * Math.cos(rad(b.lat)) * Math.sin(dLng / 2) ** 2;
+  return 2 * R * Math.asin(Math.sqrt(h)) * 1.3;   // ×1.3: aproxima el recorrido por calles
+}
+function shipCost(km){
+  const env = DATA.envio || {};
+  if (env.maxKm && km > env.maxKm) return {fuera: true, costo: 0};
+  const t = (env.tramos || []).filter(x => x.km > 0).sort((a, b) => a.km - b.km).find(x => km <= x.km);
+  return {fuera: false, costo: t && t.precio > 0 ? t.precio : 0};
+}
+let shipTimer = null, shipSeq = 0;
+function shipShow(html, err){ $("#ship").innerHTML = html; $("#ship").classList.toggle("err", !!err); }
+async function calcShip(){
+  const addr = $("#fAddr").value.trim(), seq = ++shipSeq;
+  SHIP.km = 0; SHIP.costo = 0;
+  if (addr.length < 6){ shipShow("Escribí la dirección para calcular el envío."); renderCart(); return; }
+  shipShow("Calculando la distancia…");
+  try{
+    const q = /buenos aires|argentina|caba/i.test(addr) ? addr : addr + ", Buenos Aires, Argentina";
+    const [a, b] = await Promise.all([localPos(), geocode(q)]);
+    if (seq !== shipSeq) return;
+    const maps = `https://www.google.com/maps/dir/?api=1&origin=${encodeURIComponent((DATA.negocio || {}).direccion + ", Buenos Aires")}&destination=${encodeURIComponent(q)}`;
+    if (!a || !b){ shipShow(`No encontramos esa dirección. Revisá calle, número y localidad. <a href="${maps}" target="_blank" rel="noopener">Ver en Google Maps</a>`, true); renderCart(); return; }
+    SHIP.km = Math.round(distKm(a, b) * 10) / 10;
+    const c = shipCost(SHIP.km); SHIP.costo = c.costo;
+    shipShow(c.fuera
+      ? `<span>≈ <b>${fmtKm(SHIP.km)}</b> del local · fuera de la zona de envío, lo consultamos por WhatsApp</span><a href="${maps}" target="_blank" rel="noopener">Ver en el mapa</a>`
+      : `<span>≈ <b>${fmtKm(SHIP.km)}</b> del local · envío <b>${c.costo > 0 ? money(c.costo) : "a confirmar"}</b></span><a href="${maps}" target="_blank" rel="noopener">Ver en el mapa</a>`, c.fuera);
+  }catch(_){
+    if (seq === shipSeq) shipShow("No pudimos calcular la distancia ahora. El costo de envío te lo confirmamos por WhatsApp.");
+  }
+  renderCart();
+}
+$("#fAddr").addEventListener("input", () => { clearTimeout(shipTimer); SHIP.km = 0; SHIP.costo = 0; shipTimer = setTimeout(calcShip, 1100); });
+$("#fAddr").addEventListener("change", () => { clearTimeout(shipTimer); calcShip(); });
+
+/* ---------- ¿para cuándo?: día en el calendario y horario ---------- */
+const DIAS = ["domingo", "lunes", "martes", "miércoles", "jueves", "viernes", "sábado"];
+const pad = n => String(n).padStart(2, "0");
+const isoDay = d => `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
+const toMin = h => { const [a, b] = String(h || "0:0").split(":").map(Number); return a * 60 + (b || 0); };
+function agenda(){ return Object.assign({desde: "11:00", hasta: "20:00", dias: [1, 2, 3, 4, 5, 6], intervalo: 30, anticipacion: 60}, DATA.agenda || {}); }
+function slotsFor(iso){
+  const ag = agenda(), d = new Date(iso + "T12:00:00");
+  if (!ag.dias.includes(d.getDay())) return [];
+  const now = new Date(), today = iso === isoDay(now);
+  const from = Math.max(toMin(ag.desde), today ? now.getHours() * 60 + now.getMinutes() + Number(ag.anticipacion || 0) : 0);
+  const out = [], step = Math.max(15, Number(ag.intervalo) || 30);
+  for (let m = toMin(ag.desde); m <= toMin(ag.hasta); m += step) if (m >= from) out.push(`${pad(Math.floor(m / 60))}:${pad(m % 60)}`);
+  return out;
+}
+function firstDay(){
+  const d = new Date();
+  for (let i = 0; i < 30; i++){ const iso = isoDay(d); if (slotsFor(iso).length) return iso; d.setDate(d.getDate() + 1); }
+  return isoDay(new Date());
+}
+function fillTimes(){
+  const iso = $("#fDate").value, sl = iso ? slotsFor(iso) : [], prev = $("#fTime").value;
+  const ag = agenda(), d = iso ? new Date(iso + "T12:00:00") : null;
+  $("#fTime").innerHTML = sl.length ? sl.map(h => `<option ${h === prev ? "selected" : ""}>${h}</option>`).join("") : `<option value="">—</option>`;
+  const hint = $("#whenHint");
+  hint.classList.toggle("err", !!iso && !sl.length);
+  hint.textContent = !iso ? "" : !sl.length
+    ? (ag.dias.includes(d.getDay()) ? "Ya no quedan horarios para ese día. Elegí otro." : `Los ${DIAS[d.getDay()].replace(/o$/, "os")} no tomamos pedidos. Elegí otro día.`)
+    : `${DIAS[d.getDay()][0].toUpperCase() + DIAS[d.getDay()].slice(1)} · pedidos de ${ag.desde} a ${ag.hasta} h`;
+}
+function whenCheck(){
+  const iso = $("#fDate").value, h = $("#fTime").value;
+  if (!iso) return {ok: false, msg: "Elegí el día del pedido"};
+  if (!h || !slotsFor(iso).includes(h)) return {ok: false, msg: "Elegí un horario disponible"};
+  const d = new Date(iso + "T12:00:00");
+  return {ok: true, fecha: iso, hora: h, texto: `${DIAS[d.getDay()]} ${pad(d.getDate())}/${pad(d.getMonth() + 1)} a las ${h} h`};
+}
+function initWhen(){
+  const min = isoDay(new Date()), max = new Date(); max.setDate(max.getDate() + 30);
+  $("#fDate").min = min; $("#fDate").max = isoDay(max);
+  if (!$("#fDate").value || !slotsFor($("#fDate").value).length) $("#fDate").value = firstDay();
+  fillTimes();
+}
+$("#fDate").addEventListener("change", fillTimes);
 
 /* ---------- pedidos guardados (si el panel conectó la base de pedidos) ---------- */
 const pedCfg = () => DATA && DATA.pedidos && DATA.pedidos.url && DATA.pedidos.anon ? DATA.pedidos : null;
@@ -1151,7 +1288,7 @@ function mailOrder(code, t, f){
     _template: "table", _captcha: "false",
     "Pedido": code ? "#" + code : "(sin código)",
     "Cliente": f.name,
-    "Entrega": mode === "envio" ? "Envío a: " + f.addr : "Retiro en el local",
+    "Entrega": mode === "envio" ? "Envío a: " + f.addr + (SHIP.km ? ` (≈${fmtKm(SHIP.km)})` : "") + ` · envío ${SHIP.costo > 0 ? money(SHIP.costo) : "a confirmar"}` : "Retiro en el local",
     "Para": f.when || "—",
     "Aclaraciones": f.notes || "—",
     "Productos": productos,
@@ -1172,6 +1309,9 @@ function saveOrder(code, t, f){
     direccion: mode === "envio" ? f.addr.slice(0, 300) : null, para: f.when ? f.when.slice(0, 200) : null, notas: f.notes ? f.notes.slice(0, 1000) : null,
     items: t.items.map(({p, q}) => ({id: p.id, nombre: p.nombre, q, precio: hasPrice(p) ? priceOf(p) : null})),
     subtotal: t.sub, descuento: t.promoOff, total: t.total,
+    envio: mode === "envio" && SHIP.costo > 0 ? SHIP.costo : null,
+    km: mode === "envio" && SHIP.km ? Math.round(SHIP.km * 10) / 10 : null,
+    entrega_fecha: f.fecha || null, entrega_hora: f.hora || null,
   };
   fetch(`${cfg.url}/rest/v1/pedidos`, {
     method: "POST", keepalive: true,

@@ -3,7 +3,7 @@
     "nombre": "Aramé",
     "whatsapp": "5491164578338",
     "direccion": "Rawson 2021, Martínez",
-    "horario": "Lunes a sábado · 11 a 15 h y 17 a 20 h",
+    "horario": "Lunes a sábado · 10 a 20 h",
     "aviso": "",
     "instagram": "aramecocina",
     "envios": "",
@@ -575,5 +575,37 @@
   "pedidos": {
     "url": "https://qomtlkxurnncmlvimuvr.supabase.co",
     "anon": "sb_publishable_vG1VNZOw9OADVFOMPO790w_jmTcDk1j"
+  },
+  "envio": {
+    "minimo": 50000,
+    "tramos": [
+      {
+        "km": 3,
+        "precio": null
+      },
+      {
+        "km": 6,
+        "precio": null
+      },
+      {
+        "km": 10,
+        "precio": null
+      }
+    ],
+    "maxKm": null
+  },
+  "agenda": {
+    "desde": "11:00",
+    "hasta": "20:00",
+    "dias": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+    ],
+    "intervalo": 30,
+    "anticipacion": 60
   }
 }
