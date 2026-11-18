@@ -96,6 +96,10 @@
   .ped li .w{color:#FFB4A1;font-size:12px;font-weight:800}
   .ped-tot{display:flex;justify-content:space-between;font-weight:800;margin-top:8px}
   .ped-acts{display:flex;gap:8px;margin-top:12px;flex-wrap:wrap}
+  .ped-day{display:flex;justify-content:space-between;align-items:baseline;gap:10px;margin:18px 0 8px;padding-bottom:6px;border-bottom:2px solid var(--or)}
+  .ped-day:first-child{margin-top:0}
+  .ped-day b{font-size:15px}
+  .ped-day span{font-size:13px;color:var(--ink-2);font-weight:700}
   .ped-acts .ped-del{margin-left:auto;border:0;color:var(--ink-3);font-size:13px}
   .ped-acts .ped-del:hover{color:var(--red)}
   .ped-acts .ok{background:var(--green);border-color:var(--green);color:#06210f}
@@ -397,6 +401,7 @@
           <button data-st="pendiente" class="on">Pendientes</button><button data-st="aprobado">Vendidos</button><button data-st="rechazado">Rechazados</button>
         </div>
         <div id="pedList"></div>
+        <button class="btn" id="pedXls" style="width:100%;margin-top:14px">⬇ Descargar Excel de pedidos</button>
         <button class="btn ghost" id="pedSetupEdit" style="margin-top:14px;font-size:13px;border:0;color:var(--ink-3)">Configuración de la base de pedidos</button>
       </div>
     </div>
@@ -457,7 +462,7 @@
     </div>
     <div class="sheet-foot">
       <button class="btn ghost" data-close>Cerrar</button>
-      <button class="btn primary" id="anaXls">⬇ Descargar Excel de pedidos</button>
+      <button class="btn primary" id="anaXls">⬇ Descargar Excel de análisis (con gráficos)</button>
     </div>
   </div>
 </div>
@@ -1043,19 +1048,32 @@ async function pedLoad(){
   [...$("#pedTabs").children].forEach(b => b.classList.toggle("on", b.dataset.st === PED_ST));
   $("#pedList").innerHTML = `<p style="color:var(--ink-3)">Cargando…</p>`;
   try{
-    const rows = await sb(`pedidos?select=*&estado=eq.${PED_ST}&order=creado.${PED_ST === "pendiente" ? "asc" : "desc"}&limit=100`);
+    const rows = await sb(`pedidos?select=*&estado=eq.${PED_ST}&order=${PED_ST === "pendiente" ? "creado.asc" : "resuelto.desc.nullslast,creado.desc"}&limit=300`);
     if (PED_ST === "pendiente"){ $("#pedBadge").hidden = !rows.length; $("#pedBadge").textContent = rows.length; }
     const byId = Object.fromEntries(DATA.productos.map(p => [p.id, p]));
+    let lastDay = "";
     $("#pedList").innerHTML = rows.length ? rows.map(o => {
+      // en Vendidos y Rechazados, una línea por día (el día en que se aprobó o rechazó)
+      let sep = "";
+      if (PED_ST !== "pendiente"){
+        const d = new Date(o.resuelto || o.creado), k = d.toDateString();
+        if (k !== lastDay){
+          lastDay = k;
+          const del = rows.filter(x => new Date(x.resuelto || x.creado).toDateString() === k);
+          const tot = del.reduce((a, x) => a + Number(x.total || 0), 0);
+          const nom = d.toLocaleDateString("es-AR", {weekday: "long", day: "2-digit", month: "2-digit", year: "numeric"});
+          sep = `<div class="ped-day"><b>${nom[0].toUpperCase() + nom.slice(1)}</b><span>${del.length} ${del.length === 1 ? "pedido" : "pedidos"}${PED_ST === "aprobado" ? " · " + money(tot) : ""}</span></div>`;
+        }
+      }
       const falta = (o.items || []).filter(it => { const p = byId[it.id]; return p && stockOf(p) !== null && stockOf(p) < it.q; });
-      return `<div class="ped ${PED_ST === "pendiente" && falta.length ? "nostock" : ""}" data-pid="${esc(o.id)}">
+      return sep + `<div class="ped ${PED_ST === "pendiente" && falta.length ? "nostock" : ""}" data-pid="${esc(o.id)}">
         <div class="ped-top"><b><span class="code">#${esc(o.codigo)}</span>${esc(o.cliente || "Sin nombre")}</b><time>${fmtDate(o.creado)}</time></div>
         <div class="ped-meta">${o.modo === "envio" ? "Envío a " + esc(o.direccion || "—") + (o.km ? ` (≈${String(o.km).replace(".", ",")} km)` : "") + ` · envío ${o.envio ? money(o.envio) : "a confirmar"}` : "Retiro en el local"}${o.para ? " · Para: " + esc(o.para) : ""}${o.notas ? "<br>Aclaraciones: " + esc(o.notas) : ""}</div>
         <ul>${(o.items || []).map(it => { const p = byId[it.id]; const st = p ? stockOf(p) : null;
           return `<li><span>${esc(it.q)} × ${esc(it.nombre)}${PED_ST === "pendiente" && st !== null && st < it.q ? ` <span class="w">(stock: ${st})</span>` : ""}${!p ? ` <span class="w">(ya no está en el catálogo)</span>` : ""}</span><span>${it.precio ? money(it.precio * it.q) : "a consultar"}</span></li>`; }).join("")}</ul>
         ${o.descuento > 0 ? `<div class="ped-tot" style="font-weight:600;color:var(--ink-2)"><span>Promo</span><span>−${money(o.descuento)}</span></div>` : ""}
         <div class="ped-tot"><span>Total</span><span>${money(o.total || 0)}</span></div>
-        ${PED_ST === "pendiente" ? `<div class="ped-acts"><button class="btn ok" data-ok>✓ Aprobar (vendido)</button><button class="btn danger" data-no>Rechazar</button><button class="btn ghost ped-del" data-del>Borrar</button></div>`
+        ${PED_ST === "pendiente" ? `<div class="ped-acts"><button class="btn ok" data-ok>✓ Aprobar (vendido)</button><button class="btn danger" data-no>Rechazar</button></div>`
           : PED_ST === "rechazado" ? `<div class="ped-acts"><button class="btn ghost" data-back>Volver a pendiente</button><button class="btn ghost ped-del" data-del>Borrar</button></div>`
           : `<div class="ped-acts" style="align-items:center"><span class="ped-meta" style="margin:0">Vendido el ${o.resuelto ? fmtDate(o.resuelto) : ""}</span><button class="btn ghost ped-del" data-del>Borrar</button></div>`}
       </div>`;
@@ -1451,38 +1469,222 @@ function loadXlsx(){
     document.head.appendChild(sc);
   });
 }
-$("#anaXls").onclick = async () => {
-  if (!ANA_ROWS){ toast("Primero esperá a que carguen los pedidos.", true); return; }
-  const rows = anaRows();
-  if (!rows.length){ toast("No hay pedidos en este período.", true); return; }
+/* ---------- Excel de pedidos (sección Pedidos): una fila por producto ---------- */
+const EST_TXT = {pendiente: "Pendiente", aprobado: "Vendido", rechazado: "Rechazado"};
+function saveBlob(blob, nombre){
+  const link = document.createElement("a"); link.href = URL.createObjectURL(blob); link.download = nombre;
+  document.body.appendChild(link); link.click(); setTimeout(() => { URL.revokeObjectURL(link.href); link.remove(); }, 1000);
+}
+const hoyTxt = () => new Date().toLocaleDateString("es-AR").replace(/\//g, "-");
+async function pedidosXls(rows){
+  await loadXlsx();
+  const f = iso => iso ? new Date(iso) : null;
+  const filas = [];
+  rows.forEach(o => {
+    const items = (o.items || []).length ? o.items : [{q: "", nombre: "", precio: null}];
+    items.forEach((it, k) => filas.push({
+      "Código": "#" + o.codigo, "Fecha del pedido": f(o.creado), "Estado": EST_TXT[o.estado] || o.estado, "Cliente": o.cliente || "",
+      "Entrega": o.modo === "envio" ? "Envío" : "Retiro", "Dirección": o.direccion || "",
+      "Para (día)": o.entrega_fecha || "", "Para (hora)": o.entrega_hora || "",
+      "Cantidad": it.q === "" ? "" : Number(it.q || 0), "Producto": it.nombre || "",
+      "Precio unitario": it.precio == null ? "" : Number(it.precio), "Importe": it.precio == null ? "" : Number(it.precio) * Number(it.q || 0),
+      // los importes del pedido van solo en su primera fila, así la suma de la columna da bien
+      "Envío": k === 0 && o.envio != null ? Number(o.envio) : "", "Descuento": k === 0 && Number(o.descuento) > 0 ? Number(o.descuento) : "",
+      "Total del pedido": k === 0 ? Number(o.total || 0) : "", "Aclaraciones": k === 0 ? o.notas || "" : "", "Resuelto el": k === 0 ? f(o.resuelto) : null,
+    }));
+  });
+  const resumen = rows.map(o => ({
+    "Código": "#" + o.codigo, "Fecha del pedido": f(o.creado), "Estado": EST_TXT[o.estado] || o.estado, "Cliente": o.cliente || "",
+    "Entrega": o.modo === "envio" ? "Envío" : "Retiro", "Para (día)": o.entrega_fecha || "", "Para (hora)": o.entrega_hora || "",
+    "Productos distintos": (o.items || []).length, "Unidades": (o.items || []).reduce((a, it) => a + Number(it.q || 0), 0),
+    "Envío": o.envio == null ? "" : Number(o.envio), "Total": Number(o.total || 0), "Resuelto el": f(o.resuelto),
+  }));
+  const wb = XLSX.utils.book_new();
+  const ws1 = XLSX.utils.json_to_sheet(filas, {cellDates: true}), ws2 = XLSX.utils.json_to_sheet(resumen, {cellDates: true});
+  ws1["!cols"] = [8, 17, 10, 18, 8, 26, 11, 9, 9, 30, 13, 11, 9, 10, 14, 26, 17].map(w => ({wch: w}));
+  ws2["!cols"] = [8, 17, 10, 18, 8, 11, 9, 9, 9, 9, 11, 17].map(w => ({wch: w}));
+  ws1["!autofilter"] = {ref: ws1["!ref"]}; ws2["!autofilter"] = {ref: ws2["!ref"]};
+  XLSX.utils.book_append_sheet(wb, ws1, "Pedidos por producto"); XLSX.utils.book_append_sheet(wb, ws2, "Pedidos (resumen)");
+  saveBlob(new Blob([XLSX.write(wb, {bookType: "xlsx", type: "array", cellDates: true})], {type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"}), `Pedidos Aramé ${hoyTxt()}.xlsx`);
+}
+$("#pedXls").onclick = async () => {
   busy(true, "Armando el Excel…");
   try{
-    await loadXlsx();
-    const EST = {pendiente: "Pendiente", aprobado: "Vendido", rechazado: "Rechazado"};
-    const f = iso => iso ? new Date(iso) : null;
-    const pedidos = rows.map(o => ({
-      "Código": "#" + o.codigo, "Fecha del pedido": f(o.creado), "Estado": EST[o.estado] || o.estado, "Cliente": o.cliente || "",
-      "Entrega": o.modo === "envio" ? "Envío" : "Retiro", "Dirección": o.direccion || "", "Km": o.km ?? "",
-      "Para (día)": o.entrega_fecha || "", "Para (hora)": o.entrega_hora || "", "Para (texto)": o.para || "",
-      "Productos": (o.items || []).map(it => `${it.q} × ${it.nombre}`).join(" | "),
-      "Subtotal": Number(o.subtotal || 0), "Descuento": Number(o.descuento || 0), "Envío": o.envio == null ? "" : Number(o.envio), "Total": Number(o.total || 0),
-      "Aclaraciones": o.notas || "", "Resuelto": f(o.resuelto),
+    const rows = await sb("pedidos?select=*&order=creado.desc&limit=10000");
+    if (!rows.length){ busy(false); toast("Todavía no hay pedidos.", true); return; }
+    await pedidosXls(rows); busy(false); toast("Excel de pedidos descargado ✓");
+  }catch(e){ busy(false); toast(e.message || "No se pudo armar el Excel.", true); }
+};
+
+/* ---------- Excel de análisis con gráficos (barras y tortas nativas de Excel) ---------- */
+function loadJszip(){
+  return window.JSZip ? Promise.resolve() : new Promise((res, rej) => {
+    const sc = document.createElement("script");
+    sc.src = "https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js";
+    sc.onload = res; sc.onerror = () => rej(new Error("No se pudo cargar el generador de Excel"));
+    document.head.appendChild(sc);
+  });
+}
+const xe = v => String(v ?? "").replace(/[&<>"]/g, c => ({"&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;"}[c]));
+const colL = n => { let s = ""; n++; while (n){ const m = (n - 1) % 26; s = String.fromCharCode(65 + m) + s; n = Math.floor((n - 1) / 26); } return s; };
+// estilos: 0 normal · 1 encabezado · 2 pesos · 3 título · 4 número · 5 porcentaje · 6 texto gris
+const XSTYLES = `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<styleSheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main">
+<numFmts count="1"><numFmt numFmtId="164" formatCode="&quot;$&quot; #,##0"/></numFmts>
+<fonts count="4"><font><sz val="11"/><name val="Calibri"/></font><font><b/><sz val="11"/><color rgb="FFFFFFFF"/><name val="Calibri"/></font><font><b/><sz val="16"/><color rgb="FFFE6002"/><name val="Calibri"/></font><font><sz val="10"/><color rgb="FF77716A"/><name val="Calibri"/></font></fonts>
+<fills count="3"><fill><patternFill patternType="none"/></fill><fill><patternFill patternType="gray125"/></fill><fill><patternFill patternType="solid"><fgColor rgb="FF1A1A1A"/><bgColor indexed="64"/></patternFill></fill></fills>
+<borders count="1"><border><left/><right/><top/><bottom/><diagonal/></border></borders>
+<cellStyleXfs count="1"><xf numFmtId="0" fontId="0" fillId="0" borderId="0"/></cellStyleXfs>
+<cellXfs count="7"><xf numFmtId="0" fontId="0" fillId="0" borderId="0" xfId="0"/><xf numFmtId="0" fontId="1" fillId="2" borderId="0" xfId="0" applyFont="1" applyFill="1"/><xf numFmtId="164" fontId="0" fillId="0" borderId="0" xfId="0" applyNumberFormat="1"/><xf numFmtId="0" fontId="2" fillId="0" borderId="0" xfId="0" applyFont="1"/><xf numFmtId="3" fontId="0" fillId="0" borderId="0" xfId="0" applyNumberFormat="1"/><xf numFmtId="9" fontId="0" fillId="0" borderId="0" xfId="0" applyNumberFormat="1"/><xf numFmtId="0" fontId="3" fillId="0" borderId="0" xfId="0" applyFont="1"/></cellXfs>
+<cellStyles count="1"><cellStyle name="Normal" xfId="0" builtinId="0"/></cellStyles>
+</styleSheet>`;
+const NS_C = "http://schemas.openxmlformats.org/drawingml/2006/chart", NS_A = "http://schemas.openxmlformats.org/drawingml/2006/main", NS_R = "http://schemas.openxmlformats.org/officeDocument/2006/relationships";
+function chartXml(sheet, ch){
+  const ref = (col, r1, r2) => `'${sheet.replace(/'/g, "''")}'!$${colL(col)}$${r1}:$${colL(col)}$${r2}`;
+  const n = ch.cats.length;
+  const strCache = `<c:strCache><c:ptCount val="${n}"/>${ch.cats.map((v, i) => `<c:pt idx="${i}"><c:v>${xe(v)}</c:v></c:pt>`).join("")}</c:strCache>`;
+  const numCache = `<c:numCache><c:formatCode>General</c:formatCode><c:ptCount val="${n}"/>${ch.vals.map((v, i) => `<c:pt idx="${i}"><c:v>${Number(v) || 0}</c:v></c:pt>`).join("")}</c:numCache>`;
+  const cat = `<c:cat><c:strRef><c:f>${ref(ch.catCol, ch.r1, ch.r1 + n - 1)}</c:f>${strCache}</c:strRef></c:cat>`;
+  const val = `<c:val><c:numRef><c:f>${ref(ch.valCol, ch.r1, ch.r1 + n - 1)}</c:f>${numCache}</c:numRef></c:val>`;
+  const tx = `<c:tx><c:strRef><c:f>'${sheet.replace(/'/g, "''")}'!$${colL(ch.valCol)}$${ch.r1 - 1}</c:f><c:strCache><c:ptCount val="1"/><c:pt idx="0"><c:v>${xe(ch.serie)}</c:v></c:pt></c:strCache></c:strRef></c:tx>`;
+  const fill = c => `<a:solidFill><a:srgbClr val="${c}"/></a:solidFill>`;
+  const txt = (sz, b, col = "1A1A1A") => `<c:txPr><a:bodyPr/><a:lstStyle/><a:p><a:pPr><a:defRPr sz="${sz}" b="${b ? 1 : 0}"><a:solidFill><a:srgbClr val="${col}"/></a:solidFill></a:defRPr></a:pPr><a:endParaRPr lang="es-AR"/></a:p></c:txPr>`;
+  const title = `<c:title><c:tx><c:rich><a:bodyPr/><a:lstStyle/><a:p><a:pPr><a:defRPr sz="1300" b="1"/></a:pPr><a:r><a:rPr lang="es-AR" sz="1300" b="1"><a:solidFill><a:srgbClr val="1A1A1A"/></a:solidFill></a:rPr><a:t>${xe(ch.title)}</a:t></a:r></a:p></c:rich></c:tx><c:overlay val="0"/></c:title>`;
+  let plot;
+  if (ch.type === "pie"){
+    const dpts = ch.cats.map((_, i) => `<c:dPt><c:idx val="${i}"/><c:bubble3D val="0"/><c:spPr>${fill(ch.colors[i % ch.colors.length])}<a:ln w="19050">${fill("FFFFFF")}</a:ln></c:spPr></c:dPt>`).join("");
+    plot = `<c:pieChart><c:varyColors val="1"/><c:ser><c:idx val="0"/><c:order val="0"/>${tx}${dpts}
+<c:dLbls><c:numFmt formatCode="0%" sourceLinked="0"/><c:spPr><a:noFill/><a:ln><a:noFill/></a:ln></c:spPr>${txt(1000, true)}<c:dLblPos val="bestFit"/><c:showLegendKey val="0"/><c:showVal val="0"/><c:showCatName val="1"/><c:showSerName val="0"/><c:showPercent val="1"/><c:showBubbleSize val="0"/><c:separator>: </c:separator><c:showLeaderLines val="1"/></c:dLbls>
+${cat}${val}</c:ser><c:firstSliceAng val="0"/></c:pieChart>`;
+  } else {
+    const horiz = ch.type === "barh";
+    plot = `<c:barChart><c:barDir val="${horiz ? "bar" : "col"}"/><c:grouping val="clustered"/><c:varyColors val="0"/>
+<c:ser><c:idx val="0"/><c:order val="0"/>${tx}<c:spPr>${fill(ch.colors[0])}</c:spPr><c:invertIfNegative val="0"/>
+<c:dLbls><c:numFmt formatCode="${xe(ch.fmt || "General")}" sourceLinked="0"/><c:spPr><a:noFill/><a:ln><a:noFill/></a:ln></c:spPr>${txt(900, false, "52514E")}<c:dLblPos val="outEnd"/><c:showLegendKey val="0"/><c:showVal val="${ch.labels ? 1 : 0}"/><c:showCatName val="0"/><c:showSerName val="0"/><c:showPercent val="0"/><c:showBubbleSize val="0"/></c:dLbls>
+${cat}${val}</c:ser><c:gapWidth val="${horiz ? 50 : 40}"/><c:axId val="101"/><c:axId val="102"/></c:barChart>
+<c:catAx><c:axId val="101"/><c:scaling><c:orientation val="${horiz ? "maxMin" : "minMax"}"/></c:scaling><c:delete val="0"/><c:axPos val="${horiz ? "l" : "b"}"/><c:numFmt formatCode="General" sourceLinked="1"/><c:majorTickMark val="none"/><c:minorTickMark val="none"/><c:tickLblPos val="nextTo"/><c:spPr><a:ln w="9525">${fill("BFBFBF")}</a:ln></c:spPr>${txt(900, false, "52514E")}<c:crossAx val="102"/><c:crosses val="autoZero"/><c:auto val="1"/><c:lblAlgn val="ctr"/><c:lblOffset val="100"/><c:noMultiLvlLbl val="0"/></c:catAx>
+<c:valAx><c:axId val="102"/><c:scaling><c:orientation val="minMax"/></c:scaling><c:delete val="0"/><c:axPos val="${horiz ? "t" : "l"}"/><c:majorGridlines><c:spPr><a:ln w="6350">${fill("E6E6E6")}</a:ln></c:spPr></c:majorGridlines><c:numFmt formatCode="${xe(ch.fmt || "General")}" sourceLinked="0"/><c:majorTickMark val="none"/><c:minorTickMark val="none"/><c:tickLblPos val="nextTo"/><c:spPr><a:ln><a:noFill/></a:ln></c:spPr>${txt(900, false, "77716A")}<c:crossAx val="101"/><c:crosses val="${horiz ? "max" : "autoZero"}"/><c:crossBetween val="between"/></c:valAx>`;
+  }
+  const legend = ch.type === "pie" ? `<c:legend><c:legendPos val="r"/><c:overlay val="0"/>${txt(1000, false)}</c:legend>` : "";
+  return `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<c:chartSpace xmlns:c="${NS_C}" xmlns:a="${NS_A}" xmlns:r="${NS_R}"><c:roundedCorners val="0"/>
+<c:chart>${title}<c:autoTitleDeleted val="0"/><c:plotArea><c:layout/>${plot}</c:plotArea>${legend}<c:plotVisOnly val="1"/><c:dispBlanksAs val="gap"/></c:chart>
+<c:spPr>${fill("FFFFFF")}<a:ln w="9525">${fill("E6E6E6")}</a:ln></c:spPr></c:chartSpace>`;
+}
+async function chartXlsx(sheets, nombre){
+  await loadJszip();
+  const z = new JSZip();
+  let chartN = 0;
+  const ct = [`<Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/>`, `<Default Extension="xml" ContentType="application/xml"/>`,
+    `<Override PartName="/xl/workbook.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet.main+xml"/>`,
+    `<Override PartName="/xl/styles.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.styles+xml"/>`];
+  sheets.forEach((sh, si) => {
+    const n = si + 1;
+    ct.push(`<Override PartName="/xl/worksheets/sheet${n}.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.worksheet+xml"/>`);
+    const rowsXml = sh.rows.map((r, ri) => `<row r="${ri + 1}">${r.map((c, ci) => {
+      if (c == null || c === "") return "";
+      const cell = typeof c === "object" ? c : {v: c};
+      const at = `r="${colL(ci)}${ri + 1}"${cell.s ? ` s="${cell.s}"` : ""}`;
+      return typeof cell.v === "number" ? `<c ${at}><v>${cell.v}</v></c>` : `<c ${at} t="inlineStr"><is><t xml:space="preserve">${xe(cell.v)}</t></is></c>`;
+    }).join("")}</row>`).join("");
+    const cols = sh.cols ? `<cols>${sh.cols.map((w, i) => `<col min="${i + 1}" max="${i + 1}" width="${w}" customWidth="1"/>`).join("")}</cols>` : "";
+    const hasCh = sh.charts && sh.charts.length;
+    z.file(`xl/worksheets/sheet${n}.xml`, `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main" xmlns:r="${NS_R}"><sheetPr><pageSetUpPr fitToPage="1"/></sheetPr><sheetViews><sheetView workbookViewId="0" showGridLines="0"/></sheetViews><sheetFormatPr defaultRowHeight="15"/>${cols}<sheetData>${rowsXml}</sheetData><pageMargins left="0.4" right="0.4" top="0.5" bottom="0.5" header="0.3" footer="0.3"/><pageSetup paperSize="9" orientation="landscape" fitToWidth="1" fitToHeight="1"/>${hasCh ? `<drawing r:id="rId1"/>` : ""}</worksheet>`);
+    if (!hasCh) return;
+    ct.push(`<Override PartName="/xl/drawings/drawing${n}.xml" ContentType="application/vnd.openxmlformats-officedocument.drawing+xml"/>`);
+    z.file(`xl/worksheets/_rels/sheet${n}.xml.rels`, `<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="${NS_R}/drawing" Target="../drawings/drawing${n}.xml"/></Relationships>`);
+    const anchors = [], drels = [];
+    sh.charts.forEach((ch, k) => {
+      chartN++;
+      ct.push(`<Override PartName="/xl/charts/chart${chartN}.xml" ContentType="application/vnd.openxmlformats-officedocument.drawingml.chart+xml"/>`);
+      z.file(`xl/charts/chart${chartN}.xml`, chartXml(sh.name, ch));
+      drels.push(`<Relationship Id="rId${k + 1}" Type="${NS_R}/chart" Target="../charts/chart${chartN}.xml"/>`);
+      const [c1, r1, c2, r2] = ch.at;
+      anchors.push(`<xdr:twoCellAnchor><xdr:from><xdr:col>${c1}</xdr:col><xdr:colOff>0</xdr:colOff><xdr:row>${r1}</xdr:row><xdr:rowOff>0</xdr:rowOff></xdr:from><xdr:to><xdr:col>${c2}</xdr:col><xdr:colOff>0</xdr:colOff><xdr:row>${r2}</xdr:row><xdr:rowOff>0</xdr:rowOff></xdr:to><xdr:graphicFrame macro=""><xdr:nvGraphicFramePr><xdr:cNvPr id="${k + 2}" name="Gráfico ${k + 1}"/><xdr:cNvGraphicFramePr/></xdr:nvGraphicFramePr><xdr:xfrm><a:off x="0" y="0"/><a:ext cx="0" cy="0"/></xdr:xfrm><a:graphic><a:graphicData uri="${NS_C}"><c:chart xmlns:c="${NS_C}" r:id="rId${k + 1}" xmlns:r="${NS_R}"/></a:graphicData></a:graphic></xdr:graphicFrame><xdr:clientData/></xdr:twoCellAnchor>`);
+    });
+    z.file(`xl/drawings/drawing${n}.xml`, `<?xml version="1.0" encoding="UTF-8" standalone="yes"?><xdr:wsDr xmlns:xdr="http://schemas.openxmlformats.org/drawingml/2006/spreadsheetDrawing" xmlns:a="${NS_A}">${anchors.join("")}</xdr:wsDr>`);
+    z.file(`xl/drawings/_rels/drawing${n}.xml.rels`, `<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">${drels.join("")}</Relationships>`);
+  });
+  z.file("[Content_Types].xml", `<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types">${ct.join("")}</Types>`);
+  z.file("_rels/.rels", `<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="${NS_R}/officeDocument" Target="xl/workbook.xml"/></Relationships>`);
+  z.file("xl/workbook.xml", `<?xml version="1.0" encoding="UTF-8" standalone="yes"?><workbook xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main" xmlns:r="${NS_R}"><sheets>${sheets.map((sh, i) => `<sheet name="${xe(sh.name)}" sheetId="${i + 1}" r:id="rId${i + 1}"/>`).join("")}</sheets></workbook>`);
+  z.file("xl/_rels/workbook.xml.rels", `<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">${sheets.map((_, i) => `<Relationship Id="rId${i + 1}" Type="${NS_R}/worksheet" Target="worksheets/sheet${i + 1}.xml"/>`).join("")}<Relationship Id="rId${sheets.length + 1}" Type="${NS_R}/styles" Target="styles.xml"/></Relationships>`);
+  z.file("xl/styles.xml", XSTYLES);
+  saveBlob(await z.generateAsync({type: "blob", mimeType: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"}), nombre);
+}
+// colores: naranja de la marca para barras; tortas con hasta 3 colores bien distinguibles + gris para "Otros"
+const C_OR = "FE6002", C_PIE = ["2A78D6", "EB6834", "1BAF7A"], C_OTROS = "9A9893";
+function topConOtros(pares, n){
+  const s = [...pares].sort((a, b) => b[1] - a[1]);
+  if (s.length <= n + 1) return s;
+  return [...s.slice(0, n), ["Otros", s.slice(n).reduce((a, x) => a + x[1], 0)]];
+}
+$("#anaXls").onclick = async () => {
+  if (!ANA_ROWS){ toast("Primero esperá a que carguen los pedidos.", true); return; }
+  const rows = anaRows(), ok = rows.filter(o => o.estado === "aprobado");
+  if (!ok.length){ toast("No hay ventas en este período para analizar.", true); return; }
+  busy(true, "Armando el Excel con gráficos…");
+  try{
+    const PER = {hoy: "Hoy", 7: "Últimos 7 días", 30: "Últimos 30 días", mes: "Este mes", todo: "Todo el historial"}[ANA_P];
+    const ventas = ok.reduce((a, o) => a + Number(o.total || 0), 0);
+    const pend = rows.filter(o => o.estado === "pendiente").length, rech = rows.filter(o => o.estado === "rechazado").length;
+    // por día
+    const dias = new Map();
+    const from = anaRange(ANA_P) || new Date(Math.min(...ok.map(o => +new Date(o.resuelto || o.creado))));
+    const d = new Date(from); d.setHours(0, 0, 0, 0);
+    while (d <= new Date()){ dias.set(dkey(d), [0, 0]); d.setDate(d.getDate() + 1); }
+    ok.forEach(o => { const k = dkey(new Date(o.resuelto || o.creado)); if (!dias.has(k)) dias.set(k, [0, 0]); const v = dias.get(k); v[0] += Number(o.total || 0); v[1]++; });
+    const diasArr = [...dias.entries()].sort((a, b) => a[0] < b[0] ? -1 : 1).map(([k, v]) => [k.slice(8, 10) + "/" + k.slice(5, 7), v[0], v[1]]);
+    // productos y categorías
+    const byName = Object.fromEntries(DATA.productos.map(p => [p.nombre, p])), byIdP = Object.fromEntries(DATA.productos.map(p => [p.id, p]));
+    const prods = new Map(), cats = new Map();
+    ok.forEach(o => (o.items || []).forEach(it => {
+      const imp = Number(it.precio || 0) * Number(it.q || 0);
+      const pr = prods.get(it.nombre) || [0, 0]; pr[0] += Number(it.q || 0); pr[1] += imp; prods.set(it.nombre, pr);
+      const cat = ((byIdP[it.id] || byName[it.nombre] || {}).categoria) || "Otros";
+      cats.set(cat, (cats.get(cat) || 0) + imp);
     }));
-    const detalle = [];
-    rows.forEach(o => (o.items || []).forEach(it => detalle.push({
-      "Código": "#" + o.codigo, "Fecha": f(o.creado), "Estado": EST[o.estado] || o.estado, "Producto": it.nombre,
-      "Cantidad": Number(it.q || 0), "Precio unitario": it.precio == null ? "" : Number(it.precio), "Importe": it.precio == null ? "" : Number(it.precio) * Number(it.q || 0),
-    })));
-    const wb = XLSX.utils.book_new();
-    const ws1 = XLSX.utils.json_to_sheet(pedidos, {cellDates: true}), ws2 = XLSX.utils.json_to_sheet(detalle, {cellDates: true});
-    ws1["!cols"] = [8, 18, 11, 18, 9, 28, 6, 11, 9, 24, 50, 11, 10, 9, 11, 30, 18].map(w => ({wch: w}));
-    ws2["!cols"] = [8, 18, 11, 32, 9, 14, 11].map(w => ({wch: w}));
-    XLSX.utils.book_append_sheet(wb, ws1, "Pedidos"); XLSX.utils.book_append_sheet(wb, ws2, "Detalle por producto");
-    const nombre = `Pedidos Aramé ${new Date().toLocaleDateString("es-AR").replace(/\//g, "-")}.xlsx`;
-    const blob = new Blob([XLSX.write(wb, {bookType: "xlsx", type: "array", cellDates: true})], {type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"});
-    const link = document.createElement("a"); link.href = URL.createObjectURL(blob); link.download = nombre;
-    document.body.appendChild(link); link.click(); setTimeout(() => { URL.revokeObjectURL(link.href); link.remove(); }, 1000);
-    busy(false); toast("Excel descargado ✓");
+    const prodArr = [...prods.entries()].sort((a, b) => b[1][0] - a[1][0]).map(([n, v]) => [n, v[0], v[1]]);
+    const top = prodArr.slice(0, 12);
+    const envio = ok.filter(o => o.modo === "envio").length;
+    const H = t => ({v: t, s: 1}), $v = v => ({v: Math.round(v), s: 2}), N = v => ({v, s: 4});
+    const sheets = [];
+    // 1. Resumen
+    sheets.push({name: "Resumen", cols: [30, 18, 4, 30], rows: [
+      [{v: "Análisis de ventas · Aramé", s: 3}], [{v: `${PER} · descargado el ${new Date().toLocaleDateString("es-AR")}`, s: 6}], [],
+      [H("Indicador"), H("Valor")],
+      ["Vendido (pedidos aprobados)", $v(ventas)], ["Pedidos vendidos", N(ok.length)], ["Ticket promedio", $v(ventas / ok.length)],
+      ["Con envío", N(envio)], ["Retiro en el local", N(ok.length - envio)], ["Pendientes", N(pend)], ["Rechazados", N(rech)],
+      [], [{v: "Cada hoja tiene su tabla y su gráfico. Los gráficos se actualizan si cambiás los números de la tabla.", s: 6}],
+    ]});
+    // 2. Ventas por día (barras)
+    sheets.push({name: "Ventas por día", cols: [12, 16, 12], rows: [[H("Día"), H("Vendido"), H("Pedidos")], ...diasArr.map(r => [r[0], $v(r[1]), N(r[2])])],
+      charts: [{type: "col", title: "Ventas por día", serie: "Vendido", catCol: 0, valCol: 1, r1: 2, cats: diasArr.map(r => r[0]), vals: diasArr.map(r => r[1]), colors: [C_OR], fmt: "\"$\" #,##0", at: [4, 1, 16, 21]}]});
+    // 3. Productos (barras horizontales + torta del importe)
+    const pieProd = topConOtros(prodArr.map(r => [r[0], r[2]]), 3);
+    const prodRows = [[H("Producto"), H("Unidades"), H("Importe")], ...prodArr.map(r => [r[0], N(r[1]), $v(r[2])])];
+    const pieStart = prodRows.length + 3;
+    prodRows.push([], [], [H("Participación en lo vendido"), H("Importe")], ...pieProd.map(r => [r[0], $v(r[1])]));
+    sheets.push({name: "Productos", cols: [32, 11, 14], rows: prodRows, charts: [
+      {type: "barh", title: "Productos más vendidos (unidades)", serie: "Unidades", catCol: 0, valCol: 1, r1: 2, cats: top.map(r => r[0]), vals: top.map(r => r[1]), colors: [C_OR], labels: true, at: [4, 1, 14, Math.max(16, top.length * 2 + 4)]},
+      {type: "pie", title: "Participación en lo vendido", serie: "Importe", catCol: 0, valCol: 1, r1: pieStart + 1, cats: pieProd.map(r => r[0]), vals: pieProd.map(r => r[1]), colors: pieProd.map((r, i) => r[0] === "Otros" ? C_OTROS : C_PIE[i]), at: [4, Math.max(17, top.length * 2 + 5), 14, Math.max(17, top.length * 2 + 5) + 18]},
+    ]});
+    // 4. Categorías (torta)
+    const catArr = topConOtros([...cats.entries()], 3);
+    const allCats = [...cats.entries()].sort((a, b) => b[1] - a[1]);
+    const catRows = [[H("Categoría"), H("Importe")], ...allCats.map(r => [r[0], $v(r[1])]), [], [H("Para el gráfico"), H("Importe")], ...catArr.map(r => [r[0], $v(r[1])])];
+    sheets.push({name: "Categorías", cols: [24, 14], rows: catRows, charts: [{type: "pie", title: "Ventas por categoría", serie: "Importe", catCol: 0, valCol: 1, r1: allCats.length + 4, cats: catArr.map(r => r[0]), vals: catArr.map(r => r[1]), colors: catArr.map((r, i) => r[0] === "Otros" ? C_OTROS : C_PIE[i]), at: [3, 1, 12, 19]}]});
+    // 5. Entrega y estados (tortas)
+    const ent = [["Envío", envio], ["Retiro en el local", ok.length - envio]].filter(r => r[1] > 0);
+    const est = [["Vendidos", ok.length], ["Pendientes", pend], ["Rechazados", rech]].filter(r => r[1] > 0);
+    const esRows = [[H("Entrega"), H("Pedidos")], ...ent.map(r => [r[0], N(r[1])]), [], [H("Estado"), H("Pedidos")], ...est.map(r => [r[0], N(r[1])])];
+    sheets.push({name: "Entrega y estados", cols: [22, 11], rows: esRows, charts: [
+      {type: "pie", title: "Envío o retiro (pedidos vendidos)", serie: "Pedidos", catCol: 0, valCol: 1, r1: 2, cats: ent.map(r => r[0]), vals: ent.map(r => r[1]), colors: C_PIE, at: [3, 1, 11, 17]},
+      {type: "pie", title: "Estado de los pedidos", serie: "Pedidos", catCol: 0, valCol: 1, r1: ent.length + 4, cats: est.map(r => r[0]), vals: est.map(r => r[1]), colors: C_PIE, at: [11, 1, 19, 17]},
+    ]});
+    await chartXlsx(sheets, `Análisis Aramé ${hoyTxt()}.xlsx`);
+    busy(false); toast("Excel de análisis descargado ✓");
   }catch(e){ busy(false); toast(e.message || "No se pudo armar el Excel.", true); }
 };
 
