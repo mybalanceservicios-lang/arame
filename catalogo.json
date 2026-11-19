@@ -79,7 +79,11 @@
       "categoria": "Entradas - Medzé",
       "seccion": "cocina",
       "foto": "fotos/hummus-grande.jpg",
-      "disponible": true
+      "disponible": true,
+      "stock": null,
+      "destacado": false,
+      "mesa": true,
+      "descuento": 0
     },
     {
       "id": "hummus-remolacha",
