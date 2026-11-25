@@ -60,6 +60,17 @@
   .wm img{height:1em;width:auto;aspect-ratio:1470/285;display:block}
 
   /* encabezado */
+  /* barrita de promociones activas: fondo negro, letras naranjas, se desliza sola */
+  .promo-tk{position:sticky;top:0;z-index:51;height:32px;overflow:hidden;background:#000;color:var(--or);font-weight:700;font-size:13px;display:flex;align-items:center;border-bottom:1px solid #222}
+  .promo-tk .trk{display:flex;white-space:nowrap;animation:tk var(--tk-dur,30s) linear infinite}
+  .promo-tk:hover .trk{animation-play-state:paused}
+  .promo-tk span{display:inline-flex;align-items:center;gap:9px;padding:0 26px}
+  .promo-tk span::before{content:"★";font-size:11px}
+  @keyframes tk{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+  body.has-tk header{top:32px}
+  body.has-tk .toolbar{top:96px}
+  @media(min-width:700px){body.has-tk .mesa .stage{top:96px;height:calc(100vh - 96px);height:calc(100svh - 96px)}}
+  @media (prefers-reduced-motion:reduce){.promo-tk .trk{animation:none}}
   header{position:sticky;top:0;z-index:50;background:rgba(0,0,0,.96);border-bottom:1px solid var(--line)}
   /* bandera de Armenia: franja fina arriba de todo y franja del pie */
   :root{--flag:linear-gradient(90deg,#D90012 0 33.3%,#0033A0 33.3% 66.6%,#F2A800 66.6% 100%)}
@@ -432,6 +443,7 @@
 <body>
 
 <div class="bgglow" aria-hidden="true"></div>
+<div class="promo-tk" id="promoTk" hidden aria-label="Promociones activas"><div class="trk" id="promoTrk"></div></div>
 <canvas id="bgfx" aria-hidden="true"></canvas>
 
 <header>
@@ -666,6 +678,28 @@ async function load(){
   if (fromHash && fromHash === activeSec) setTimeout(() => goTo(document.getElementById("sec-" + activeSec)), 300);
 }
 
+// arma los textos de la barrita con todas las promos activas
+function renderTicker(){
+  const msgs = [];
+  const pr = promoTotal(); if (pr) msgs.push(promoText(pr));
+  DATA.productos.filter(p => !isOff(p) && discOf(p)).forEach(p => msgs.push(`${p.nombre} con ${discOf(p)}% OFF`));
+  ((DATA.envio || {}).descuentos || []).filter(d => d && d.activo !== false).forEach(d => {
+    const v = Number(d.valor) || 0;
+    const que = d.aplica === "pedido" ? (d.modo === "pct" ? `${v}% OFF en tu pedido` : `${money(v)} de descuento en tu pedido`)
+      : (d.modo === "gratis" ? "Envío gratis" : d.modo === "pct" ? `${v}% OFF en el envío` : `${money(v)} menos en el envío`);
+    const zonas = String(d.zona || "").split(",").map(z => z.trim()).filter(Boolean);
+    msgs.push(`${que}${zonas.length ? " a " + zonas.join(" y ") : ""}${Number(d.minimo) > 0 ? ` en compras desde ${money(d.minimo)}` : ""}`);
+  });
+  const on = msgs.length > 0;
+  $("#promoTk").hidden = !on; document.body.classList.toggle("has-tk", on);
+  if (!on) return;
+  // se repite el texto para que el movimiento no tenga cortes
+  const set = msgs.map(m => `<span>${esc(m)}</span>`).join("");
+  let reps = 2; const largo = msgs.join("").length;
+  while (largo * (reps / 2) < 140) reps += 2;
+  $("#promoTrk").innerHTML = set.repeat(reps);
+  $("#promoTk").style.setProperty("--tk-dur", Math.max(18, Math.round(largo * reps / 2 * 0.22)) + "s");
+}
 function renderInfo(){
   const n = DATA.negocio || {};
   const num = String(n.whatsapp || "").replace(/\D/g, "");
@@ -682,6 +716,7 @@ function renderInfo(){
   if (n.aviso){ $("#aviso").textContent = n.aviso; $("#aviso").hidden = false; }
   const pr = promoTotal();
   ["#promoBanner", "#mPromo"].forEach(sel => { $(sel).hidden = !pr; if (pr) $(sel + " span").textContent = promoText(pr); });
+  renderTicker();
   const h = DATA.historia;
   if (h && (h.titulo || h.texto)){
     $("#stTitle").textContent = h.titulo || ""; $("#stText").textContent = h.texto || "";
@@ -818,7 +853,7 @@ function markSec(){
 }
 
 // alto de lo que queda fijo arriba (encabezado + barra de categorías)
-const stickyH = () => 64 + $("#toolbar").offsetHeight;
+const stickyH = () => 64 + $("#toolbar").offsetHeight + ($("#promoTk").hidden ? 0 : $("#promoTk").offsetHeight);
 function goTo(el){
   if (!el) return;
   spyLock = performance.now() + 900;
