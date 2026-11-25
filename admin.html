@@ -171,6 +171,19 @@
   .tramo{display:grid;grid-template-columns:auto 90px auto 1fr auto;gap:8px;align-items:center;margin-bottom:8px;font-size:13.5px;color:var(--ink-2)}
   .tramo input{font:inherit;font-size:15px;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:8px 10px;outline:none;width:100%}
   .tramo button{width:34px;height:34px;border-radius:9px;border:1px solid var(--line);background:none;color:var(--ink-3)}
+  .desc{background:var(--bg);border:1px solid var(--line);border-radius:14px;padding:12px;margin-bottom:10px}
+  .desc.off{opacity:.55}
+  .desc .top{display:flex;align-items:center;gap:10px;margin-bottom:8px}
+  .desc .top input[data-k=motivo]{flex:1}
+  .desc input,.desc select{font:inherit;font-size:15px;color:var(--ink);background:var(--card);border:1px solid var(--line);border-radius:10px;padding:8px 10px;outline:none;width:100%;min-width:0}
+  .desc input:focus,.desc select:focus{border-color:var(--or)}
+  .desc .grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-top:8px}
+  .desc label{display:flex;flex-direction:column;gap:4px;font-size:12px;font-weight:700;color:var(--ink-3)}
+  .desc .sw{flex-direction:row;align-items:center;gap:6px;white-space:nowrap;color:var(--ink-2)}
+  .desc .sw input{width:18px;height:18px;accent-color:var(--or)}
+  .desc .x{width:36px;height:36px;flex-shrink:0;border-radius:10px;border:1px solid var(--line);background:none;color:var(--ink-3);font-size:14px}
+  .desc .res{margin-top:8px;font-size:12.5px;color:var(--or-2);font-weight:700}
+  @media(max-width:480px){.desc .grid3{grid-template-columns:1fr 1fr}}
   .dias{display:flex;flex-wrap:wrap;gap:6px;margin-top:4px}
   .dias label{display:inline-flex;align-items:center;gap:6px;background:var(--bg);border:1px solid var(--line);border-radius:999px;padding:6px 12px;font-weight:700;color:var(--ink)}
   .dias input{accent-color:var(--or);width:16px;height:16px}
@@ -357,6 +370,11 @@
       <div id="nTramos"></div>
       <button class="btn" type="button" id="nTramoAdd" style="margin-bottom:12px">+ Agregar tramo</button>
       <label class="f">Distancia máxima de envío (km)<input id="nMaxKm" type="number" inputmode="decimal" min="0" step="0.5" placeholder="Vacío = sin límite"></label>
+
+      <h3 class="sub-h">Descuentos especiales</h3>
+      <p class="help" style="margin:-4px 0 10px;color:var(--ink-3);font-size:13px">Para envíos a ciertas zonas o promos puntuales. Se aplican solos cuando el cliente elige envío y su dirección tiene alguna de las palabras de la zona. Si hay varios que coinciden, se usa el más conveniente para el cliente.</p>
+      <div id="nDescs"></div>
+      <button class="btn" type="button" id="nDescAdd" style="margin-bottom:14px">+ Agregar descuento especial</button>
 
       <h3 class="sub-h">Horario para tomar pedidos</h3>
       <div class="row2">
@@ -924,6 +942,7 @@ $("#bNegocio").onclick = () => {
   $("#nHor").value = n.horario || ""; $("#nAviso").value = n.aviso || ""; $("#nIg").value = n.instagram || ""; $("#nGrv").value = n.resenasGoogle || ""; $("#nMail").value = n.avisoMail || ""; $("#nEnv").value = n.envios || ""; $("#nPago").value = n.pagos || "";
   $("#nCats").value = categories().join("\n");
   const env = DATA.envio || {}, ag = Object.assign({desde: "11:00", hasta: "20:00", dias: [1, 2, 3, 4, 5, 6]}, DATA.agenda || {});
+  $("#nDescs").innerHTML = ""; (env.descuentos || []).forEach(addDesc);
   $("#nMin").value = env.minimo || ""; $("#nMaxKm").value = env.maxKm || "";
   $("#nTramos").innerHTML = ""; (env.tramos && env.tramos.length ? env.tramos : [{km: 3}, {km: 6}, {km: 10}]).forEach(addTramo);
   $("#nAgDesde").value = ag.desde; $("#nAgHasta").value = ag.hasta;
@@ -956,6 +975,11 @@ $("#nSave").onclick = async () => {
       d.categorias = [...new Set(cats)];
       d.envio = {...(d.envio || {}), minimo: Math.max(0, Math.round(Number($("#nMin").value) || 0)), maxKm: Number($("#nMaxKm").value) > 0 ? Number($("#nMaxKm").value) : null,
         tramos: [...document.querySelectorAll("#nTramos .tramo")].map(t => ({km: Number(t.querySelector("[data-k=km]").value) || 0, precio: Number(t.querySelector("[data-k=precio]").value) > 0 ? Math.round(Number(t.querySelector("[data-k=precio]").value)) : null})).filter(t => t.km > 0).sort((a, b) => a.km - b.km)};
+      d.envio.descuentos = [...document.querySelectorAll("#nDescs .desc")].map(g => {
+        const v = k => g.querySelector(`[data-k=${k}]`);
+        return {activo: v("activo").checked, motivo: v("motivo").value.trim() || "Descuento especial", zona: v("zona").value.trim(),
+          aplica: v("aplica").value, modo: v("modo").value, valor: Math.max(0, Number(v("valor").value) || 0), minimo: Math.max(0, Math.round(Number(v("minimo").value) || 0))};
+      }).filter(x => x.modo === "gratis" || x.valor > 0);
       d.agenda = {...(d.agenda || {}), desde: $("#nAgDesde").value || "11:00", hasta: $("#nAgHasta").value || "20:00",
         dias: [...document.querySelectorAll("#nAgDias input:checked")].map(i => Number(i.value))};
       d.secciones = secs; d.historia = historia; d.resenas = resenas;
@@ -1071,6 +1095,7 @@ async function pedLoad(){
         <div class="ped-meta">${o.modo === "envio" ? "Envío a " + esc(o.direccion || "—") + (o.km ? ` (≈${String(o.km).replace(".", ",")} km)` : "") + ` · envío ${o.envio ? money(o.envio) : "a confirmar"}` : "Retiro en el local"}${o.para ? " · Para: " + esc(o.para) : ""}${o.notas ? "<br>Aclaraciones: " + esc(o.notas) : ""}</div>
         <ul>${(o.items || []).map(it => { const p = byId[it.id]; const st = p ? stockOf(p) : null;
           return `<li><span>${esc(it.q)} × ${esc(it.nombre)}${PED_ST === "pendiente" && st !== null && st < it.q ? ` <span class="w">(stock: ${st})</span>` : ""}${!p ? ` <span class="w">(ya no está en el catálogo)</span>` : ""}</span><span>${it.precio ? money(it.precio * it.q) : "a consultar"}</span></li>`; }).join("")}</ul>
+        ${o.desc_motivo ? `<div class="ped-tot" style="font-weight:600;color:var(--or-2)"><span>${esc(o.desc_motivo)}</span><span>${Number(o.desc_especial) > 0 ? "−" + money(o.desc_especial) : ""}</span></div>` : ""}
         ${o.descuento > 0 ? `<div class="ped-tot" style="font-weight:600;color:var(--ink-2)"><span>Promo</span><span>−${money(o.descuento)}</span></div>` : ""}
         <div class="ped-tot"><span>Total</span><span>${money(o.total || 0)}</span></div>
         ${PED_ST === "pendiente" ? `<div class="ped-acts"><button class="btn ok" data-ok>✓ Aprobar (vendido)</button><button class="btn danger" data-no>Rechazar</button></div>`
@@ -1490,6 +1515,7 @@ async function pedidosXls(rows){
       "Precio unitario": it.precio == null ? "" : Number(it.precio), "Importe": it.precio == null ? "" : Number(it.precio) * Number(it.q || 0),
       // los importes del pedido van solo en su primera fila, así la suma de la columna da bien
       "Envío": k === 0 && o.envio != null ? Number(o.envio) : "", "Descuento": k === 0 && Number(o.descuento) > 0 ? Number(o.descuento) : "",
+      "Descuento especial": k === 0 && Number(o.desc_especial) > 0 ? Number(o.desc_especial) : "", "Motivo del descuento": k === 0 ? o.desc_motivo || "" : "",
       "Total del pedido": k === 0 ? Number(o.total || 0) : "", "Aclaraciones": k === 0 ? o.notas || "" : "", "Resuelto el": k === 0 ? f(o.resuelto) : null,
     }));
   });
@@ -1497,12 +1523,13 @@ async function pedidosXls(rows){
     "Código": "#" + o.codigo, "Fecha del pedido": f(o.creado), "Estado": EST_TXT[o.estado] || o.estado, "Cliente": o.cliente || "",
     "Entrega": o.modo === "envio" ? "Envío" : "Retiro", "Para (día)": o.entrega_fecha || "", "Para (hora)": o.entrega_hora || "",
     "Productos distintos": (o.items || []).length, "Unidades": (o.items || []).reduce((a, it) => a + Number(it.q || 0), 0),
-    "Envío": o.envio == null ? "" : Number(o.envio), "Total": Number(o.total || 0), "Resuelto el": f(o.resuelto),
+    "Envío": o.envio == null ? "" : Number(o.envio), "Descuento especial": Number(o.desc_especial) > 0 ? Number(o.desc_especial) : "", "Motivo del descuento": o.desc_motivo || "",
+    "Total": Number(o.total || 0), "Resuelto el": f(o.resuelto),
   }));
   const wb = XLSX.utils.book_new();
   const ws1 = XLSX.utils.json_to_sheet(filas, {cellDates: true}), ws2 = XLSX.utils.json_to_sheet(resumen, {cellDates: true});
-  ws1["!cols"] = [8, 17, 10, 18, 8, 26, 11, 9, 9, 30, 13, 11, 9, 10, 14, 26, 17].map(w => ({wch: w}));
-  ws2["!cols"] = [8, 17, 10, 18, 8, 11, 9, 9, 9, 9, 11, 17].map(w => ({wch: w}));
+  ws1["!cols"] = [8, 17, 10, 18, 8, 26, 11, 9, 9, 30, 13, 11, 9, 10, 12, 30, 14, 26, 17].map(w => ({wch: w}));
+  ws2["!cols"] = [8, 17, 10, 18, 8, 11, 9, 9, 9, 9, 12, 30, 11, 17].map(w => ({wch: w}));
   ws1["!autofilter"] = {ref: ws1["!ref"]}; ws2["!autofilter"] = {ref: ws2["!ref"]};
   XLSX.utils.book_append_sheet(wb, ws1, "Pedidos por producto"); XLSX.utils.book_append_sheet(wb, ws2, "Pedidos (resumen)");
   saveBlob(new Blob([XLSX.write(wb, {bookType: "xlsx", type: "array", cellDates: true})], {type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"}), `Pedidos Aramé ${hoyTxt()}.xlsx`);
@@ -1687,6 +1714,43 @@ $("#anaXls").onclick = async () => {
     busy(false); toast("Excel de análisis descargado ✓");
   }catch(e){ busy(false); toast(e.message || "No se pudo armar el Excel.", true); }
 };
+
+/* ---------- descuentos especiales ---------- */
+function descResumen(g){
+  const v = k => g.querySelector(`[data-k=${k}]`);
+  const aplica = v("aplica").value, modo = v("modo").value, val = Number(v("valor").value) || 0, min = Number(v("minimo").value) || 0, zona = v("zona").value.trim();
+  const que = aplica === "pedido" ? (modo === "pct" ? `${val}% OFF en el pedido` : `${money(val)} de descuento en el pedido`)
+    : (modo === "gratis" ? "envío gratis" : modo === "pct" ? `${val}% OFF en el envío` : `${money(val)} menos en el envío`);
+  g.querySelector(".res").textContent = (modo !== "gratis" && !val) ? "Poné el valor del descuento." :
+    `${zona ? `Envíos a ${zona.split(",").map(z => z.trim()).filter(Boolean).join(" o ")}` : "Todos los envíos"}${min ? ` desde ${money(min)}` : ""}: ${que}.`;
+  g.classList.toggle("off", !v("activo").checked);
+}
+function addDesc(d = {}){
+  const g = document.createElement("div"); g.className = "desc";
+  const aplica = d.aplica || "envio", modo = d.modo || (aplica === "envio" ? "gratis" : "pct");
+  g.innerHTML = `<div class="top"><input data-k="motivo" placeholder="Motivo (lo ve el cliente). Ej: Clientes de Tigre" value="${esc(d.motivo || "")}"><label class="sw"><input type="checkbox" data-k="activo" ${d.activo === false ? "" : "checked"}>Activo</label><button type="button" class="x" aria-label="Quitar descuento" data-ddel>✕</button></div>
+    <label>Zona (palabras de la dirección, separadas por coma)<input data-k="zona" placeholder="Ej: Tigre, Nordelta · vacío = todos los envíos" value="${esc(d.zona || "")}"></label>
+    <div class="grid3">
+      <label>Se aplica a<select data-k="aplica"><option value="envio" ${aplica === "envio" ? "selected" : ""}>El envío</option><option value="pedido" ${aplica === "pedido" ? "selected" : ""}>El pedido</option></select></label>
+      <label>Tipo<select data-k="modo"></select></label>
+      <label>Valor<input data-k="valor" type="number" inputmode="numeric" min="0" step="1" value="${d.valor || ""}" placeholder="0"></label>
+      <label>Compra mínima ($)<input data-k="minimo" type="number" inputmode="numeric" min="0" step="1000" value="${d.minimo || ""}" placeholder="Sin mínimo"></label>
+    </div>
+    <div class="res"></div>`;
+  const fillModo = sel => {
+    const v = g.querySelector("[data-k=modo]"), cur = sel || v.value;
+    const ops = g.querySelector("[data-k=aplica]").value === "envio" ? [["gratis", "Envío gratis"], ["pct", "% de descuento"], ["monto", "$ de descuento"]] : [["pct", "% de descuento"], ["monto", "$ de descuento"]];
+    v.innerHTML = ops.map(([k, n]) => `<option value="${k}">${n}</option>`).join("");
+    v.value = ops.some(o => o[0] === cur) ? cur : ops[0][0];
+    g.querySelector("[data-k=valor]").closest("label").style.visibility = v.value === "gratis" ? "hidden" : "visible";
+  };
+  fillModo(modo);
+  g.addEventListener("input", () => { descResumen(g); });
+  g.addEventListener("change", e => { if (e.target.matches("[data-k=aplica], [data-k=modo]")) fillModo(); descResumen(g); });
+  $("#nDescs").appendChild(g); descResumen(g);
+}
+$("#nDescAdd").onclick = () => addDesc({});
+$("#nDescs").addEventListener("click", e => { const b = e.target.closest("[data-ddel]"); if (b && confirm("¿Quitar este descuento especial?")) b.closest(".desc").remove(); });
 
 /* ---------- tramos de envío ---------- */
 function addTramo(t = {}){

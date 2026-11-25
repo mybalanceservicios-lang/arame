@@ -581,6 +581,7 @@
     <div class="sub-row" id="sSubRow" hidden><span>Subtotal</span><span id="sSub"></span></div>
     <div class="sub-row promo" id="sPromoRow" hidden><span id="sPromoLbl"></span><span id="sPromo"></span></div>
     <div class="sub-row" id="sShipRow" hidden><span id="sShipLbl">Envío</span><span id="sShip"></span></div>
+    <div class="sub-row promo" id="sEspRow" hidden><span id="sEspLbl"></span><span id="sEsp"></span></div>
     <div class="sum"><span>Total</span><span id="sTotal">$0</span></div>
     <p class="promo-hint" id="sMinHint" hidden></p>
     <p class="promo-hint" id="sPromoHint" hidden></p>
@@ -1003,10 +1004,38 @@ function totals(){
   r.minEnvio = mode === "envio" ? Math.max(0, Number(env.minimo) || 0) : 0;
   r.faltaMin = r.minEnvio && r.productos < r.minEnvio ? r.minEnvio - r.productos : 0;
   r.envio = mode === "envio" && SHIP.costo > 0 ? SHIP.costo : 0;
-  r.total = r.productos + r.envio;
+  // descuentos especiales por zona (Panel → Datos del negocio → Envíos)
+  r.esp = specialDiscount(r);
+  r.total = Math.max(0, r.productos + r.envio - r.esp.monto);
   return r;
 }
 const secName = id => (SECS.find(s => s.id === id) || {}).nombre || "";
+
+/* ---------- descuentos especiales (por zona de envío) ---------- */
+function specialDiscount(r){
+  const none = {monto: 0, motivo: "", texto: "", regla: null};
+  if (mode !== "envio" || !r.items.length) return none;
+  const addr = norm($("#fAddr") ? $("#fAddr").value : "");
+  let best = none;
+  for (const d of ((DATA.envio || {}).descuentos || [])){
+    if (!d || d.activo === false) continue;
+    const zonas = String(d.zona || "").split(",").map(z => norm(z.trim())).filter(Boolean);
+    if (zonas.length && !zonas.some(z => addr.includes(z))) continue;
+    if (Number(d.minimo) > 0 && r.productos < Number(d.minimo)) continue;
+    const v = Math.max(0, Number(d.valor) || 0);
+    let monto = 0, texto = "";
+    if (d.aplica === "pedido"){
+      monto = d.modo === "pct" ? Math.round(r.productos * Math.min(v, 90) / 100) : Math.min(v, r.productos);
+      texto = d.modo === "pct" ? `${Math.min(v, 90)}% OFF en el pedido` : `${money(v)} de descuento en el pedido`;
+    } else {
+      // envío: si el costo todavía es "a confirmar", igual se avisa el beneficio
+      monto = d.modo === "gratis" ? r.envio : d.modo === "pct" ? Math.round(r.envio * Math.min(v, 100) / 100) : Math.min(v, r.envio);
+      texto = d.modo === "gratis" ? "envío gratis" : d.modo === "pct" ? `${Math.min(v, 100)}% OFF en el envío` : `${money(v)} menos en el envío`;
+    }
+    if (!best.regla || monto > best.monto) best = {monto, motivo: String(d.motivo || "Descuento especial").slice(0, 120), texto, regla: d};
+  }
+  return best;
+}
 
 function lineHTML({p, q}){
   return `<div class="li">
@@ -1048,6 +1077,11 @@ function renderCart(){
   $("#sSub").textContent = money(t.promoOk ? t.sub : t.productos);
   $("#sShipRow").hidden = mode !== "envio";
   if (mode === "envio") $("#sShip").textContent = SHIP.costo > 0 ? money(SHIP.costo) : SHIP.km ? "a confirmar" : "—";
+  $("#sEspRow").hidden = !t.esp.regla;
+  if (t.esp.regla){
+    $("#sEspLbl").textContent = `${t.esp.motivo} · ${t.esp.texto}`;
+    $("#sEsp").textContent = t.esp.monto > 0 ? "−" + money(t.esp.monto) : "se aplica";
+  }
   $("#sMinHint").hidden = !t.faltaMin;
   if (t.faltaMin) $("#sMinHint").textContent = `El envío es para pedidos desde ${money(t.minEnvio)}. Te faltan ${money(t.faltaMin)}, o elegí retiro en el local.`;
   if (t.promoOk){
@@ -1103,6 +1137,7 @@ $("#seg").addEventListener("click", e => {
   mode = b.dataset.mode;
   [...$("#seg").children].forEach(x => x.classList.toggle("on", x === b));
   $("#addrWrap").hidden = $("#ship").hidden = mode !== "envio";
+  /* el descuento por zona depende de la dirección: se recalcula al escribir */
   if (mode === "envio" && $("#fAddr").value.trim()) calcShip();
   renderCart();
 });
@@ -1137,6 +1172,7 @@ $("#sendBtn").onclick = () => {
     `¡Hola ${DATA.negocio?.nombre || "Aramé"}! Quiero hacer este pedido${code ? ` (#${code})` : ""}:`, "",
     ...lines, "",
     ...(t.promoOk ? [`Subtotal: ${money(t.sub)}`, `Promo ${t.promo.pct}% OFF: −${money(t.promoOff)}`] : []),
+    ...(t.esp.regla ? [`Descuento especial (${t.esp.motivo}): ${t.esp.texto}` + (t.esp.monto > 0 ? ` −${money(t.esp.monto)}` : "")] : []),
     `*Total: ${money(t.total)}*` + (t.envio ? " (con envío)" : mode === "envio" ? " + envío a confirmar" : "") + (t.pending ? " + productos a consultar" : ""),
     "",
     `Nombre: ${name}`,
@@ -1186,8 +1222,10 @@ function shipCost(km){
 let shipTimer = null, shipSeq = 0;
 function shipShow(html, err){ $("#ship").innerHTML = html; $("#ship").classList.toggle("err", !!err); }
 async function calcShip(){
-  const addr = $("#fAddr").value.trim(), seq = ++shipSeq;
-  SHIP.km = 0; SHIP.costo = 0;
+  const addr = $("#fAddr").value.trim();
+  if (addr && addr === SHIP.addr && SHIP.km) return;   // misma dirección: no se vuelve a calcular
+  const seq = ++shipSeq;
+  SHIP.km = 0; SHIP.costo = 0; SHIP.addr = "";
   if (addr.length < 6){ shipShow("Escribí la dirección para calcular el envío."); renderCart(); return; }
   shipShow("Calculando la distancia…");
   try{
@@ -1196,7 +1234,7 @@ async function calcShip(){
     if (seq !== shipSeq) return;
     const maps = `https://www.google.com/maps/dir/?api=1&origin=${encodeURIComponent((DATA.negocio || {}).direccion + ", Buenos Aires")}&destination=${encodeURIComponent(q)}`;
     if (!a || !b){ shipShow(`No encontramos esa dirección. Revisá calle, número y localidad. <a href="${maps}" target="_blank" rel="noopener">Ver en Google Maps</a>`, true); renderCart(); return; }
-    SHIP.km = Math.round(distKm(a, b) * 10) / 10;
+    SHIP.km = Math.round(distKm(a, b) * 10) / 10; SHIP.addr = addr;
     const c = shipCost(SHIP.km); SHIP.costo = c.costo;
     shipShow(c.fuera
       ? `<span>≈ <b>${fmtKm(SHIP.km)}</b> del local · fuera de la zona de envío, lo consultamos por WhatsApp</span><a href="${maps}" target="_blank" rel="noopener">Ver en el mapa</a>`
@@ -1206,7 +1244,7 @@ async function calcShip(){
   }
   renderCart();
 }
-$("#fAddr").addEventListener("input", () => { clearTimeout(shipTimer); SHIP.km = 0; SHIP.costo = 0; shipTimer = setTimeout(calcShip, 1100); });
+$("#fAddr").addEventListener("input", () => { clearTimeout(shipTimer); SHIP.km = 0; SHIP.costo = 0; SHIP.addr = ""; renderCart(); shipTimer = setTimeout(calcShip, 1100); });
 $("#fAddr").addEventListener("change", () => { clearTimeout(shipTimer); calcShip(); });
 
 /* ---------- ¿para cuándo?: día en el calendario y horario ---------- */
@@ -1286,6 +1324,7 @@ function mailOrder(code, t, f){
     "Para": f.when || "—",
     "Aclaraciones": f.notes || "—",
     "Productos": productos,
+    "Descuento especial": t.esp.regla ? `${t.esp.motivo}: ${t.esp.texto}` + (t.esp.monto > 0 ? ` (−${money(t.esp.monto)})` : "") : "—",
     "Total": money(t.total) + (t.promoOk ? ` (con ${t.promo.pct}% OFF)` : "") + (t.pending ? " + productos a consultar" : ""),
   };
   fetch(`https://formsubmit.co/ajax/${encodeURIComponent(to)}`, {
@@ -1304,6 +1343,8 @@ function saveOrder(code, t, f){
     items: t.items.map(({p, q}) => ({id: p.id, nombre: p.nombre, q, precio: hasPrice(p) ? priceOf(p) : null})),
     subtotal: t.sub, descuento: t.promoOff, total: t.total,
     envio: mode === "envio" && SHIP.costo > 0 ? SHIP.costo : null,
+    desc_especial: t.esp.regla ? t.esp.monto : null,
+    desc_motivo: t.esp.regla ? `${t.esp.motivo} (${t.esp.texto})`.slice(0, 120) : null,
     km: mode === "envio" && SHIP.km ? Math.round(SHIP.km * 10) / 10 : null,
     entrega_fecha: f.fecha || null, entrega_hora: f.hora || null,
   };
